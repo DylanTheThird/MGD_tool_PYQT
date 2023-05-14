@@ -1,0 +1,167 @@
+{"Meta-Combat":
+	{"SetMusicTo": 
+		{
+		"move": ["filepath"],
+		"explanation": ["Path/To/Song/Here.mp3"]
+		},
+	"MonsterArrived":
+		{
+		"move": ["limit", "empty"],
+		"limit":10,
+		"explanation": ["This is triggered whenever the monster is added to an encounter. Triggers before StartOfCombat if monsters are added at the start of combat. Also must be called within the first 10 lineTriggers."]
+		},
+	"StartOfCombat": {
+		"move": ["limit", "empty"],
+		"limit":10,
+		"explanation": ["This is triggered at the start of combat. Only for the first enemy listed in the encounter. It will also replace the generic line of enemies approaching. Also must be called within the first 10 lineTriggers."]
+},
+	"EndOfRound": {
+		"move": ["limit"],
+		"limit":10,
+		 "explanation": ["Triggers at the end of every round of combat, before status effects tick down. A round would be whenever the player and all monsters present have each had at least one turn. Also must be called within the first 10 lineTriggers. Note that upon reaching the end of the round, it will trigger for each monster in the encounter."]
+},
+	"StartOfRound": {
+		"move": ["limit"],
+		"limit":10,
+		 "explanation": ["Triggers at the start of a round. That is, when the player and all monsters have not yet had their turn. Also must be called within the first 10 lineTriggers. Note that upon reaching the start of the round, it will trigger for each monster in the encounter."]
+	 }
+	},
+ "Reactions": 
+	{
+	"HitWith": {
+	"move": ["items", "mandatory"],
+	 "explanation": ["Text is displayed after successfully hitting a monster with a skill. Only shown after they are hit. Note this can include skills used by items, or the item name itself."]
+	},
+	"HitWithA": {
+"move": ["items", "mandatory"],
+ "explanation": ["Text is displayed after successfully hitting a monster with a skill. Only shown after they are hit. Note this can include skills used by items, or the item name itself."]
+},
+ "UsesMove": {
+"move": ["mandatory"],
+ "explanation": ["Triggers when the specified skill is used by the monster. It is displayed before the move. Biased towards Sex skills, but will use UsesMoveA pool as a fallback."]
+},
+ "UsesMoveA": {
+"move": ["mandatory"],
+ "explanation": ["Triggers when the specified skill is used by the monster. It is displayed before the move. Biased towards Sex skills, but will use UsesMoveA pool as a fallback."]
+},
+ "UsesMovePre": {
+"move": ["mandatory"],
+ "explanation": ["This gets put before a tighten used by the monster. You can use it for multiple random lines, but usually it will be a single line bundle as shown in the next example."]
+},
+ "HitWithPre": {
+"move": ["mandatory"],
+ "explanation": ["This gets put before a tighten used by the monster. You can use it for multiple random lines, but usually it will be a single line bundle as shown in the next example."]
+},
+ "Escape": {
+"move": [],
+ "explanation": ["Triggers when the player successfully uses an escape skill. Examples would be Teleport, or Distract. If MOVE is given a blank string, it will apply to any instance of an escape skill."]
+},
+ "LowHealth": {
+"move": ["empty"],
+ "explanation": ["Triggers upon reaching less than 30", "f their max health. Only happens once, heals will not reset it."]
+},
+ "PlayerLowHealth": {
+"move": ["empty"],
+ "explanation": ["Triggers upon the player reaching less than 35", "f their max health. Only happens once, resetting on orgasms."]
+},
+ "PlayerRecoil": {
+"move": ["mandatory"],
+ "explanation": ["Checks if the specified skill the player used had recoil, triggering after the attack. Triggers before HitWith/HitWithA. Biased towards Sex skills, but will use PlayerRecoilA pool as a fallback."]
+},
+ "PlayerRecoilA": {
+"move": ["mandatory"],
+ "explanation": ["Checks if the specified skill the player used had recoil, triggering after the attack. Triggers before HitWith/HitWithA. Biased towards Sex skills, but will use PlayerRecoilA pool as a fallback."]
+},
+ "OnSurrender": {
+"move": ["empty"],
+ "explanation": ["Triggers when the player surrenders. The MOVE key should be empty."]
+},
+ "onPlayerEdge": {
+"move": [],
+ "explanation": ["Displays when the player edges. The MOVE key can optionally be given a specific skill to check for."]
+},
+ "onEdge": {
+"move": [],
+ "explanation": ["Displays when the monster edges. The MOVE key can optionally be given a specific skill to check for."]
+},
+ "OnPlayerOrgasm": {
+"move": [],
+ "explanation": ["Displays when the player cums. The MOVE key can optionally be given a specific skill to check for."]
+},
+ "onOrgasm": {
+"move": [],
+ "explanation": ["Displays when the monster cums. The MOVE key can optionally be given a specific skill to check for."]
+},
+ "PostOrgasm": {
+"move": [],
+ "explanation": ["Displays after the monster orgasm line. This allows for some combat functions that may otherwise break up the orgasm line into janky parts. The MOVE key can optionally be given a specific skill to check for."]
+},
+	"OnLoss": {
+		"move": [],
+		 "explanation": ["Displays after the monster is defeated and taken out of the encounter. DOES NOT FUNCTION IN SINGLE MONSTER FIGHTS (game explodes otherwise). Intended for multi enemy fights, but this never triggers if it's the final monster in an encounter. This has many uses, but take care not to call a function that would specify the original moster specifically, or it will crash the game. The MOVE key can optionally be given a specific skill to check for."]
+			}
+ },
+ "Counters":
+ {
+ "AutoCounter": {
+"move": ["items", "actions"],
+ "explanation": ["Triggers before the player uses the skill. Wait, Struggle, Run Away, Push Away, and Defend can also be used in MOVE"]
+},
+ "AutoCounterSkillTag": {
+"move": ["skills-skill"],
+ "explanation": ["Same as AutoCounter, but will instead check a skill's skilltags list."]
+},
+ "AutoCounterSkillFetish": {
+"move": ["skills-fetish"],
+ "explanation": ["Same as AutoCounterSkillTag, but for the skill's fetishtags list."]
+},
+ "OffenceCounter": {
+"move": ["empty"],
+ "explanation": ["This will trigger before the player can use any form of offence. That is, anything that affects the monster. This won't trigger from the player using something on themselves, like healing or buffing."]
+	},
+	"AnyCounter": {
+		"move": ["empty"],
+		 "explanation": ["Like OffenceCounter, but this will trigger prior to the player doing ANYTHING, including consumables, even if the monster is stunned. ... ANYTHING, excludes Wait, Struggle, Run Away, Push Away, and Defend. Use AutoCounter to cover those."]
+	}
+ },
+"Stance, Restraints": 
+	{
+	"StanceStruggle": {
+		"move": [],
+		 "explanation": ["Triggers upon the player trying to escape a stance prior to whether or not it succeeds or fails. It is recommended to make a one for each possible stance the monster can be in. Remember that the player can only initiate Sex, Making Out, or Anal on their own."]
+	},
+	"StanceStruggleFail": {
+		"move": [],
+		 "explanation": ["Triggers upon the player failing to escape a stance."]
+	},
+	"StanceStruggleComment": {
+		"move": [],
+		 "explanation": ["Like StanceStruggleFail, triggers after the player fails to escape a stance. Takes place after StanceStruggleFail, meant monster dialogue responses."]
+	},
+	"StanceStruggleFree": {
+		"move": [],
+		 "explanation": ["Triggers upon the player successfully escaping a stance."]
+	},
+	"StanceStruggleFreeComment": {
+		"move": [],
+		 "explanation": ["Like StanceStruggleComment, triggers after the player successfully escapes a stance. Takes place after StanceStruggleFree, meant for monster dialogue responses."]
+	},
+	"RestaintStruggle": {
+		"move": ["restrain"],
+		 "explanation": ["Triggers upon the player trying to escape a restraint, whether or not it succeeds or fails. Specify the specific restraint in the MOVE key."]
+	},
+	"RestraintStruggleCharmed": {
+		"move": ["restrain"],
+		 "explanation": ["Like RestraintStruggle, but usurps it if the player is charmed."]
+	},
+	"RestraintEscaped": {
+		"move": ["restrain"],
+		 "explanation": ["Triggers if the player successfully escapes the specified restraint."]
+	},
+	"RestraintEscapedFail": 
+	{
+		"move": ["restrain"],
+		 "explanation": ["Triggers if the player fails to escape the specified restraint."]
+		}
+	}
+ }

@@ -1,0 +1,25 @@
+{
+"Core Stats":
+	{"Power":{"type":"int"},
+	 "Technique":{"type":"int"},
+	 "Intelligence":{"type":"int"},
+	 "Allure":{"type":"int"},
+	 "Willpower":{"type":"int"},
+	 "Luck":{"type":"int"},
+	 "Arousal":{"type":"int"},
+	 "Energy":{"type":"int"},
+	 "Spirit":{"type":"int"}
+	},
+"Sensitivity":
+	{"Sex":{"type":"int"},
+	 "Ass":{"type":"int"},
+	 "Breasts":{"type":"int"},
+	 "Mouth":{"type":"int"},
+	 "Seduction":{"type":"int"},
+	 "Magic":{"type":"int"},
+	 "Pain":{"type":"int"},
+	 "Energy":{"type":"int"},
+	 "Holy":{"type":"int"},
+	 "Unholy":{"type":"int"}
+	}
+}

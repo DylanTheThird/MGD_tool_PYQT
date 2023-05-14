@@ -1,0 +1,124 @@
+{
+    "power": {
+				"type":"int",
+				"tooltip":"Base damage or healing value of the skill.",
+				"default":"1"
+			},
+    "minRange": {
+				"type":"int",
+				"tooltip":"The randomized percent minimum damage or healing range of the skill.",
+				"default":"1"
+			},
+    "maxRange": {
+				"type":"int",
+				"tooltip":"The randomized percent maximum damage or healing range of the skill.",
+				"default":"1"
+			},
+    "recoil": {
+				"type":"int",
+				"tooltip":"Percentage of the damage dealt to the target recoiled back at the caster. Cannot be a negative value.",
+				"default":"1"
+			},
+    "critDamage": {
+				"type":"int",
+				"tooltip":"Percent damage modifier for the critical damage dealt. Flatly additive/subtractive to any existing modifiers."
+			},
+    "initiative": {
+				"type":"int",
+				"tooltip":"Flat initiative modifier for the skill’s turn order. Flatly additive/subtractive to any existing modifiers."
+			},
+    "accuracy": {
+				"type":"int",
+				"tooltip":"Flat accuracy modifier for whether the skill successfully lands. Flatly additive/subtractive to any existing modifiers."
+			},
+    "scalesWithStatusEffect": {
+				"type":"singlelist",
+				"tooltip":"Scales the damage or healing if the given status effect is on the target. Stacks on potency, see Status Effect Reference for potency reference.",
+				"choices":["files/itemStatusEffects.txt"]
+			},
+    "flatDamageSF-FlatScaling": {
+				"type":"int",
+				"tooltip":"Flat base damage boost for each stack of scalesWithStatusEffect"
+			},
+    "flatDamageSF-PercentScaling": {
+				"type":"int",
+				"tooltip":"Percent damage boost for each stack of scalesWithStatusEffect. Take caution with high percent values."
+			},
+    "TotalDamageSF-PercentScaling": {
+				"type":"int",
+				"tooltip":"Boost to total skill damage for each stack of scalesWithStatusEffect. This means it bypasses defense reductions, and applies after other damage boosts. Take extreme care. If using this key, set the other SF damage scaling key values to 0, or remove entirely"
+			},
+    "statusEffect": {
+				"type":"singlelist",
+				"choices":["files/itemStatusEffects.txt"],
+				"tooltip":"What status effect it uses. Use EventRestrain for combat event based restrain application, ensuring combat event based restrain skills don’t chain.",
+				"default":"Power"
+			},
+    "statusChance": {
+				"type":"int",
+				"tooltip":"Base percent chance of the effect successfully applying on the target.",
+				"default":"1"
+			},
+    "statusDuration": {
+				"type":"int",
+				"tooltip":"How many turns the effect lasts.",
+				"default":"1"
+			},
+    "statusPotency": {
+				"type":"int",
+				"tooltip":"Ranges from: Aphrodisiac flat arousal per turn (can stack), Restrain durability, Sleep flat energy drain per turn (can stack), how much of a given stat Buff/Debuff, or number of stacks for Paralysis or Trance.",
+				"default":"0"
+			},
+    "statusResistedBy": {
+				"type":"singlelist",
+				"choices":["files/itemStatusEffects.txt"],
+				"tooltip":"Which target stat resists the affect for avoiding application. Irrelevant to Buffs/Debuffs.",
+				"default":"Luck"
+				
+			},
+    "statusText": {
+				"type":"int",
+				"tooltip":"Will change status effect name in game. Making it unique for Buff/Debuff skills ensures they don’t overlap with others in tracking.",
+				"default":"New super skill"
+			},
+    "statusEffectScaling": {
+				"type":"int",
+				"tooltip":"For stat buff/debuff skills, deciding their scaling based on the set statType value of the caster’s stats. 100% of a given stat is equal to stat * 1, 50% stat * 0.5, etc. Can also be used for scaling healing skillType skills with the skill’s given statType."
+			},
+    "outcome": {
+				"type":"text",
+				"tooltip":"Triggers on the skill successfully landing."
+			},
+    "miss": {
+				"type":"text",
+				"tooltip":"Triggers on the skill missing."
+			},
+    "restraintStruggle": {
+				"type":"text",
+				"tooltip":"Triggers displayable text when the target struggles."
+			},
+    "restraintStruggleCharmed": {
+				"type":"text",
+				"tooltip":"Triggers displayable text when the charmed target struggles."
+			},
+    "retraintEscaped": {
+				"type":"text",
+				"tooltip":"Triggers displayable text when the target breaks the restraints."
+			},
+    "retraintEscapedFail": {
+				"type":"text",
+				"tooltip":"Triggers displayable text when the target fails to break the restraints."
+			},
+    "restraintOnLoss": {
+				"type":"text",
+				"tooltip":"Triggers displayable text if the target loses while restrained. Made for Pin, but could have other uses."
+			},
+    "statusOutcome": {
+				"type":"text",
+				"tooltip":"Triggers displayable text upon the skill hitting its target. Providing IgnoreAttack will allow for combat event based attack or any healing skillType skills to miss normally."
+			},
+    "statusMiss": {
+				"type":"text",
+				"tooltip":"Triggers displayable text upon the skill missing its target. Can take functions for combat events and related."
+			}
+}

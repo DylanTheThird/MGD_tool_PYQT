@@ -1,0 +1,8 @@
+Consumable
+CombatConsumable
+NotCombatConsumable
+DissonantConsumable
+Loot
+Rune
+Accessory
+Key

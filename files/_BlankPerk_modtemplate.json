@@ -1,0 +1,58 @@
+{
+    "name": {
+				"type":"text",
+				"tooltip":"name of perk"
+			},
+    "description": {
+				"type":"area",
+				"tooltip":"perk description"
+			},
+    
+    "LevelReq": {
+				"type":"int",
+				"tooltip":"level needed for the perk"
+			},
+    "PerkReq": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Useful for tiered perks intended for the level up menu. \nLeave an empty string if not desired.",
+						"choices":["currentMod-Perks","main-inc-/Perks"]
+						},
+    "StatReq": {
+						"type":"PairFields",
+						"tooltip":"stats required for the perk and its value. \nTo Delete, clear field with name",
+						"choices":["file-files/stats.txt"],
+						"fields":[
+									{"name":"StatReq",
+									"type":"text"
+									},
+									{"name":"StatReqAmount",
+									"type":"int"
+									}
+								]
+						},
+
+    "PerkType": {
+						"type":"PairFields",
+						"tooltip":"The perk types, deciding what the perk does to the perk owner. \nTo Delete, clear field with name",
+						"choices":["file-files/perkTypes.txt"],
+						"fields":[
+									{"name":"PerkType",
+									"type":"text"
+									},
+									{"name":"EffectPower",
+									"type":"int"
+									}
+								]
+						},
+    "PlayerCanPurchase": {
+						"type":"singlelist",
+						"tooltip":"yes, no - levelingmenu. hidden - for item perks",
+						"choices":["yes","no", "HiddenCompletelyFromPlayer"]
+						},
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}

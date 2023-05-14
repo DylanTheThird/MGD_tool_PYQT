@@ -1,0 +1,80 @@
+{
+   "name": {
+				"type":"text",
+				"tooltip":"name of adventure",
+				"options":["addition"]
+			},
+     "Description": {
+				"type":"area",
+				"tooltip":"Adventure description",
+				"options":["addition"]
+			},
+    "requires": {
+						"type":"multilist",
+						"tooltip":"Name of a required item or items",
+						"choices":["currentMod-Items/itemType_Key", "main-inc-/Items/KeyItems", "main-inc-/Items"],
+				"options":["search"]
+						},
+    "Deck": {
+						"type":"deck",
+						"tooltip":"Specify the order of encounters and events the player will face upon starting the adventure",
+				"options":["addition"]
+						},
+    "RandomEvents": {
+						"type":"multilist",
+						"tooltip":"Set the random events that can be selected by the RandomEvent string for the Deck",
+						"choices":["currentMod-Events", "main-inc-/Events"],
+				"options":["search","addition"]
+						},
+    "RandomMonsters": {
+						"type":"multilist",
+						"tooltip":"Set the random monsters you can encounter for the RandomMonsters string for the Deck",
+						"choices":["currentMod-Monsters", "main-inc-generic/Monsters"],
+				"options":["search","addition"]
+						},
+    "MonsterGroups": {
+						"type":"monstergroups",
+						"tooltip":"Decides the possible monsters formations",
+						"choices":["currentElement-RandomMonsters","main-inc-generic/Monsters"],
+						"options":["expand", "search","addition"]
+						},
+    "Treasure": {
+						"type":"listDict",
+						"tooltip":"Decides the amount of eros given from chests for each type of treasure rarity. The listed objects and their keys must be included, and each key must provide a value in their string",
+						"fields":{
+								    "Common": {"type":"multilist",
+												"options":["search"],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":[""]},
+								    "Uncommon": {"type":"multilist",
+												"options":["search"],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":[""]},
+								    "Rare": {"type":"multilist",
+												"options":["search"],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":[""]}
+									},
+						"options":["addition"]
+						
+						},
+    "Eros": {
+						"type":"listDict",
+						"t2y2pe":"listDict",
+						"options":[],
+						"tooltip":"Decides the amount of eros given from chests for each type of treasure rarity. The listed objects and their keys must be included, and each key must provide a value in their string",
+						"fields":{
+								    "Common": {"type":"int",
+												"default":0},
+								    "Uncommon": {"type":"int",
+												"default":0},
+								    "Rare": {"type":"int",
+												"default":0}
+									}
+						},
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}

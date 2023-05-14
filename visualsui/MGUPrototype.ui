@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>575</width>
+    <height>473</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>5</y>
+      <width>284</width>
+      <height>223</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QTreeWidget" name="treeWidget">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
+       <column>
+        <property name="text">
+         <string/>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>Adventures</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>adv 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>adv2</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>Items</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>item 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>item2</string>
+         </property>
+        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string>Events</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Event 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Event 2</string>
+         </property>
+        </item>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>NEW ADVENTURES!!</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buddy">
+        <cstring>treeWidget</cstring>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QTreeWidget" name="treeWidget_2">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>40</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Additions</string>
+     </property>
+    </column>
+    <item>
+     <property name="text">
+      <string>Skills</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Perks</string>
+     </property>
+    </item>
+   </widget>
+   <zorder>treeWidget_2</zorder>
+   <zorder>layoutWidget</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>575</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_Mod_Menu">
+    <property name="title">
+     <string>&amp;Mod Menu</string>
+    </property>
+    <addaction name="actionNew_Mod"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Mod"/>
+    <addaction name="actionLoad_Mod"/>
+    <addaction name="separator"/>
+    <addaction name="actionRecentMods"/>
+   </widget>
+   <widget class="QMenu" name="menuOption">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <widget class="QMenu" name="menuText_fields">
+     <property name="title">
+      <string>Text fields</string>
+     </property>
+     <addaction name="actionFont_2"/>
+     <addaction name="actionSize_2"/>
+    </widget>
+    <widget class="QMenu" name="menuLabels">
+     <property name="title">
+      <string>Labels</string>
+     </property>
+     <addaction name="actionFont"/>
+     <addaction name="actionSize"/>
+    </widget>
+    <addaction name="menuLabels"/>
+    <addaction name="menuText_fields"/>
+    <addaction name="separator"/>
+    <addaction name="actionStances"/>
+   </widget>
+   <widget class="QMenu" name="menuAdd_New">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionAdd_new"/>
+    <addaction name="actionDisplay_Details"/>
+    <addaction name="actionRemove"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Scene"/>
+    <addaction name="actionAdd_function"/>
+    <addaction name="actionAdd_picture"/>
+   </widget>
+   <addaction name="menu_Mod_Menu"/>
+   <addaction name="menuOption"/>
+   <addaction name="menuAdd_New"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionAdd_new"/>
+   <addaction name="actionDisplay_Details"/>
+   <addaction name="actionAdd_Addition"/>
+   <addaction name="separator"/>
+   <addaction name="actionRemove"/>
+   <addaction name="actionMain_Status"/>
+  </widget>
+  <action name="actionNew_Mod">
+   <property name="text">
+    <string>New Mod</string>
+   </property>
+  </action>
+  <action name="actionSave_Mod">
+   <property name="text">
+    <string>Load Mod</string>
+   </property>
+  </action>
+  <action name="actionLoad_Mod">
+   <property name="text">
+    <string>Save Mod</string>
+   </property>
+  </action>
+  <action name="actionAdventure">
+   <property name="text">
+    <string>Adventure</string>
+   </property>
+  </action>
+  <action name="actionEvent">
+   <property name="text">
+    <string>Event</string>
+   </property>
+  </action>
+  <action name="actionFetish">
+   <property name="text">
+    <string>Fetish</string>
+   </property>
+  </action>
+  <action name="actionItem">
+   <property name="text">
+    <string>Item</string>
+   </property>
+  </action>
+  <action name="actionMonster">
+   <property name="text">
+    <string>Monster</string>
+   </property>
+  </action>
+  <action name="actionPerk">
+   <property name="text">
+    <string>Perk</string>
+   </property>
+  </action>
+  <action name="actionSkill">
+   <property name="text">
+    <string>Skill</string>
+   </property>
+  </action>
+  <action name="actionPerk_2">
+   <property name="text">
+    <string>Perk</string>
+   </property>
+  </action>
+  <action name="actionSkill_2">
+   <property name="text">
+    <string>Skill</string>
+   </property>
+  </action>
+  <action name="actionEvent_2">
+   <property name="text">
+    <string>Event</string>
+   </property>
+  </action>
+  <action name="actionStances">
+   <property name="text">
+    <string>Stances</string>
+   </property>
+  </action>
+  <action name="actionFont">
+   <property name="text">
+    <string>Font</string>
+   </property>
+  </action>
+  <action name="actionSize">
+   <property name="text">
+    <string>Size</string>
+   </property>
+  </action>
+  <action name="actionFont_2">
+   <property name="text">
+    <string>Font</string>
+   </property>
+  </action>
+  <action name="actionSize_2">
+   <property name="text">
+    <string>Size</string>
+   </property>
+  </action>
+  <action name="actionAdd_new">
+   <property name="text">
+    <string>Add new</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Details">
+   <property name="text">
+    <string>Mod Elements</string>
+   </property>
+  </action>
+  <action name="actionRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </action>
+  <action name="actionRecentMods">
+   <property name="text">
+    <string>RecentMods</string>
+   </property>
+  </action>
+  <action name="actionAdd_Addition">
+   <property name="text">
+    <string>Additions</string>
+   </property>
+  </action>
+  <action name="actionMain_Status">
+   <property name="text">
+    <string>Main Status</string>
+   </property>
+  </action>
+  <action name="actionAdd_Scene">
+   <property name="text">
+    <string>Add Scene</string>
+   </property>
+  </action>
+  <action name="actionAdd_function">
+   <property name="text">
+    <string>Add function</string>
+   </property>
+  </action>
+  <action name="actionAdd_picture">
+   <property name="text">
+    <string>Add picture</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

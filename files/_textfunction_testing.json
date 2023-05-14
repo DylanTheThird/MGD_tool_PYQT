@@ -1,0 +1,170 @@
+{
+    "general": {
+				"special functions": [
+			{
+				"title": "SetChoice",
+				"explanation": "Will set specified choice number to the following string value. Think of them as progress or variable fields you can manually set for an event.",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}											
+												}
+			},
+			{
+				"title": "IfChoice",
+				"explanation": "Will check for a choice. If it is a match, it then goes to the specified scene. If it is not a match, it will ignore the scene jump and continue the scene.",
+				"options":["special"],
+				"steps": "4",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},			
+			{
+				"title": "Menu",
+				"explanation": "Gives the player an option menu of choices. Each choice is a scene in the same event file. Make sure the scene names exactly match the choice. Will always end current scene and jump to a new one, thus it is recommended to only have them at the end of a scene.By default, if there are more than 6 choices, page arrows will automatically be added.",
+				"options":["special"],
+				"steps": "EndLoop",
+				"structure":{}
+			},
+			{				"title": "HitMonsterWith",
+				"explanation": "Hit the monster with a skill. Will not apply stances or status effects from the skill, and does apply recoil damage. It will only damage to the target, and can crit. It will never miss. Uses the player stats. Do not use any skill with a targetType that isn't 'single'.",
+				"options":["special", "limit skills"],
+				"steps": "2",
+									"structure":{												
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills", "limit"]}
+												}
+			},
+			{				"title": "IfPlayerHasStances",
+				"explanation": "Checks the player for every specified stance in the loop. If all stances are true, it jumps to the given scene.",
+				"options":["simple"],
+				"steps": "EndLoop-1",
+									"structure":{
+												"Stances":{"type":"multilist",
+												"options":["multi_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Scenes"]}
+												}
+			}
+			
+								
+								,
+								
+											{
+				"title": "SwapLineIf",
+				"explanation": "really tough. with additional options.",
+									"options":["special", "swapline"],
+									"steps":"EndLoop",
+									"structure":{
+												"1":{"type":"singlelist",
+												"choices":["", "Random", "Stat", "Arousal", "MaxArousal", "Energy", "MaxEnergy", "Virility", "HasFetish", "HasFetishLevelEqualOrGreater", "Perk", "EncounterSize", "Item", "Eros", "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]}
+												}
+								},
+								{				"title": "DamagePlayerFromMonster",
+				"explanation": "Deal randomized damage to the player via a skill and monster.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{
+												
+												"1":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Monsters", "main-inc-generic-/Monsters"]},
+												"2":{"type":"singlelist",
+												"choices":[]}
+												}
+								},
+			{				"title": "GivePerk_spec",
+				"explanation": "Gives the player a perk, even if they already have it.",
+									"options":["special", "org", "TODO"],
+									"tags":["GivePerk", "GivePerkQuietly", "GivePerkToMonster"],
+									"steps":"1",
+									"structure":{
+												"1":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Perks", "main-inc-/Perks"]}
+												}
+			},
+			{				"title": "IfHealingSickness",
+				"explanation": "Jumps to the given scene if healing sickness is active. Used to actually avoid the refresh scenes for rest points. Only works in events.",
+				"options":["simple", "Events", "herenow"],
+				"steps": "2",				
+									"structure":{
+												"1":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Events"]}
+												}
+			}
+								],				
+				"events function":[
+									{
+				"title": "SkillShoppingMenu",
+				"explanation": "Opens a skill purchasing menu based on the provided skills, up till 'EndLoop'. Good whitespace formatting is highly recommended for sanity, see how skill shops in the base game are done.",
+									"options":["simple"],
+									"steps":"EndLoop",
+									"structure":{
+												"1":{"type":"multilist",
+												"options":[],
+												"choices":["currentmod-Skills", "main/Skills"]}}
+			}
+												],
+				"change monster":[
+									{"title":"ChangeMonsterLevel",
+									"explanation":"Changes the given stat of the focused monster by the given amount. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+									"options":["simple"],
+									"steps":"EndLoop-1",
+									"structure":{
+												"Amount":{"type":"int"},
+												"2":{"type":"int"}
+												}
+									},
+									{"title":"ChangeMonsterstat",
+									"explanation":"Changes the given stat of the focused monster by the given amount. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Core stat":{"type":"singlelist",
+												"choices":["game-core stats-simple"]},
+												"1":{"type":"int"}
+												}
+									},
+									{"title":"givemonsterperk",
+									"explanation":"Changes the given stat of the focused monster by the given amount. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Perks", "main-inc-/Perks"]}
+												}
+									},
+									{"title":"playerspeaks",
+									"explanation":" upon leaving the event and/or encounter. These do not produce dialogue.",
+									"steps":"2",
+									"options":["simple"],
+									"structure":{
+												"Text":{"type":"text"}
+												}
+									},
+									{
+									"title": "IfPlayerHasStances",
+									"explanation": "Checks the player for every specified stance in the loop. If all stances are true, it jumps to the given scene.",
+									"options":["simple"],
+									"steps": "EndLoop",
+									"structure":{
+												"1":{"name":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Skills-Stances"]},
+												"2":{"name":"multilist",
+												"options":["single_item", "search"],
+												"choices":["currentmod-Events-Scenes"]}
+												}
+												}
+									
+								]
+				}
+				}

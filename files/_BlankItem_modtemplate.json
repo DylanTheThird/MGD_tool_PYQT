@@ -1,0 +1,124 @@
+{ 
+"name": {
+				"type":"text",
+				"tooltip":"name of item"
+			},
+    "descrip": {
+				"type":"area",
+				"tooltip":"item description"
+			},
+    "itemType": {
+						"type":"singlelist",
+						"tooltip":"type of item",
+						"choices":["file-files/healingItemTypes.txt"]
+						},
+	"cost": { "type":"int",
+						"tooltip":""},
+	"hp": { "type":"int",
+						"tooltip":"For consumable item types, flatly recovers or alters the corresponding stat based on the value. Negative values will have opposite effect,Equipment and loot item types will instead flatly influence the corresponding stat by its max, ignoring Exp. Can use negative values.It can be used in combination with skills"},
+	"ep": { "type":"int"},
+	"sp": { "type":"int"},	
+	"Exp": { "type":"int"},
+    "Power": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "Technique": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "Intelligence": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "Willpower": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "Allure": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "Luck": {
+				"type":"int",
+				"tooltip":"stat boost"
+			},
+    "statusEffect": {
+				"type":"singlelist",
+				"choices":["file-files/itemStatusEffects.txt"],
+				"options":[],
+				"default":"None",
+				"tooltip":"cleanses the given status effect"
+			},
+    "statusChance": {
+				"type":"int",
+				"tooltip":"represents a percent chance for it to successfully cleanse on us"
+			},
+    "statusPotency": {
+				"type":"int",
+				"tooltip":"for relevant status effects will clear the given amount of potency"
+			},
+    "useOutcome": {
+				"type":"area",
+				"options":["function"],
+				"tooltip":"same as skill outcome, what happen on use. Can use the text functions."
+			},
+    "useMiss": {
+				"type":"area",
+				"options":["function"],
+				"tooltip":"Currently not used by the game."
+			},
+    "perks": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"To apply perks via equipment related item types",
+						"choices":["currentMod-Perks", "main-inc-/Perks"]
+						},
+    "skills": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"For equipment item types, the key will give all listed skills for as long as the item is equipped. Take caution that it means runes can give a skill multiples times.For consumable item types, it will utilize the given skill upon use. Note it can only take one skill, even if the key technically accepts an array. You can provide it with UseableItem, which counts for a older consumable items. Generally preferable to use the above.",
+						"choices":["currentMod-Skills", "main-inc-/Skills"]
+						},
+    "requires": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Name of a required item or items",
+						"choices":["currentMod-Items/itemType_Key", "main-inc-/Items"]
+						},
+"resistancesStatusEffects": { "type": "dictionary",
+                          "tooltip": "Only applicable to equipment and loot item types. Alters the given stat for the wielder, can use negative values.",
+						"options":[],
+						  "fields":{
+									"Stun": { "type":"int"},
+									"Charm": { "type":"int"},
+									"Aphrodisiac":{ "type":"int"},
+             						 "Restraints":{ "type":"int"},
+             						 "Sleep": { "type":"int"},
+             						 "Trance": { "type":"int"},
+             						 "Paralysis": { "type":"int"},
+            						  "Debuff": { "type":"int"}
+			  }},
+    "BodySensitivity": {
+                          "type": "dictionary",
+						"options":[],
+                          "tooltip": "Only applicable to equipment and loot item types. Alters the given stat for the wielder, can use negative values.",
+						  "fields":{
+								    "Sex": { "type":"int"},
+								    "Ass": {"type":"int"},
+								    "Breasts": {"type":"int"},
+									"Mouth": {"type":"int"},
+									"Seduction": {"type":"int"},
+									"Magic": {"type":"int"},
+									"Pain": {"type":"int"},
+									"Holy": {"type":"int"},
+									"Unholy": {"type":"int"}
+									}
+                        },
+						
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}

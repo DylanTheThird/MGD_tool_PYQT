@@ -1,0 +1,179 @@
+{
+"skills":
+	{"startsStance":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Applies any of the given stances.",
+						"choices":["Stances"]
+						},
+      "removesStance":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Removes the listed stances for both the caster and target. All removes all current stances. Target removes all stances from the target.",
+						"choices":["Stances", "All", "Target"]
+						},
+      "requiresStance":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Requires the caster to be in the specified stances",
+						"choices":["Stances"]
+						},
+      "unusableIfStance":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Caster cannot be in any of the specified stances.",
+						"choices":["Stances"]
+						},
+      "requiresTargetStance":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Target must be in all of the specified stances.",
+						"choices":["Stances"]
+						},
+      "unusableIfTarget":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Target cannot be in any of the specified stances.",
+						"choices":["Stances"]
+						},
+      "requiresStatusEffect":
+		{
+				"type":"singlelist",
+				"choices":["file-files/itemStatusEffects.txt", "None"],
+				"options":[],
+						"tooltip":"Requires target to have this status effect."
+						},
+      "requiresStatusPotency":
+		{
+        "type": "int",
+						"tooltip":"Required target status effect must have a minimum of the given potency value. Reminder that it’s optional, such as if only checking for Charm."
+      },
+      "unusableIfStatusEffect":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Target cannot have any of the specified status effects.",
+						"choices":["Stances"]
+						},
+      "requiresStatusEffectSelf":
+		{
+				"type":"singlelist",
+				"fix":"me",
+				"choices":["file-files/itemStatusEffects.txt", "None"],
+				"options":[],
+						"tooltip":"Requires caster to have this status effect."
+						},
+      "requiresStatusPotencySelf":
+		{
+        "type": "int",
+						"tooltip":"Required caster status effect must have a minimum of the given potency value. Reminder that it’s optional, such as if only checking for Charm"
+      },
+      "unusableIfStatusEffectSelf":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Caster cannot have any of the specified status effects. ",
+						"choices":["Stances"]
+						},
+      "requiresPerk":
+		{
+						"type":"multilist",
+						"options":["multi_item"],
+						"tooltip":"Target must have all the specified perks. Can repeat a perk to require multiple stacks of the same perk.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						},
+      "requiresOnePerk":
+		{
+						"type":"multilist",
+						"options":["single_item"],
+						"tooltip":"Target must have the specified perk.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						},
+      "unusableIfPerk":
+		{
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Target cannot have any of the specified perks.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						},
+      "requiresPerkSelf":
+		{
+						"type":"multilist",
+						"options":["multi_item"],
+						"tooltip":"Caster must have all the specified perks. Can repeat a perk to require multiple stacks of the same perk.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						},
+      "requiresOnePerkSelf":
+		{
+						"type":"multilist",
+						"options":["multi_item"],
+						"tooltip":"Caster must have the specified perk. Can repeat a perk to require multiple stacks of the same perk.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						},
+      "unusableIfPerkSelf": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Caster cannot have any of the specified perks.",
+						"choices":["currentMod-Perks", "main/Perks"]
+						}
+	},
+"global":
+{
+    "FullyUnlockedByEvent": {
+						"type":"dictionary",
+						"tooltip":"A more complex and optional key that checks for progress or a choice in a event",
+						"options":["expand","optional"],
+						"fields":{
+								    "NameOfEvent": {
+													"type":"multilist",
+													"options":["single_item"],
+													"choices":["currentMod-Events", "main-inc-/Events"]
+													},
+								    "Progress": {"type":"int",
+												"default":-99},
+								    "ChoiceNumber": {"type":"int",
+												"default":-1},
+									"Choice": {"type":"text"}
+									}
+						},
+  "MusicList": {
+    "type": "filePath",
+	"options":["list", "music"]
+  },
+  "music": {
+    "type": "filePath",
+	"options":["music"]
+  },
+  "requiresEvent": {
+    "type": "dictionary",
+    "tooltip": "A more complex and optional key that checks for progress or a choice in a event",
+    "options": ["expand","optional"],
+    "fields": {
+      "NameOfEvent": {
+        "type": "multilist",
+        "options": ["single_item"],
+        "tooltip": "events",
+        "choices": [
+          "currentMod-Events",
+          "main-inc-/Events"
+        ]
+      },
+      "Progress": {
+        "type": "int"
+      },
+      "ChoiceNumber": {
+        "type": "int"
+      },
+      "Choice": {
+        "type": "text"
+      }
+    }
+  }
+}
+}

@@ -1,0 +1,59 @@
+{
+    "name": {
+				"type":"text",
+				"tooltip":"name of item",
+				"options":["addition"]
+			},
+    "CardType": {
+				"type":"singlelist",
+				"choices":["Event","Quest","Shopping","Church","Guild","Inn","BarShift","WaiterShift","GloryHoleShift","DayShift","","EndOfDay","TimePassed","StepTaken","EndOfTurn","EndOfCombat","PlayerOrgasm","Dream"]
+				},
+    "CardLimit": {"type":"int",
+					"default":0},
+     "Description": {
+				"type":"area",
+				"tooltip":"When used for Grimoire card types, it will present the string you provide on the right hand side of in the Grimoire when players are reviewing events and quests for selection.When used for locations in the town card type, providing it with the string 'EnterArea' will make it trigger when the player enters that location.When used for brothel shift card types, using a different shift type will make it count for that shift too. Repeating the same shift type increase its chances."
+			},
+   "requires": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Name of a required item or items",
+						"choices":["currentMod-Items/itemType_Key", "dir-game/Json/Items/KeyItems","main-inc-/Items"]
+						},
+    "Speakers": {
+						"type":"dictionary",
+						"tooltip":"gives functionality for the 'Speaks' function, used in dialogue. Each object added is correlated to a number in the 'Speaks' function, starting from 2 for the second object to a maximum of 12 added speakers, ordered by each object added from top to bottom.",
+						"options":["expand", "limit","addition"],
+						"limit":12,
+						"fields":{
+								    "name":
+											{"type":"multilist",
+											"choices":["currentMod-Monsters/name_all", "main-inc/Monsters"],
+											"options":["single_item"]
+											},
+								    "postName": {"type":"text",
+												"tooltip":"will place the data provided in the string after their name, for example, if you wanted to differentiate multiple generic monsters (Elf 1, Elf 2, etc). Can use the 'SetPostName' function to override it for all characters"},
+								    "SpeakerType": {"type":"singlelist",
+												"tooltip":"currently only serves one purpose. If set to '?' will let you put in any name you wish for the 'name' key, regardless if they even have a monster json. Alternatively, the 'Speak' function can be used instead. Otherwise, it can be left with an empty string",
+													"choices":["","?"],
+													"default":""}
+									}
+						},
+    "EventText": {
+						"type":"functionfield",
+						"tooltip":"series of scenes that will make up your event.",
+						"options":["expand", "addition"],
+						"fields":{
+						          "NameOfScene": {"type":"text"},
+								  "theScene": {"type":"singlelist",
+									"options":["function"],
+												"choices":["exampleOption"]
+												}
+								  }
+                },
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}

@@ -1,0 +1,134 @@
+{
+    "name": {
+				"type":"text",
+				"tooltip":"Sets the internal name of the location, meant only for internal referral in other keys and functions. Do try to provide a fairly non-generic value to prevent potential overlap issues with other locations.",
+				"options":["addition"]				
+			},
+     "exploreTitle": {
+				"type":"text",
+				"tooltip":"The cosmetic name displayed on the map screen. This doesn’t need to be unique"
+			},
+	"mapIcon": {
+				"type":"filePath",
+				"options":["map"],
+				"tooltip":"will utilize the filepath you provide it to add your location to the map"
+			},
+    "mapIconXpos": {"type":"int",
+					"default":0,
+				"tooltip":"offset the position of the location on the map. Not typically used in favor of making a 1920x1080 transparent .png and simply placing the map icon accordingly to where it’d appear on the map"},
+    "mapIconYpos": {"type":"int",
+					"default":0,
+				"tooltip":"offset the position of the location on the map. Not typically used in favor of making a 1920x1080 transparent .png and simply placing the map icon accordingly to where it’d appear on the map"
+				},
+    "mapIconZorder": {"type":"int",
+					"default":0,
+				"tooltip":"is for instances where there is possible overlap with other icons. This is useful for situations where you have intentionally overlapping locations, say, a building icon inside a larger forest icon."
+				},
+	"mapClouds": {
+				"type":"filePath",
+				"options":["map"],
+				"tooltip":"will utilize the filepath you provide it to provide a cover for your location till the requirements are unlocked.While the keys must till be included, providing an empty string for mapClouds: will simply make it unused, thus making it optional"
+			},
+    "mapCloudsXpos": {"type":"int",
+					"default":0,
+				"tooltip":"offset the position of the location on the map. Not typically used in favor of making a 1920x1080 transparent .png and simply placing the map icon accordingly to where it’d appear on the map"
+				},
+    "mapCloudsYpos": {"type":"int",
+					"default":0,
+				"tooltip":"offset the position of the location on the map. Not typically used in favor of making a 1920x1080 transparent .png and simply placing the map icon accordingly to where it’d appear on the map"},
+    "requires": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Name of a required item or items - Does not include exploring via the Grimoire- unlocked by for that.",
+						"choices":["currentMod-Items","main-inc-/Items"]
+						},
+    "FullyUnlockedBy": {
+						"type":"multilist",
+						"options":[],
+						"tooltip":"Name of a required item or items - Does include exploring via the Grimoire.",
+						"choices":["currentMod-Items/itemType_Key", "main-inc-/Items"]
+						},
+    "MinimumDeckSize": {"type":"int",
+					"default":0,
+				"tooltip":"Decides the minimum number of monsters and/or events the player must select before they can start an adventure via the Grimoire.."
+				},
+    "MaximumMonsterDeck": {"type":"int",
+					"default":0,
+				"tooltip":"The maximum number of monsters and events players can add for exploration via the Grimoire, with two key variants for Monsters and Events respectively."
+				},
+    "MaximumEventDeck": {"type":"int",
+					"default":0,
+				"tooltip":"The maximum number of monsters and events players can add for exploration via the Grimoire, with two key variants for Monsters and Events respectively."
+				},
+    "Monsters": {
+						"type":"multilist",
+						"options":["addition"],
+						"tooltip":"Set the choice of monsters that can be selected for exploration via the Grimoire",
+						"choices":["currentMod-Monsters", "main-inc-generic-/Monsters"]
+						},
+    "MonsterGroups": {
+						"type":"monstergroups",
+						"tooltip":"Decides the possible monsters formations",
+						"options":["expand","addition"],
+						"choices":["currentElement-Monsters","main-inc-generic-/Monsters"],
+						"fields":{
+								    "Monsters": {
+													"type":"multilist",
+													"options":[],
+													"choices":["currentElement-Monsters","dir-game/Json/Items/KeyItems"]
+													}
+									}
+						},
+    "Events": {
+						"type":"multilist",
+						"options":["addition"],
+						"tooltip":"Set the choice of events that can be selected for exploration via the Grimoire,",
+						"choices":["currentMod-Events/CardType_Event", "main-inc-/Events"]
+						},
+    "Quests": {
+						"type":"multilist",
+						"options":["addition"],
+						"tooltip":"Name of a required item or items",
+						"choices":["currentMod-Events/CardType_Quests", "main-inc-/Events"]
+						},
+    "Treasure": {
+						"type":"listDict",
+						"tooltip":"Decides the amount of eros given from chests for each type of treasure rarity. The listed objects and their keys must be included, and each key must provide a value in their string",
+						"fields":{
+								    "Common": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0},
+								    "Uncommon": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0},
+								    "Rare": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0}
+									}
+						},
+    "Eros": {
+						"type":"listDict",
+						"tooltip":"Decides the amount of eros given from chests for each type of treasure rarity. The listed objects and their keys must be included, and each key must provide a value in their string",
+						"fields":{
+								    "Common": {"type":"int",
+												"default":0},
+								    "Uncommon": {"type":"int",
+												"default":0},
+								    "Rare": {"type":"int",
+												"default":0}
+									}
+						},
+	"picture": {
+				"type":"filePath",
+				"options":["notmap"],
+				"tooltip":"The background image to be used at the location when exploring and adventuring."
+			},
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}

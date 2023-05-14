@@ -1,0 +1,13 @@
+Event
+Lust Rune
+Monster
+Blue Slime
+EndEncounter
+RandomEvent
+RandomMonsters
+RandomTreasure
+CommonTreasure
+UncommonTreasure
+RareTreasure
+BreakSpot
+Unrepeatable

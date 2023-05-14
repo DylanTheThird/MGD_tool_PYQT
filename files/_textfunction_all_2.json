@@ -1,0 +1,2834 @@
+
+{
+	"General": {
+		"Change Monster-done": [
+			{	"title": "ChangeMonsterSensitivity",
+				"explanation": "Changes the given sensitivity by specified amount for the focused monster. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Sensitivity":{"type":"singlelist",
+												"choices":["file-files/sensitivity.txt"]},
+												"2":{"type":"int"}
+												}
+			},
+			{	"title": "ChangeMonsterStatusEffectResistances",
+				"explanation": "Changes the given status effect resistance by specified amount for the focused monster. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue. See Status Effect Resistances",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"2":{"type":"int"}
+												}
+			},
+			{	"title":"ChangeMonsterFetish",
+				"explanation":"Changes the given fetish by the specified level amount for the focused monster. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Fetishes":{"type":"singlelist",
+												"choices":["Fetishes"]},
+												"2":{"type":"int"}
+												}
+									},
+			{"title":"GivePerkToMonster",
+			"explanation":"Gives or removes the perk respectively from the focused monster. Can give duplicates. It does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+									},
+			{				"title": "RemovePerkFromMonster",
+				"explanation": "Gives or removes the perk respectively from the focused monster. Can give duplicates. It does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+			},
+			{				"title": "GiveSkillToMonster",
+				"explanation": "Gives or removes the skill respectively from the focused monster. Can give duplicates to increase chances. It does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"Skill":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "RemoveSkillFromMonster",
+				"explanation": "Gives or removes the skill respectively from the focused monster. Can give duplicates to increase chances. It does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"Skill":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "ClearMonsterPerks",
+				"explanation": "Clears the focused monster perk or skill list respectively, in case you want to rebuild their entire skill list or perks in the middle of combat. It does reset upon leaving an encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "ClearMonsterSkillList",
+				"explanation": "Clears the focused monster perk or skill list respectively, in case you want to rebuild their entire skill list or perks in the middle of combat. It does reset upon leaving an encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Change Stats-done": [
+			{				"title": "ChangeMaxArousal",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "ChangeMaxEnergy",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeMaxSpirit",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangePower",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeWill",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeTech",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeAllure",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeLuck",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeInt",
+				"explanation": "Changes the players given stat by the given amount, permanently. Take caution using these. See Eros and GiveExp as well.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeSensitivity",
+				"explanation": "Changes the target sensitivity for the player by the given amount.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												
+												"Sensitivity":{"type":"singlelist",
+												"choices":["file-files/sensitivity.txt"]},
+												"2":{"type":"int"}
+												}
+			},
+			{
+				"title": "PermanentlyChangeSensitivity",
+				"explanation": "Same as above but will permanently affect the player. This prevents the church from recovering the player stats. Take caution.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												
+												"Sensitivity":{"type":"singlelist",
+												"choices":["file-files/sensitivity.txt"]},
+												"2":{"type":"int"}
+												}
+			},
+			{
+				"title": "PermanentChangeStatusEffectResistances",
+				"explanation": "Permanently alters the players status effect resistance. It is recommended to use perks for less permanent afflictions.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"2":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeFetish",
+				"explanation": "Changes the target fetish for the player by the given amount. Often used in loss scenes.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												
+												"Fetishes":{"type":"singlelist",
+												"choices":["Fetishes", "Fetishes"]},
+												"2":{"type":"int"}
+												}
+			},
+			{
+				"title": "PermanentlyChangeFetish",
+				"explanation": "Same as above but will permanently affect the player. This prevents the church from recovering the player stats. Take caution.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												
+												"Fetishes":{"type":"singlelist",
+												"choices":["Fetishes", "Fetishes"]},
+												"2":{"type":"int"}
+												}
+			},
+			{
+				"title": "RespecPlayer",
+				"explanation": "Gives the player the ability to reinvest all of their stat points, perk points, and sensitivity points earned thus far.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Church": [
+			{
+				"title": "AddTributeToProgress",
+				"explanation": "Takes money spent in a church function and adds it to the current events progress. Thus, it cannot be used for anything but the church.",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												
+												"Optional":{"type":"singlelist",
+												"choices":["", "AddTributeToProgress"],
+												"default":""}
+												}
+			},
+			{
+				"title": "DonateToGoddess",
+				"explanation": "'DonateToGoddess' lets the player provide an inputted amount to donate to the goddess.AddTributeToProgress takes money spent in a church function and adds it to the current events progress. Thus, it cannot be used for anything but the church",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												
+												"Optional":{"type":"singlelist",
+												"choices":["", "AddTributeToProgress"]}
+												}
+			},
+			{
+				"title": "SensitivityRestore",
+				"explanation": "'SensitivityRestore' lets the player use the sensitivity restore functionality.AddTributeToProgress takes money spent in a church function and adds it to the current events progress. Thus, it cannot be used for anything but the church",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												
+												"Optional":{"type":"singlelist",
+												"choices":["", "AddTributeToProgress"]}
+												}
+			},
+			{
+				"title": "PurgeFetishes",
+				"explanation": "'PurgeFetishes' lets the player use the fetish purging functionality.AddTributeToProgress takes money spent in a church function and adds it to the current events progress. Thus, it cannot be used for anything but the church",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												
+												"Optional":{"type":"singlelist",
+												"choices":["", "AddTributeToProgress"]}
+												}
+			}
+		],
+		"Dialogue": [
+			{
+				"title": "PlayerSpeaks",
+				"explanation": "Puts the player name in the text box header for the next string.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "PlayerSpeaksSkill",
+				"explanation": "Generally for use in combat events where the skill name is called still, and quotation marks are needed to be removed.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "Speak",
+				"explanation": "Displays the given text in the text box header for the following string of text. Doesn't need to be in SPEAKER field - see SPEAKS",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"text"}
+												}
+			},
+			{
+				"title": "SaveNextLine",
+				"explanation": "Using 'SaveNextLine' saves the next line that's going to be displayed. Will then automatically be displayed during the next Menu. This normally does happen already, but can be useful for more complex cases. See the logic for the Will-Power Temple's random encounters as an example.",
+				"options":["simple", "TODO"],
+				"steps": "1"
+			},
+			{
+				"title": "UseSavedLineInMenu",
+				"explanation": "will display the current saved line manually. Was originally intended for the displaying with menus, but didn’t work as intended. It was left it in just in case.",
+				"options":["simple", "TODO"],
+				"steps": "1"
+			},
+			{
+				"title": "DisplaySavedLine",
+				"explanation": "will display the saved line in a menu upon returning to it, where it’d otherwise not change or display anything at all. See the logic for the Will-Power Temple’s navigation as an example",
+				"options":["simple", "TODO"],
+				"steps": "1"
+			}
+		],
+		"Eros-done": [
+			{
+				"title": "ChangeEros",
+				"explanation": "'ChangeEros' alters the player's current amount of eros by a flat amount given in the following string. Can be negative.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "ChangeErosByPercent",
+				"explanation": "'ChangeErosByPercent' alters the player's current amount of eros by a percent in the following string. Can be negative.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "SetEros",
+				"explanation": "'SetEros' will set the player's eros to a certain amount. For very specific uses. Take caution.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			}
+		],
+		"Event Jumps-done": [
+			{
+				"title": "JumpToEvent",
+				"explanation": "Goes to an event stated in the next string. Remember that it will pick the first scene listed by default.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},{
+				"title": "JumpToNPCEvent",
+				"explanation": "Goes to the event stated in the next string, used for events from the town.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},{
+				"title": "JumpToLossEvent",
+				"explanation": "Goes to the event stated in the next string, used for event loss scenes.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},
+			{
+				"title": "JumpToEventThenScene",
+				"explanation": "Goes to an event, then a scene via the two following strings. Useful when you want to avoid it going to the first scene in an event. Note that it will leave combat encounters.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},{
+				"title": "CallCombatEventAndScene",
+				"explanation": "Variant of JumpToEventThenScene, but stays in in combat. Used for events with combat functions.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":[]}
+												}
+			},
+			{
+				"title": "JumpToNPCEventThenScene",
+				"explanation": "Variant of JumpToEventThenScene for town.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":[]}
+												}
+			},
+			{
+				"title": "CallEventAndSceneThenReturn",
+				"explanation": "Functions the same as CallSceneThenReturn, but allows you to call to another event, then scene.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{												
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":[]}
+												}
+			}
+		],
+		"Inventory-done": [
+			{
+				"title": "AllowInventory",
+				"explanation": "AllowInventory lets the player access their inventory and use skills out of combat. Intended for use with Adventures and Events.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "DenyInventory",
+				"explanation": "'DenyInventory' prevents the player from accessing their inventory.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Player Afflictions-done": [
+			{				"title": "-doneSetArousalToXUnlessHigherThanX",
+				"explanation": "Sets the player arousal to the first specified numerical value, unless the current arousal is higher than the specified value. This is mostly for cinematic purposes.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneSetArousalToXUnlessHigherThanXThenAddY",
+				"explanation": "Same as the above, but if the current arousal is higher than the specified value, it will add the second given value instead. Also mostly for cinematic purposes.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"},											
+												"2":{"type":"int"}
+												}
+			},
+			{				"title": "-doneSetArousalToMax",
+				"explanation": "'SetArousalToMax' sets the player's arousal to max. The player is not notified.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneChangeArousal",
+				"explanation": "Will flatly alter the player's current arousal with the specified number. Can be negative.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},{
+				"title": "-doneChangeArousalQuietly",
+				"explanation": "change the player's arousal without notifying the player.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneChangeEnergy",
+				"explanation": "Same as the above, but for the players current energy. Note negative values subtract.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},{
+				"title": "-doneChangeEnergyQuietly",
+				"explanation": "change the player's current energy without notifying the player.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneChangeArousalByPercent",
+				"explanation": "Changes players current amount of their arousal or energy respectively by a percent based on their maximum of the chosen stat. Can take negative values. It does not notify the player.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},{
+				"title": "-doneChangeEnergyByPercent",
+				"explanation": "Changes players current amount of their arousal or energy respectively by a percent based on their maximum of the chosen stat. Can take negative values. It does not notify the player.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneSetSpirit",
+				"explanation": "Set the players current spirit to a number. It will be rounded to the maximum or 0 if the given number exceeds or is below respectively.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneChangeSpirit",
+				"explanation": "Changes the players current spirit by the given amount. Can take a negative value. It will be rounded to the maximum or 0 if the given number exceeds or is below respectively.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneChangeSpiritQuietly",
+				"explanation": "change the players current spirit without notifying them.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "DamagePlayerFromMonster",
+				"explanation": "Deal randomized damage to the player via a skill and monster, the monster chosen is used as a stat reference. The skill chosen will not apply status effects. Displaying dialogue has to be done manually, it will not take dialogue from the skill. If you want to display the damage number from the skill, use {DamageToPlayer} in the following string after completing the function.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{												
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Skills":{"type":"singlelist",
+												"choices":[]}
+												}
+			},
+			{				"title": "DamageMonsterFromMonster",
+				"explanation": "Deal randomized damage to the focused monster via a skill and called monster, the monster chosen is used as a stat reference and doesn't need to be in the active combat encounter. The skill chosen will not apply status effects. Displaying dialogue has to be done manually, it will not take dialogue from the skill. If you want to display the damage number from the skill, use {DamageToMonster} in the following string after completing the function.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{
+												
+												"Monster":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Skills":{"type":"singlelist",
+												"choices":[]}
+												}
+			},
+			{				"title": "-doneChangePerkDuration",
+				"explanation": "Changes the duration of the given perk the player possesses by the set amount. '6' would be a full day. See TimeDuration for reference.",
+									"options":["simple"],
+									"steps":"3",
+									"structure":{
+												
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]},
+												"2":{"type":"int"}
+												}
+			},
+			{				"title": "ApplyStatusEffect",
+				"explanation": "Applies a status effect to the player, specifically from skills. If used while in combat, it will utilize the focused monster's stats during application. It cannot miss.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{												
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]}
+												}
+			},
+			{				"title": "-doneRemoveStatusEffect",
+				"explanation": "Removes the specified status effect, not the skill used to apply it from the above function.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{												
+												"Status Effect":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]}
+												}
+			},
+			{				"title": "-doneClearNonPersistentStatusEffects",
+				"explanation": "'ClearNonPersistentStatusEffects' clears non-persistent status effects, and perks with the perk type NonPersistentEffect.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneClearPlayerStatusEffects",
+				"explanation": "'ClearPlayerStatusEffects' clears the player of all currently applied status effects.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneRefreshPlayer",
+				"explanation": "'RefreshPlayer' fully heals the player and removes all currently applied status effects.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneHoldCurrentVirility",
+				"explanation": "Using 'HoldCurrentVirility' grabs the current virility of the player and uses it for all checks until 'HoldCurrentVirilityEnd' is called. Persists across events and scenes.",
+				"options":["simple"],
+				"steps": "1"
+			},{
+				"title": "-doneHoldCurrentVirilityEnd",
+				"explanation": "Using 'HoldCurrentVirility' grabs the current virility of the player and uses it for all checks until 'HoldCurrentVirilityEnd' is called. Persists across events and scenes.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-donePlayerOrgasm",
+				"explanation": "Forces the player to cum, resets arousal to zero, then lowers spirit by set amount. Displays no text/feedback.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-donePlayerOrgasmNoSpiritLoss",
+				"explanation": "'PlayerOrgasmNoSpiritLoss' causes the player to orgasm, reseting current arousal, but they don't lose spirit. Used primarily to trigger relevant status effects and events where losing spirit is not desired from a design perspective, such as victory scenes.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneEmptySpiritCounter",
+				"explanation": "'EmptySpiritCounter' for specific uses when looping orgasm text and displaying spirit lost in events so it doesnt stack itself in the display.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Player Give & Take-done": [
+			{				"title": "GiveExp",
+				"explanation": "Despite its name, flatly alters the amount of exp the player has. This means it can both remove and give exp, depending on if you give a negative or positive value respectively. After altering the exp, it checks to see if the player can level up.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "GiveItem",
+				"explanation": "Despite its name, 'GiveItem' changes the specified amount of the following item that the player owns. This means it can both remove and give items, depending on if you give a negative or positive value respectively. You are free to remove as much of the given item as you please, it will not cause any technical issues.",
+									"options":["simple"],
+									"steps":"3",
+									"structure":{
+												"1":{"type":"int"},
+												"Items":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Items"]}}
+												
+			},{
+				"title": "GiveItemQuietly",
+				"explanation": "Does not notify the player",
+									"options":["simple"],
+									"steps":"3",
+									"structure":{
+												"1":{"type":"int"},
+												"Items":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Items"]}}
+												
+			},
+			{				"title": "GiveSkill",
+				"explanation": "Using 'GiveSkill' gives player a skill if they don't have it already.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}}
+			},{
+				"title": "GiveSkillQuietly",
+				"explanation": "Gives player a skill if they don't have it already. That won't notify the player.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "RemoveSkillFromPlayer",
+				"explanation": "Taking away a skill if they have it.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},{
+				"title": "RemoveSkillFromPlayerQuietly",
+				"explanation": "Taking away a skill if they have it. Won't notify the player",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "GiveSkillThatWasTemporarilyRemoved",
+				"explanation": "'GiveSkillThatWasTemporarilyRemoved' & 'RemoveSkillFromPlayerTemporarily' a quiet variant of give skill specifically for temporarily removing skills then giving them back, ensuring they go back into the same spot in skill order to not disorganize player skills. Check Pin for an example. If you want to give the player a temp skill for a fight, like, tail cuddle, you do not need to use this set of functions.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},{
+				"title": "RemoveSkillFromPlayerTemporarily",
+				"explanation": "'GiveSkillThatWasTemporarilyRemoved' & 'RemoveSkillFromPlayerTemporarily' a quiet variant of give skill specifically for temporarily removing skills then giving them back, ensuring they go back into the same spot in skill order to not disorganize player skills. Check Pin for an example. If you want to give the player a temp skill for a fight, like, tail cuddle, you do not need to use this set of functions.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "GivePerk",
+				"explanation": "Gives the player a perk, even if they already have it.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+			},{
+				"title": "GivePerkQuietly",
+				"explanation": "Gives the player a perk, even if they already have it. Won't notify the player",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+			},{
+				"title": "RemovePerk",
+				"explanation": "RemovePerk, even if they already have it. 'RemovePerk' doing the opposite.",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+			},{
+				"title": "RemovePerkQuietly",
+				"explanation": "RemovePerk, even if they already have it. Won't notify the player",
+									"options":["simple"],
+									"steps":"2",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]}
+												}
+			}
+		],
+		"Shop-done": [
+			{
+				"title": "SkillShoppingMenu",
+				"explanation": "Opens a skill purchasing menu based on the provided skills, up till 'EndLoop'. Good whitespace formatting is highly recommended for sanity, see how skill shops in the base game are done.",
+									"options":["simple"],
+									"steps":"EndLoop",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":[],
+												"choices":["Skills"]}}
+			},
+			{
+				"title": "ShoppingMenu",
+				"explanation": "Opens a shop menu based on the provided items, up till 'EndLoop'. Good whitespace formatting is highly recommended for sanity, see how shops in the base game are done.",
+									"options":["simple"],
+									"steps":"EndLoop",
+									"structure":{
+												"Items":{"type":"multilist",
+												"options":[],
+												"choices":["Items"]}}
+			}
+		],
+		"SwapLineIf-done": [
+					
+			{
+				"title": "SwapLineIf",
+				"explanation": "Lets you swap out individual lines for others based on specific circumstances, or at random. If no available line is found, it will always grab the last one.If a line is blank, the line will be skipped. In case people want to add new lines.",
+									"options":["special", "swapline"],
+									"steps":"EndLoop",
+									"structure":{"Swap": {"type": "singlelist",
+                    "choices": ["Random", "Stat", "Arousal", "MaxArousal", "Energy", "MaxEnergy", "Virility",
+                                "HasFetish", "HasFetishLevelEqualOrGreater", "Perk", "EncounterSize", "Item", "Eros",
+                                "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]}}
+								}
+		],
+		"Time-done": [
+			{
+				"title": "PlayerStep",
+				"explanation": "'PlayerStep' operates like the passage of time for turns in combat.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "DelayNotifications",
+				"explanation": "'PlayerStep' operates like the passage of time for turns in combat.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "AdvanceTime",
+				"explanation": "Moves forward time. Note there are 6 chunks in a single day.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{
+				"title": "RestPlayer",
+				"explanation": "'RestPlayer' heals the player as if using a rest point and advances time by 1 chunk.",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												"optional":{"type":"singlelist",
+												"choices":["DelayNotifications"]}
+												}
+			},
+			{
+				"title": "SleepPlayer",
+				"explanation": "SleepPlayer advances time until morning and fully heals the player. Also will trigger a dream unless stated otherwise via DelayNotifications.",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												"optional":{"type":"singlelist",
+												"choices":["DelayNotifications"]}
+												}
+			},
+			{
+				"title": "IfDelayingNotifications",
+				"explanation": "Lets you check if 'DelayNotifications' was called letting you jump to a different scene if true. Only works in events. This is so 'TimePassed' events can comply with the above functions, but still let them have the opportunity to silently operate.",
+				"options":["simple", "Events"],
+				"steps": "2",
+									"structure":{					
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},
+			{
+				"title": "TimeBecomesNight",
+				"explanation": "'TimeBecomesNight' sets the time to false night, while 'TimeBecomesDay' sets it to false day respectively. The former will clear false days and start false nights, the latter, vice versa.",
+				"options":["simple"],
+				"steps": "1"
+			},{
+				"title": "TimeBecomesDay",
+				"explanation": "'TimeBecomesNight' sets the time to false night, while 'TimeBecomesDay' sets it to false day respectively. The former will clear false days and start false nights, the latter, vice versa.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "TimeBecomesNormal",
+				"explanation": "'TimeBecomesNormal' returns a false night or day back to its normal variant. Does nothing if there is no false night or day.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "IfTimeIs",
+				"explanation": "Can check time of day.",
+				"options":["simple", "Events"],
+				"steps": "3",
+									"structure":{
+												"Options":{"type":"singlelist",
+												"choices":["Day", "Night", "DayFaked", "DayTrue", "NightFaked", "NightTrue", "Morning", "Noon", "Afternoon", "Dusk", "Evening", "Midnight"]},
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},
+			{
+				"title": "HealingSickness",
+				"explanation": "'HealingSickness' starts a global trigger for tracking if the player healed with a refresh point. Lasts a whole day, or 6 chunks.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "IfHealingSickness",
+				"explanation": "Jumps to the given scene if healing sickness is active. Used to actually avoid the refresh scenes for rest points. Only works in events.",
+				"options":["simple"],
+				"steps": "2",				
+									"structure":{
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			}
+		],
+		"Town Jumps & GameOver-done": [
+			{
+				"title": "CallLossLevelUp",
+				"explanation": "'CallLossLevelUp' calls the loss level up scene. For niche use in loss scenes that don't game over you. You'll still need to have all endings to that event go to town though.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GameOver",
+				"explanation": "'GameOver' returns the player to the church as if they lost combat. Advances time by 1.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "TrueGameOver",
+				"explanation": "'TrueGameOver' ends the game and returns to the main menu. For bad/good ends.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToTown",
+				"explanation": "'GoToTown' sends the player directly back to the town. Good for ending quests with different dialogue/returns. Advances time by 1.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "BumpToTown",
+				"explanation": "'BumpToTown' sends the player to the town square without advancing time.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToChurch",
+				"explanation": "'GoToChurch' sends the player to the church. Good for alternate scenes for game over returns. Advances time by 1.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToRandomBrothelWaiterScene",
+				"explanation": "Functions that send the player to a random brothel scene, each variant utilizing a different CardType for brothel shifts as its selection, consisting of the following.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToRandomBrothelBarScene",
+				"explanation": "Functions that send the player to a random brothel scene, each variant utilizing a different CardType for brothel shifts as its selection, consisting of the following.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToRandomBrothelHoleScene",
+				"explanation": "Functions that send the player to a random brothel scene, each variant utilizing a different CardType for brothel shifts as its selection, consisting of the following.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "GoToRandomBrothelDayScene",
+				"explanation": "Functions that send the player to a random brothel scene, each variant utilizing a different CardType for brothel shifts as its selection, consisting of the following.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		]
+	},
+	"Event Only": {
+		"Choice": [
+			{
+				"title": "SetChoice",
+				"explanation": "Will set specified choice number to the following string value. Think of them as progress or variable fields you can manually set for an event.",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}											
+												}
+			},
+			{
+				"title": "IfChoice",
+				"explanation": "Will check for a choice. If it is a match, it then goes to the specified scene. If it is not a match, it will ignore the scene jump and continue the scene.",
+				"options":["special"],
+				"steps": "4",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "ChoiceToDisplayPlayer",
+				"explanation": "'ChoiceToDisplayPlayer' & ChoiceToDisplayMonster grabs the specified choice's string value for the Text Markup specified below, and is not reset until it is called again, so it will affect other events. Thus, it should be called at the start of an event.",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "ChoiceToDisplayMonster",
+				"explanation": "'ChoiceToDisplayPlayer' & ChoiceToDisplayMonster grabs the specified choice's string value for the Text Markup specified below, and is not reset until it is called again, so it will affect other events. Thus, it should be called at the start of an event.",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "SetChoiceToPlayerName",
+				"explanation": "Sets the selected choice to the player's name. For the above functions intended use case.",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "SetChoiceTo PlayerName",
+				"explanation": "Sets the selected choice to the player's name. With space",
+				"options":["special"],
+				"steps": "3",
+									"structure":{
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			}
+		],
+		"Quest, Event, Adventure Complete-done": [
+			{
+				"title": "QuestComplete",
+				"explanation": "'QuestComplete' makes an event no longer selectable via the Grimoire. Despite its name, it covers the entire Grimoire section of CardType, so both Quests, and Events in the Grimoire.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "AdventureComplete",
+				"explanation": "'AdventureComplete' makes an adventure no longer selectable via the map. This affects the adventure for any locations it is listed in.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Get Event Choice-done": [
+			{
+				"title": "GetEventAndIfChoiceIs",
+				"explanation": "Check an events choices and check if the choice matches, if so, jump to scene.",
+				"options":["special"],
+				"steps": "5",
+									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"},
+												"Current Scenes":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "GetEventAndSetChoice",
+				"explanation": "Gets an event, and sets the specified choice to the given string.",
+				"options":["special"],
+				"steps": "4",
+									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "ChoiceToDisplayFromOtherEvent",
+				"explanation": "'ChoiceToDisplayPlayerFromOtherEvent' & 'ChoiceToDisplayMonsterFromOtherEvent' grabs the specified choice from an external event's string value for the Text Markup specified below, and is not reset until it is called again, so it will affect other events. Thus, it should be called at the start of a scene or event.",
+				"options":["special"],
+				"choices": ["ChoiceToDisplayPlayerFromOtherEvent", "ChoiceToDisplayMonsterFromOtherEvent"],
+				"steps": "3",
+									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},			
+			{
+				"title": "ChoiceToDisplayMonsterFromOtherEvent",
+				"explanation": "'ChoiceToDisplayPlayerFromOtherEvent' & 'ChoiceToDisplayMonsterFromOtherEvent' grabs the specified choice from an external event's string value for the Text Markup specified below, and is not reset until it is called again, so it will affect other events. Thus, it should be called at the start of a scene or event.",
+				"options":["special"],
+				"choices": ["ChoiceToDisplayPlayerFromOtherEvent", "ChoiceToDisplayMonsterFromOtherEvent"],
+				"steps": "4",
+									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			},
+			{
+				"title": "SetChoiceToPlayerNameFromOtherEvent",
+				"explanation": "Sets the selected choice to the player's name in another event. For the above functions.",
+				"options":["special"],
+				"steps": "4",
+									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"choice no":{"type":"combobox"},
+												"choice text":{"type":"combobox"}
+												}
+			}
+		],
+		"Get Event Progress-done": [
+			{
+				"title": "GetEventAndChangeProgress",
+				"explanation": "Gets an event and changes its progress based on the given value. Can be negative.",
+				"options":["simple"],
+				"choices": ["GetEventAndChangeProgress", "GetEventAndSetProgress"],
+				"steps": "3",
+									"structure":{					
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"Progress":{"type":"int"}
+												}
+			},
+			{
+				"title": "GetEventAndSetProgress",
+				"explanation": "Gets an event and set its progress based on the given value. Can be negative.",
+				"options":["simple"],
+				"choices": ["GetEventAndChangeProgress", "GetEventAndSetProgress"],
+				"steps": "3",
+									"structure":{					
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
+												"Progress":{"type":"int"}
+												}
+			},
+			{
+				"title": "GetAnEventsProgressThenIfEquals",
+				"explanation": "Gets an event and then checks if it is equal to the provided value. If true, it jumps to the given scene.",
+				"options":["simple"],
+				"choices": ["GetAnEventsProgressThenIfEquals", "GetAnEventsProgressThenIfEqualsOrGreater", "GetAnEventsProgressThenIfEqualsOrLess"],
+				"steps": "4",
+									"structure":{					
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Progress":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{
+				"title": "GetAnEventsProgressThenIfEqualsOrGreater",
+				"explanation": "Gets an event and then checks if it is equal or greater to the provided value. If true, it jumps to the given scene.",
+				"options":["simple"],
+				"choices": ["GetAnEventsProgressThenIfEquals", "GetAnEventsProgressThenIfEqualsOrGreater", "GetAnEventsProgressThenIfEqualsOrLess"],
+				"steps": "4",
+									"structure":{					
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Progress":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{
+				"title": "GetAnEventsProgressThenIfEqualsOrLess",
+				"explanation": "Gets an event and then checks if it is equal or lower to the provided value. If true, it jumps to the given scene.",
+				"options":["simple"],
+				"choices": ["GetAnEventsProgressThenIfEquals", "GetAnEventsProgressThenIfEqualsOrGreater", "GetAnEventsProgressThenIfEqualsOrLess"],
+				"steps": "4",
+									"structure":{					
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Progress":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{
+				"title": "EventsProgressEqualsOtherEventsProgress",
+				"explanation": "Following three functions are for very specific compare even progress scene jumpers. They all work the same, but do change in how it's decided.",
+				"options":["special"],
+				"choices": ["EventsProgressEqualsOtherEventsProgress", "IfEventsProgressEqualsOrLessThanOtherEventsProgress","EventsProgressEqualsOrGreaterThanOtherEventsProgress"],
+				"steps": "4",
+									"structure":{					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],		
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "IfEventsProgressEqualsOrLessThanOtherEventsProgress",
+				"explanation": "Following three functions are for very specific compare even progress scene jumpers. They all work the same, but do change in how it's decided.",
+				"options":["special"],
+				"choices": ["EventsProgressEqualsOtherEventsProgress", "IfEventsProgressEqualsOrLessThanOtherEventsProgress","EventsProgressEqualsOrGreaterThanOtherEventsProgress"],
+				"steps": "4",
+									"structure":{					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],		
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "EventsProgressEqualsOrGreaterThanOtherEventsProgress",
+				"explanation": "Following three functions are for very specific compare even progress scene jumpers. They all work the same, but do change in how it's decided.",
+				"options":["special"],
+				"choices": ["EventsProgressEqualsOtherEventsProgress", "IfEventsProgressEqualsOrLessThanOtherEventsProgress","EventsProgressEqualsOrGreaterThanOtherEventsProgress"],
+				"steps": "4",
+									"structure":{					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},					
+												"Event":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},	
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],		
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "Cross-Event Comparators-todo",
+				"explanation": "Following three functions are for very specific compare even progress scene jumpers. They all work the same, but do change in how it's decided.",
+				"options":["special", "TODO"],
+				"choices": ["EventsProgressEqualsOtherEventsProgress", "IfEventsProgressEqualsOrLessThanOtherEventsProgress","EventsProgressEqualsOrGreaterThanOtherEventsProgress"],
+				"steps": "4",
+									"structure":{					
+												"1":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},					
+												"2":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},	
+												"3":{"type":"multilist",
+												"options":["single_item", "search"],		
+												"choices":[]}
+												}
+			}
+		],
+		"Input-done": [
+			{
+				"title": "InputProgress",
+				"explanation": "'InputProgress' calls to take an inputted number from the player and stores it. The player must specifically provide numbers for input.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "HasErosLessThanInput",
+				"explanation": "Checks if the player has less eros than the inputted number. If true, it jumps to the given scene. Used to avoiding putting the players eros below zero, and keeping it free from potential abuse.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{					
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{				"title": "IfInputEquals",
+				"explanation": "Checks to see if the inputted number is a match to the specified value. If true, it jumps to the given scene. Previously for checking for zero, however 'IfInputEqualsOrLessThan' below is favored for catching negative inputs.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{				"title": "IfInputEqualsOrLessThan",
+				"explanation": "Checks to see if the inputted number is equal to or less than the specified value. Used for catching undesirable inputs such as 0, or negative numbers that have the potential to abuse the input system. If you wish to use negative numbers, it is best to interpret the input from the player as such using the below functions, rather than to require them to input a negative number, which can be unintuitive.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}}
+			},
+			{
+				"title": "RemoveInputFromPlayerEros",
+				"explanation": "'RemovesInputFromPlayerEros' removes the inputted number from the players eros.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{
+				"title": "AddInputToProgress",
+				"explanation": "'AddInputToProgress' and 'RemoveInputFromProgress' adds or removes the input from the event's progress respectively.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "RemoveInputFromProgress",
+				"explanation": "'AddInputToProgress' and 'RemoveInputFromProgress' adds or removes the input from the event's progress respectively.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "RemoveProgressFromEros",
+				"explanation": "'RemoveProgressFromEros' uses the events progress to subtract from the players eros.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Menu System-done": [
+			{
+				"title": "Menu",
+				"explanation": "Gives the player an option menu of choices. Each choice is a scene in the same event file. Make sure the scene names exactly match the choice. Will always end current scene and jump to a new one, thus it is recommended to only have them at the end of a scene.By default, if there are more than 6 choices, page arrows will automatically be added.",
+				"options":["special"],
+				"steps": "EndLoop",
+				"structure":{}
+			}
+		],
+		"Player Checks-done": [
+			{
+				"title": "StatEqualsOrMore",
+				"explanation": "Checks the following stat against the given number, if the stat is equal or higher, it jumps to the scene, else it continues. See Stat Reference.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Stats":{"type":"singlelist",
+													"choices":["game-core stats-simple"]},
+												"2":{"type":"int"},
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Scenes"]}
+												}
+			},
+			{				"title": "HasErosLessThan",
+				"explanation": "If player has less eros than the given amount, it jumps to the scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "VirilityEqualsOrGreater",
+				"explanation": "If the player virility is greater than the given number, it jumps to the scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerOrgasm",
+				"explanation": "Checks if the players current arousal is over their maximum arousal. If true, it then goes to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerArousalOverPercentOfMax",
+				"explanation": "Checks if the players current arousal is over a certain percent of their maximum arousal. If true, it jump to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerSpiritGone",
+				"explanation": "Check if the player is out of spirit, if true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerEnergyGone",
+				"explanation": "Same as above, but for the player's energy.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerEnergyLessThanPercent",
+				"explanation": "Checks if the player energy is less than the given percentage of their maximum, if true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfSensitivityEqualOrGreater",
+				"explanation": "Checks if the given sensitivity for the player is equal to or greater than the given value. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"1":{"type":"singlelist",
+												"choices":["file-files/sensitivity.txt"]},
+												"2":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasFetish",
+				"explanation": "Checks if the player has the following fetish (which requirs being level 25 or higher), if true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Fetishes":{"type":"singlelist",
+													"choices":["Fetishes"]},
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfFetishLevelEqualOrGreater",
+				"explanation": "Checks if the player has an equal or greater level of the given fetish, if true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Fetishes":{"type":"singlelist",
+												"choices":["Fetishes"]},
+												"2":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasSkill",
+				"explanation": "Checks if the player has the following skill. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["main/Skills"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasItem",
+				"explanation": "Checks if the player does or doesn't respectively have an item in their inventory or equipped.",
+				"steps": "3",
+									"structure":{
+												"Items":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["main/Items"]},
+												"Scenes":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfDoesntHaveItem",
+				"explanation": "Checks if the player does or doesn't respectively have an item in their inventory or equipped.",
+				"steps": "3",
+									"structure":{
+												"Items":{"type":"multilist",
+													"options":["single_item", "search"],
+												"choices":["main/Items"]},
+												"2":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasItemEquipped",
+				"explanation": "Checks if the player has the specified item equipped. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Item":{"type":"multilist",
+													"options":["single_item", "search"],
+												"choices":["main/Items"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasItemInInventory",
+				"explanation": "Checks if the player has the specified amount of an item in their inventory, ignoring their equipment slots. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Item":{"type":"multilist",
+													"options":["single_item", "search"],
+												"choices":["main/Items"]},
+												"2":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfHasPerk",
+				"explanation": "Checks if the player has the following perk. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Perks":{"type":"multilist",
+													"options":["single_item", "search"],
+												"choices":["main/Perks"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerLevelGreaterThan",
+				"explanation": "Checks if the player level is equal or greater than the specified amount. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfInExploration",
+				"explanation": "If the player is in Exploration via the Grimoire, rather than an Adventure. If true, it jumps to the given scene, else it continues.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			}
+		],
+		"Pre-Combat": [			{				"title": "CombatEncounter",
+				"explanation": "Starts a combat encounter with the specified monster(s), returns to the current scene after the combat IF the player wins. Supports up to 12 enemies.",
+				"options":["special","limit-12"],
+				"steps": "StartCombat",
+				"structure":{}
+			}
+		],
+		"Progress-done": [
+			{				"title": "SetProgress",
+				"explanation": "Will set the event's progress to the specified number. Can be negative.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}
+							}
+			},
+			{				"title": "ChangeProgress",
+				"explanation": "Changes the events progress based on the given value. Can be negative.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}
+							}
+			},
+			{				"title": "ChangeProgressBasedOnVirility",
+				"explanation": "Changes progress based on virility, with the following with the value in the following string being a multiplier. Base number in the example translates to 0.1x scaling of the players virility total. So if the player has 100 virility, it will result in progress increasing by 10.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}
+							}
+			},
+			{				"title": "ProgressEquals",
+				"explanation": "Checks if the progress of the event is equal to the following number. If true, it jumps to the given scene. If false, it is ignored. Can be negative.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "ProgressEqualsOrGreater",
+				"explanation": "Works the same as the previous function, but is still true even if the event's value is greater than the checked value. Can be negative.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "ProgressEqualsOrLess",
+				"explanation": "Same as the previous function, but instead is still true if the event's value is less than the checked value. Can be negative.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			}
+		],
+		"Scene Jumps-done": [
+			{				"title": "JumpToScene",
+				"explanation": "Goes to scene stated in the next string. Scenes are contained within an event, see Event Jumps for jumping to specific scenes outside of the event.",
+				"options":["special"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "JumpToRandomScene",
+				"explanation": "Goes to one of the listed scenes at random. Close with 'EndLoop'. You can repeat a scene in the listing to make it more likely.",
+				"options":["special"],
+				"steps":"EndLoop",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["multi_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "CallSceneThenReturn",
+				"explanation": "Allows you to jump into a scene then return to where it was called initially. These can be called inside each other as well. Exiting one of these calls is the same as ending an event, ensuring it eventually leads to a scene with no jumps.",
+				"options":["special"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "CallNextSceneJumpThenReturn",
+				"explanation": "Turns the next scene jump into a call and return, just like 'CallSceneThenReturn'. Useful when in tandem with check based scene jump functions, such as from Player Checks or Monster Checks. The scene jump function must be given directly after 'CallNextSceneJumpThenReturn' or it will expire.",
+				"options":["simple"],
+				"steps":"1"
+			}
+		],
+		"Speakers Specific-done": [
+			{
+				"title": "DisplayCharacters",
+				"explanation": "Shows each specified Speakers image/card from a Event.",
+				"options":["special"],
+				"steps":"EndLoop",
+									"structure":{
+												"Characters":{"type":"multilist",
+												"options":["multi_item"],
+												"choices":["Events-speakers"]}
+												}
+			},
+			{				"title": "Speaks",
+				"explanation": "Puts the character's name from the Speakers key in the next box for the next string.",
+				"options":["special"],
+				"steps":"2",
+				"structure":{}
+			},
+			{				"title": "SetPostName",
+				"explanation": "Sets the end of a monsters name to a thing, can be used to make attack titles appear in events. Will affect all speakers, and persist for all 'Speaks' calls until it is manually set blank.",
+				"options":["simple"],
+				"steps": "1",
+									"structure":{
+												"1":{"type":"text"}
+												}
+			},
+			{				"title": "SetFlexibleSpeaker",
+				"explanation": "Using 'SetFlexibleSpeaker' sets a speaker to be used from the 'Speakers': key whenever 'FlexibleSpeaks' is called.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "FlexibleSpeaks",
+				"explanation": "Using 'SetFlexibleSpeaker' sets a speaker to be used from the 'Speakers': key whenever 'FlexibleSpeaks' is called.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Stat Checks": [
+			{				"title": "StatCheck",
+				"explanation": "Rolls a d20 with the specified player stat, against the given number. If the roll is higher than the given opposed check number, it jumps the given scene. If it fails, it will go to the scene specified after 'Fail'. Note you can also check for 'Temptation', as a specialized stat check based on Willpower, Allure, and Intelligence. See Stat Reference.",
+				"options":["special", "subfunction"],
+				"steps":"6",
+				"structure":{
+							"Stats":{"type":"singlelist",
+								"choices":["game-core stats-simple"]},
+							"2":{"type":"int"},
+							"Success Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]},
+							"4":{"type":"text", "default":"Fail"},
+							"Fail Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]}
+								},
+				"subfunction":
+				{"position":1,
+				"type":"ChangeStatCheckDifficulty",
+				 "structure":{
+							"IfPlayerHasStatusEffect":{
+								"Status effect":{"type":"singlelist",
+								"choices":["file-files/itemStatusEffects.txt"]},
+								"Modifier":{"type":"int"}},
+							"IfHasPerk":
+								{"Perks":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["main/Perks"]},
+								"Modifier":{"type":"int"}},
+							"IfHasFetish":
+								{"Fetishes":{"type":"singlelist",
+													"choices":["Fetishes"]},
+								"Modifier":{"type":"int"}},
+							"IfHasFetishEqualOrGreater":
+								{"Fetishes":{"type":"singlelist",
+													"choices":["Fetishes"]},
+								"Amount":{"type":"int"},
+								"Modifier":{"type":"int"}},
+							"IfVirilityEqualOrGreater":
+								{"Amount":{"type":"int"},
+								"Modifier":{"type":"int"}},
+							"IfEncounterSizeGreaterOrEqualTo":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfEncounterSizeLessOrEqualTo":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfProgressEqualsOrGreater":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"GetAnEventsProgressThenIfEqualsOrGreater":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfChoice":
+							{"choice":{"type":"choiceField"},							
+							"Modifier":{"type":"int"}},
+							"GetEventAndIfChoice":
+							{"choice":{"type":"choiceField"},							
+							"Modifier":{"type":"int"}}
+							}
+				}
+				},			
+			{				"title": "StatCheckRollUnder",
+				"explanation": "Functions the exact same as StatCheck but the player instead fails if the roll is higher than the opposed checked amount, and passes if it is lower. Also informs the player that the goal of the check is to roll under for clarity. Players cannot surpass failure, nor use ChangeStatCheckDifficulty.",
+				"options":["simple"],
+				"steps":"6",
+				"structure":{
+							"Stats":{"type":"singlelist",
+								"choices":["game-core stats-simple"]},
+							"2":{"type":"int"},
+							"Success Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]},
+							"4":{"type":"text", "default":"Fail"},
+							"Fail Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]}
+								}
+			},
+			{				"title": "ChangeNextStatCheckDifficulty",
+				"explanation": "For edge cases where it doesn't work as a sub-function to 'StatCheck'. Alters the next stat check across any scene or event. Can stack, and also lower the difficulty. Does not persist after a stat check is called. Displays no dialogue for the change. Use in tandem with check functions such as Player Checks or Monster Checks to indirectly provide it with conditions depending on the resulting scene.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}
+							}
+			},
+			{				"title": "ResetStatCheckDifficultyModifer",
+				"explanation": "'ResetStatCheckDifficultyModifer' resets the modifier to 0. Useful when there's still a way to avoid a stat check after calling a modifier.",
+				"options":["simple"],
+				"steps":"1"
+			}
+		],
+		"Store Events-done": [
+			{				"title": "StoreCurrentEventSpotSkippingLines",
+				"explanation": "Stores the current event, scene, and string you're on. The following string is provided with a numerical value to skip the number of lines after it when called by GoBackToStoredEvent then add on any number of lines to jump forward when called by 'GoBackToStoredEvent'. Will stay stored until called again or it's used.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}
+							}
+			},
+			{				"title": "GoBackToStoredEvent",
+				"explanation": "'GoBackToStoredEvent' jumps back to the stored event, as called above, then proceeding to skip the number of lines specified. Upon being called, it will clear the stored event.",
+				"options":["simple"],
+				"steps":"1"
+			}
+		]
+	},
+	"Asset": {
+		"BG & Chest-done": [
+			{				"title": "ChangeBG",
+				"explanation": "Changes the background. Requires path to image afterwards. Night equivalents - same file name, but with 'Night.png' appended at the end: ExampleNameNight.png",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"filePath",
+							"options":["notmap"]}}
+			},
+			{				"title": "StoreCurrentBG",
+				"explanation": "Using 'StoreCurrentBG' stores the current BG on-screen, while 'UseHeldBG' changes the BG back to the stored BG in the previous function. Used when making dreams to ensure it can non-destructively change the BG for the duration of the dream event.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "UseHeldBG",
+				"explanation": "Using 'StoreCurrentBG' stores the current BG on-screen, while 'UseHeldBG' changes the BG back to the stored BG in the previous function. Used when making dreams to ensure it can non-destructively change the BG for the duration of the dream event.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "ShowTreasureChest",
+				"explanation": "Using 'ShowTreasureChest' displays the wooden chest art. Used to fool the player during the mimic encounter. Beyond using it for chest traps, making custom treasure events based on your own conditions and rewards would also be applicable.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "HideTreasureChest",
+				"explanation": "HideTreasureChest needs to be called to remove the wooden chest art, or else it will not go away",
+				"options":["simple"],
+				"steps":"1"
+			}
+		],
+		"Image Layers": [
+			{				"title": "ChangeImageLayer",
+				"explanation": "Changes a specific layer of art for the specified character in the scene, works almost the same as above. If you set the image name to '', it will stop displaying the layer. Excluding layers with 'alwaysOn': enabled. Instead of a number, you can instead designate a Monster's nameID. It will change their layer regardless of what position they are",
+				"options":["special"],
+				"steps":"4",
+				"structure":{
+							"Layer Type":{"type":"singlelist",
+												"choices":[]},
+							"Speaker":{"type":"combobox",
+										"choices":[]},
+							"Image":{"type":"singlelist",
+												"choices":[]}
+							}
+			},
+			{
+								"title": "AnimateImageLayer",
+				"explanation": "Changes a specific layer of art for the specified character in the scene, works almost the same as above. If you set the image name to '', it will stop displaying the layer. Excluding layers with 'alwaysOn': enabled. Instead of a number, you can instead designate a Monster's nameID. It will change their layer regardless of what position they are",
+				"options":["special"],
+				"steps":"EndLoop",
+				"structure":{
+							"Channel":{"type":"singlelist",
+												"choices":["Animation","Animatione2","Animation3"]},
+							"Layer Type":{"type":"singlelist",
+												"choices":[]},
+							"Speaker":{"type":"combobox",
+										"choices":[]},
+							"Time":{"type":"int"},
+							"Picture List":{
+									"type": "filePath",
+									"options":["list", "notmap"]}
+							}
+			}
+		],
+		"Music/BGM-done": [
+			{				"title": "StopBGM",
+				"explanation": "Using 'StopBGM' stops any music that's currently playing.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "ChangeBGM",
+				"explanation": "Changes the music to the path provided in the next string.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"filePath",
+							"options":["music"]}
+							}
+			},
+			{				"title": "ChangeBGM-List",
+				"explanation": "Clears the current music and starts the given queue of music, playing in the order they're given. Close with 'EndMusicList'.",
+				"options":["simple"],
+				"steps": "EndMusicList",
+				"structure":{
+							"Music list":{"type": "filePath",
+								"options":["list", "music"]}
+							}
+							
+			},
+			{				"title": "ChangeBGM-OverideCombatMusic",
+				"explanation": "'ChangeBGM-OverideCombatMusic' functions the same as 'ChangeBGM', but overrides and ignores music from SetMusicTo.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Music file":{"type":"filePath",
+							"options":["music"]}
+							}
+			},
+			{				"title": "ChangeBGM-NoFade",
+				"explanation": "Using 'ChangeBGM-NoFade' ensures the BGM doesn't fade in or out at the start or end of the song. Useful when the music needs seamless loops.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Music file":{"type":"filePath",
+							"options":["music"]}}
+			},
+			{				"title": "PlayThisSongAfterCombat",
+				"explanation": "Using 'PlayThisSongAfterCombat' will play the specified song after combat instead of reverting to the locations song.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Music file":{"type":"filePath",
+							"options":["music"]}}
+			},
+			{				"title": "StoreCurrentBGM",
+				"explanation": "Using 'StoreCurrentBGM' stores the currently playing BGM, while 'PlayStoredBGM' changes the BGM to the song stored in the previous function. Used when making dreams to ensure it can non-destructively change the BGM for the duration of the dream event.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "PlayStoredBGM",
+				"explanation": "Using 'StoreCurrentBGM' stores the currently playing BGM, while 'PlayStoredBGM' changes the BGM to the song stored in the previous function. Used when making dreams to ensure it can non-destructively change the BGM for the duration of the dream event.",
+				"options":["simple"],
+				"steps":"1"
+			}
+		],
+		"SFX-done": [
+			{				"title": "PlaySoundEffect",
+				"explanation": "Plays the selected audio file from the following string, or from one of the sound banks above.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							}
+			},
+			{				"title": "PlaySoundEffect2",
+				"explanation": "Plays another selected audio file simultaneously regardless if the base function has finished or not",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							}
+			},
+			{				"title": "PlaySoundBankOnce",
+				"explanation": "Using 'PlaySoundBankOnce' plays through the selected sound bank one time. Used for Sofia's singular kiss barrage.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"singlelist",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							}
+			},
+			{				"title": "PlayLoopingSoundEffect",
+				"explanation": "PlayLoopingSoundEffect plays an audio file on loop, or a sound bank on loop.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							}
+			},
+			{				"title":"StopSoundEffectLoop",
+				"explanation": "StopSOundEffectLoop: Stops the looping sound, looping sounds are separate from one off sounds",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							}
+			},
+			{				"title": "PlayLoopingSoundEffect2",
+				"explanation": "'PlayLoopingSoundEffect' plays an audio file on loop, or a sound bank on loop.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							}
+			},
+			{				"title": "StopSoundEffectLoop2",
+				"explanation": "StopSOundEffectLoop: Stops the looping sound, looping sounds are separate from one off sounds",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"Options":{"type":"combobox",
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							}
+			}
+		],
+		"VFX": [
+			{				"title": "PlayVisualEffect",
+				"explanation": "'PlayVisualEffect' plays a visual effect on channel 1. It will keep playing till 'EndVisualEffect' is called.\n'StartHaze' start tier 1 haze effect, a low opacity screen cover.'GrowingHaze' tier 1 -> tier 2 haze.'IncreasingHaze' tier 2 -> tier 3 haze.'DecreasingHaze' tier 3 -> tier 2 haze.'FadingHaze' tier 2 -> tier 1 haze.'SuddenHaze' full, rapid tier 3 fade in.'BlackOut' blacks out the screen with the image. Stays dark till the channel is ended or changed.'ScreenPulse' pulses on the screen once at low opacity.'DoublePulse' pulses on the screen twice at low opacity.'TriplePulse' pulse on the screen thrice at low opacity.'RepeatingPulse' repeats low opacity pulse.'ScreenFlash' quick image flash. Note that using bright images might be unpleasant to the eye.'BlindingFlash' flash that lasts longer and fades slower. Still probably unpleasant to the eye.'OrgasmPulse' rapid pulse for orgasms. Eyes will definitely hurt with bright images, use with care.",
+				"options":["simple"],
+				"steps":"3",
+				"structure":{
+							"Effect":{"type":"singlelist",
+							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"Image":{"type":"filePath",
+								"options":[]}
+								}
+			},
+			{				"title": "PlayVisualEffect2",
+				"explanation": "'PlayVisualEffect' plays a visual effect on channel 1. It will keep playing till 'EndVisualEffect' is called.'StartHaze' start tier 1 haze effect, a low opacity screen cover.'GrowingHaze' tier 1 -> tier 2 haze.'IncreasingHaze' tier 2 -> tier 3 haze.'DecreasingHaze' tier 3 -> tier 2 haze.'FadingHaze' tier 2 -> tier 1 haze.'SuddenHaze' full, rapid tier 3 fade in.'BlackOut' blacks out the screen with the image. Stays dark till the channel is ended or changed.'ScreenPulse' pulses on the screen once at low opacity.'DoublePulse' pulses on the screen twice at low opacity.'TriplePulse' pulse on the screen thrice at low opacity.'RepeatingPulse' repeats low opacity pulse.'ScreenFlash' quick image flash. Note that using bright images might be unpleasant to the eye.'BlindingFlash' flash that lasts longer and fades slower. Still probably unpleasant to the eye.'OrgasmPulse' rapid pulse for orgasms. Eyes will definitely hurt with bright images, use with care.",
+				"options":["simple"],
+				"steps":"3",
+				"structure":{
+							"Effect":{"type":"singlelist",
+							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"Image":{"type":"filePath",
+								"options":[]}
+								}
+			},
+			{				"title": "PlayVisualEffect3",
+				"explanation": "'PlayVisualEffect' plays a visual effect on channel 1. It will keep playing till 'EndVisualEffect' is called.'StartHaze' start tier 1 haze effect, a low opacity screen cover.'GrowingHaze' tier 1 -> tier 2 haze.'IncreasingHaze' tier 2 -> tier 3 haze.'DecreasingHaze' tier 3 -> tier 2 haze.'FadingHaze' tier 2 -> tier 1 haze.'SuddenHaze' full, rapid tier 3 fade in.'BlackOut' blacks out the screen with the image. Stays dark till the channel is ended or changed.'ScreenPulse' pulses on the screen once at low opacity.'DoublePulse' pulses on the screen twice at low opacity.'TriplePulse' pulse on the screen thrice at low opacity.'RepeatingPulse' repeats low opacity pulse.'ScreenFlash' quick image flash. Note that using bright images might be unpleasant to the eye.'BlindingFlash' flash that lasts longer and fades slower. Still probably unpleasant to the eye.'OrgasmPulse' rapid pulse for orgasms. Eyes will definitely hurt with bright images, use with care.",
+				"options":["simple"],
+				"steps":"3",
+				"structure":{
+							"Effect":{"type":"singlelist",
+							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"Image":{"type":"filePath",
+								"options":[]}
+								}
+			},
+			{				"title": "EndVisualEffect",
+				"explanation": "ends visual effect",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "EndVisualEffect2",
+				"explanation": "ends visual effect",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "EndVisualEffect3",
+				"explanation": "ends visual effect",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "PlayHypnoSpiral",
+				"explanation": "Rotates an image by 360 degrees, meant for hypno spirals. End with. Speed, 1-100, default 5,Opacity, 0.1-1, In front of characters, 1/Behind, 0",
+				"options":["simple"],
+				"steps": "5",
+									"structure":{
+												"Speed":{"type":"int", "default":"5"},
+												"Opacity":{"type":"int"},
+												"Image":{"type":"filePath",
+												"options":[]},
+												"Front-Back":{"type":"singlelist",
+												"choices":["0","1"]}
+												}
+			},
+			{				"title": "EndHypnoSpiral",
+				"explanation": "Ends spiral effect",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "PlayPendulum",
+				"explanation": "Rotates an image back and forth on screen like a pendulum. Speed, 0-any,Angle - 360, In front of characters, 1/Behind, 0",
+				"options":["simple"],
+				"steps": "5",
+									"structure":{
+												"Speed":{"type":"int", "default":"5"},
+												"Angle":{"type":"int", "default":"60"},
+												"Image":{"type":"filePath",
+													"options":[]},
+												"Front-Back":{"type":"singlelist",
+												"choices":["0","1"]}
+												}
+			},
+			{				"title": "EndPendulum",
+				"explanation": "Ends pendulum effect",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "PlayImagePulseLoopingList",
+				"explanation": "Pulses an image on the screen based on the multiple parameters. It will loop through any number of images provided after the parameters are set in the order. PulseSpeed 0.2-2, default 1, Zoom 0.2-2, default 1, Opacity 0.1-1",
+				"options":["simple"],
+				"steps": "EndLoop",
+									"structure":{
+												"PulseSpeed":{"type":"int", "default":"1"},
+												"Zoom":{"type":"int", "default":"1"},
+												"Opacity":{"type":"int", "default":"1"}, 
+												"Images":{"type": "filePath",
+														"options":["list"]}
+												}
+			},
+			{				"title": "EndImagePulseLoopingList",
+				"explanation": "Ends pulse effect",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "PlayImagePulseLoopingRandom",
+				"explanation": "Pulses an image on the screen based on the multiple parameters. It will loop through any number of images provided after the parameters are set in random order. PulseSpeed 0.2-2, default 1, Zoom 0.2-2, default 1, Opacity 0.1-1",
+				"options":["simple"],
+				"steps": "EndLoop",
+									"structure":{
+												"PulseSpeed":{"type":"int", "default":"1"},
+												"Zoom":{"type":"int", "default":"1"},
+												"Opacity":{"type":"int", "default":"1"}, 
+												"Images":{"type": "filePath",
+														"options":["list"]}
+												}
+			},
+			{				"title": "EndImagePulseLoopingRandom",
+				"explanation": "Ends pulse effect",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "PlayCustomBarrage",
+				"explanation": "Display a barrage of images, values are for PulseSpeed and Opacity respectively",
+				"options":["simple"],
+				"steps": "EndLoop",
+									"structure":{
+												"PulseSpeed":{"type":"int", "default":"1"},
+												"Opacity":{"type":"int", "default":"1"},
+												"Images":{"type": "filePath",
+														"options":["list"]}
+												}
+			},
+			{				"title": "EndCustomBarrage",
+				"explanation": "Ends pulse effect",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "PlayMotionEffect",
+				"explanation": "'PlayMotionEffect' will move the players view of the scene, using one of the selected motion effects below. 'EndMotionEffect' can end the current motion effect if it's taking too long.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Effect":{"type":"singlelist",
+												"choices":["Bounce", "BounceSlow", "BounceFast", "BounceOnce", "Sway", "SwaySlow", "SwayFast", "SwayOnce", "Pump", "PumpSlow", "PumpFast", "Ride", "RideSlow", "RideFast", "Vibrate", "Realign","Explosion","LongExplosion","Crash", "Quake","ScreenBounce","SlowScreenBounce","ScreenSway"]}
+												}
+			},
+			{				"title": "PlayMotionEffectLoop",
+				"explanation": "'Works the same as PlayMotionEffect, but will maintain the effect even as the scene moves to the next line, until EndMotionEffect is called",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Effect":{"type":"singlelist",
+												"choices":["Bounce", "BounceSlow", "BounceFast", "BounceOnce", "Sway", "SwaySlow", "SwayFast", "SwayOnce", "Pump", "PumpSlow", "PumpFast", "Ride", "RideSlow", "RideFast", "Vibrate", "Realign","Explosion","LongExplosion","Crash", "Quake","ScreenBounce","SlowScreenBounce","ScreenSway"]}
+												}
+			},
+			{				"title": "PlayMotionEffectCustom",
+				"explanation": "Plays a custom motion effect",
+				"options":["special"],
+				"steps": "check",
+									"structure":{
+												"Effect":{"type":"singlelist",
+													"choices":["Bounce", "Sway", "Pump", "Ride","Vibrate", "blank"]},
+												"Target":{"type":"singlelist",
+													"choices":["Characters", "Character", "Bodypart"]},
+												"Speed":{"type":"int", "default":"1"},
+												"Distance":{"type":"int", "default":"1"}
+												}
+			},
+			{				"title": "EndAllVisualEffects",
+				"explanation": "'EndAllVisualEffects' will stop all VFX currently playing, regardless of what it is.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		]
+	},
+	"Combat Only": {
+		"Encounter": [
+			{				"title": "-doneHideMonsterEncounter",
+				"explanation": "'HideMonsterEncounter' temporarily hides the encounter. It is still very much so in effect, just the visibility and selectibility of all currently displayed monsters monsters from the encounter are gone. It's meant for combat events, but nothing stops you from using it elsewhere, just do take caution. Using DisplayCharacters for its duration of use intended.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneShowMonsterEncounter",
+				"explanation": "'HideMonsterEncounter' temporarily hides the encounter. It is still very much so in effect, just the visibility and selectibility of all currently displayed monsters monsters from the encounter are gone. It's meant for combat events, but nothing stops you from using it elsewhere, just do take caution. Using DisplayCharacters for its duration of use intended.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "AddMonsterToEncounter",
+				"explanation": "'AddMonsterToEncounter' Add the monster to the encounter. Will renumber all the monsters in the encounter. Can add infinitely, so make sure there's a check to stop it from going above three. Is always added to the end of the encounter list.",
+				"options":["Simple"],
+				"steps": "check",
+				"structure":{					
+												"Options":{"type":"singlelist",
+												"choices":["", "ChangeForm"]},
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]}
+												}
+			}
+		],
+		"End Combat or Monster-done": [
+			{				"title": "PlayerLosesCombat",
+				"explanation": "Player instantly loses combat and goes to loss scene based on focused monster. Has no display text, it happens instantly. Note you can use the GameOver function to make your own loss scenes as well without having to go back to the combat loss scenes. Up to you.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "EndCombat",
+				"explanation": "Immediately ends combat and goes to combat reward screen.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "ClearFightForVictory",
+				"explanation": "Clears out monster encounter, immediately ending combat and gives rewards.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "ClearMonsterEncounter",
+				"explanation": "Clears out monster encounter. Use if you want to completely leave combat when you jump to an event.In a loss scene, ClearMonsterEncounter followed by a jump to event function can be used to ignore a game over. Just remember to use CallLossLevelUp before clearing the monster encounter for loss exp gains.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "ClearMonsterEncounterBossFight",
+				"explanation": "Same as above but doesn't return the players ability to run.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "RemoveMonster",
+				"explanation": "Removes focused monster from encounter, rewards no exp money or loot.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "DefeatMonster",
+				"explanation": "Defeats the focused monster, still ensuring their exp and loot for the player when combat ends.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"DenyTargetOrgasm and DenyAttackerOrgasm-done": [
+		{				"title": "DenyTargetOrgasm",
+				"explanation": "makes the target of an attack immune to normal orgasm calls (e.g. PlayerOrgasm and MonsterOrgasm still works) for a single attack, resetting thereafter. This does mean the target can still orgasm from recoil.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "DenyAttackerOrgasm",
+				"explanation": "specifically exists for letting the attacker avoid recoil damage triggering an orgasm",
+				"options":["simple"],
+				"steps": "1"
+			}],
+		"Monster Attacks": [
+			{				"title": "-doneSemenHeal",
+				"explanation": "Heals the focused monster based on the given number and the same calculation as the semen eater perk type. {FinalDamage} can be used in the following string to display how much arousal is recovered.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}}
+			},
+			{				"title": "-doneEnergyDrain",
+				"explanation": "Drains energy from the play using the same calculation as the energy drain perk. {FinalDamage} can be used in the following string to display how much energy is lost.",
+				"options":["simple"],
+				"steps":"2",
+				"structure":{
+							"1":{"type":"int"}}
+			},
+			{				"title": "-doneSetSkipMonsterAttack",
+				"explanation": "'SetSkipMonsterAttack' Sets the focused monster to skip their attack call for the round.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "-doneSetResumeMonsterAttack",
+				"explanation": "'SetResumeMonsterAttack' sets the focused monster to attack for the round again.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "-doneSkipAllMonsterAttacks",
+				"explanation": "'SkipAllMonsterAttacks' sets all monsters in the fight to no longer attack for the round.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "-doneResumeAllMonsterAttacks",
+				"explanation": "'ResumeAllMonsterAttacks' sets all monsters in the fight to attack for the round again.",
+				"options":["simple"],
+				"steps":"1"
+			},
+			{				"title": "CallMonsterAttack-herenow",
+				"explanation": "Calls the focused monster's turn attack turn. Intended for use at the end of turn if a counter attack set up fails, but has other applications.",
+				"options":["simple", "sub-function", "TODO"],
+				"steps":"1"
+			},
+			{				"title": "SpecificAttack",
+				"explanation": "Make the focused monster cast a specific skill.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"Skill":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]}
+												}
+			},
+			{				"title": "EndCounterChecks",
+				"explanation": "'EndCounterChecks' is used and required for characters with multiple separate counters from lineTriggers to stop them from overlapping when you don't want to.",
+				"options":["simple"],
+				"steps":"1"
+			}
+		],
+		"Monster Checks-done": [
+			{				"title": "IfThisMonsterIsInEncounter",
+				"explanation": "Checks for the specified monster in the encounter, will ignore focused monster if checking for other with the same name.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "EncounterSizeGreaterOrEqualTo",
+				"explanation": "Checks if the current combat encounter has an equal or greator, or equal or less than respectively, of the given number of enemies.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "EncounterSizeLessOrEqualTo",
+				"explanation": "Checks if the current combat encounter has an equal or greator, or equal or less than respectively, of the given number of enemies.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterLevelGreaterThan",
+				"explanation": "Checks if the focused monster level is greater than the specified amount.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterHasStatusEffect",
+				"explanation": "Checks if the focused monster does or doesn't have the specified status effect respectively. See Status Effect Reference.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterDoesntHaveStatusEffect",
+				"explanation": "Checks if the focused monster does or doesn't have the specified status effect respectively. See Status Effect Reference.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{					
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfOtherMonsterHasStatusEffect",
+				"explanation": "Same as the above, but checks for another monster. Note that it will shift focus to that monster. Ignores the currently focused monster.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfOtherMonsterDoesntHaveStatusEffect",
+				"explanation": "Same as the above, but checks for another monster. Note that it will shift focus to that monster. Ignores the currently focused monster.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterHasStatusEffectWithPotencyEqualOrGreater",
+				"explanation": "Checks if the focused monster has a status effect with the given amount of potency. Note not all status effects use potency. Will shift focus to that monster. Ignores the currently focused monster.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Status Effects":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"2":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterArousalGreaterThan",
+				"explanation": "Checks if the monster's arousal is greater than the given number.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"1":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterOrgasm",
+				"explanation": "Checks if the current monster's arousal will make them cum.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "CallMonsterEncounterOrgasmCheck",
+				"explanation": "Checks if any monsters in a fight have orgasmed, and proceeds as if hit in combat.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterSpiritGone",
+				"explanation": "Checks if the monster is out of spirit. Made for use with enemies who have more than one spirit.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterHasSkill",
+				"explanation": "Checks if the monster has the skill or perk respectively. Useful for checking for skills or perks given to the monster by a separate event or scene.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfMonsterHasPerk",
+				"explanation": "Checks if the monster has the skill or perk respectively. Useful for checking for skills or perks given to the monster by a separate event or scene.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Perks":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Perks"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			}
+		],
+		"Monster Combat Afflictions": [
+			{				"title": "ChangeMonsterArousal",
+				"explanation": "Change the related stat to the focused monster. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneChangeMonsterSpirit",
+				"explanation": "Change the related stat to the focused monster. They can take negative values, and it does reset upon leaving the event and/or encounter. These do not produce dialogue.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneMonsterOrgasm",
+				"explanation": "Brings the focused monster to an orgasm, resetting their arousal and deducting their spirit by the given amount.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int"}
+												}
+			},
+			{				"title": "-doneDenyMonsterOrgasm",
+				"explanation": "All monsters in the combat encounter are immune to normal orgasm calls (e.g. 'MonsterOrgasm' still works) for the entire round of combat.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneRefreshMonster",
+				"explanation": "Fully heals the focused monster and removes all currently applied status effects.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "ApplyStatusEffectToMonster",
+				"explanation": "Applies a status effect via the given skill to the focused monster. Will not display the skill's 'StatusOutcome':.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills", "main/Skills"]}
+												}
+			},
+			{				"title": "RemoveStatusEffectFromMonster",
+				"explanation": "'ApplyStatusEffectToMonster' applies a status effect via the given skill to the focused monster. Will not display the skill's 'StatusOutcome':.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{												
+												"Status":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]}
+												}
+			},
+			{				"title": "HitMonsterWith",
+				"explanation": "Hit the monster with a skill. Will not apply stances or status effects from the skill, and does apply recoil damage. It will only damage to the target, and can crit. It will never miss. Uses the player stats. Do not use any skill with a targetType that isn't 'single'.",
+				"options":["special", "limit skills"],
+				"steps": "2",
+									"structure":{												
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills", "limit"]}
+												}
+			}
+		],
+		"Monster Focus": [
+			{				"title": "FocusOnMonster",
+				"explanation": "Focuses on the specified monster by their number in the encounter. If the number is bigger than the encounter size, it will focus on the last monster in the encounter. Starts at 1.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"1":{"type":"int",
+												"default":1}
+												}
+			},
+			{				"title": "-doneFocusOnRandomMonster",
+				"explanation": "Focuses on a random monster in the encounter.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneShuffleMonsterEncounter",
+				"explanation": "Shuffles the monster encounter and renumbers them. You must refocus the monster for other functions if you want to do anything else after calling it.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneRefocusOnInitalMonster",
+				"explanation": "Refocuses on the first monster you entered the function with. Will not work if you used 'ShuffleMonsterEncounter'.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneFocusedSpeaks",
+				"explanation": "The focused enemy Speaks.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "-doneFocusedSpeaksSkill",
+				"explanation": "Same as above, but simply no quotations. Typically used for combat event skill name displays.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Player Combat Afflictions": [
+			{				"title": "-doneDenyPlayerOrgasm",
+				"explanation": "The player is immune to normal orgasm calls (e.g. 'PlayerOrgasm' still works) for the entire round of combat.",
+				"options":["simple"],
+				"steps": "1"
+			},
+			{				"title": "HitPlayerWith",
+				"explanation": "Hit the player with a skill. Will not apply stances or status effects from the skill, and does apply recoil damage. It will only damage to the target, and can crit. It will never miss. Uses the focused monsters stats. Do not use any skill with a targetType that isn't 'single'.",
+				"options":["special", "limit skills"],
+				"steps": "2",
+									"structure":{												
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills", "main/Skills"]}
+												}
+			},
+			{				"title": "-doneSkipPlayerAttack",
+				"explanation": "Skips the players attack. Specifically intended for use with Counters. This also prevents the player from consuming the skill's 'costType':, and using consumables.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		],
+		"Player Combat Checks": [
+			{				"title": "IfPlayerHasStatusEffect",
+				"explanation": "If the player has this status effect, jump to the given scene. Can be used out of combat, but not many status effects maintain out of combat. See Status Effect Reference.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Status":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerDoesntHaveStatusEffect",
+				"explanation": "If the player has this status effect, jump to the given scene. Can be used out of combat, but not many status effects maintain out of combat. See Status Effect Reference.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Status":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerHasStatusEffectWithPotencyEqualOrGreater",
+				"explanation": "Similar to above except you can check the effect's potency. Note not all status effects use potency, see Status Effect Reference.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Status":{"type":"singlelist",
+												"choices":["game/statusEffects-Status Effects"]},
+												"Potency":{"type":"int"},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerStunnedByParalysis",
+				"explanation": "If player is currently stunned by paralysis, jump to the given scene.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerIsUsingThisSkill",
+				"explanation": "If the player is using the skill this turn, jump to the given scene. For more advanced cases where lineTriggers isn't flexible enough. Check Sofia for it's usage.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			}
+		],
+		"Stances": [
+			{				"title": "ApplyStance",
+				"explanation": "Applies the stance to the player and the currently focused monster. Be sure to have a check for stance before this so you don't reapply the stance a second time. Or more.",
+				"options":["special"],
+				"steps": "2",
+									"structure":{
+												"Stance":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]}
+												}
+			},
+			{				"title": "SetAttack",
+				"explanation": "Note that out of combat stance calls, as well as Counters and EndOfRound calls need to have the skill manually set for the fetish check. Or else, it may use the players skill for the fetish application to stance durability",
+				"steps": "2",
+									"structure":{												
+												"Skills":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Skills", "main/Skills"]}
+												}
+			},
+			{				"title": "ApplyStanceToOtherMonster",
+				"explanation": "Applies the specified stance to the given monster with the player. Will ignore the focused monster. Will not apply stance to a monster who already has the stance. Will shift focus to the given monster.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Stance":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]}
+												}
+			},
+			{				"title": "ClearStanceFromMonsterAndPlayer",
+				"explanation": "Remove the specified stance from focused monster and the player. Can state 'All' instead of a stance to remove all currently active stances the player has with the focused monster.",
+				"options":["simple"],
+				"steps": "2",
+									"structure":{
+												"Stance":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances", "All"]}
+												}
+			},
+			{				"title": "IfPlayerHasStance",
+				"explanation": "Checks if the player does or does not have this stance with anyone respectively. You can also provide a value of 'Any' or 'None'.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Stance":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerDoesntHaveStance",
+				"explanation": "Checks if the player does or does not have this stance with anyone respectively. You can also provide a value of 'Any' or 'None'.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfPlayerHasStances",
+				"explanation": "Checks the player for every specified stance in the loop. If all stances are true, it jumps to the given scene.",
+				"options":["simple"],
+				"steps": "EndLoop-1",
+									"structure":{
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "IfMonsterHasStance",
+				"explanation": "Works same as the player variants, but checks for the focused monster instead.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "IfMonsterDoesntHaveStance",
+				"explanation": "Works same as the player variants, but checks for the focused monster instead.",
+				"options":["simple"],
+				"steps": "3",
+									"structure":{
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{				"title": "IfOtherMonsterHasStance",
+				"explanation": "Similar to above, but checks for the specified monster. Will ignore the focused monster. Will not apply stance to a monster who already has the stance. Will shift focus to the given monster.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "IfOtherMonsterDoesntHaveStance",
+				"explanation": "Similar to above, but checks for the specified monster. Will ignore the focused monster. Will not apply stance to a monster who already has the stance. Will shift focus to the given monster.",
+				"options":["simple"],
+				"steps": "4",
+									"structure":{
+												"Monsters":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Monsters"]},
+												"Stances":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+			{
+				"title": "-doneClearStances",
+				"explanation": "Clears the stances of everyone in the encounter.",
+				"options":["simple"],
+				"steps": "1"
+			}
+		]
+	}
+}

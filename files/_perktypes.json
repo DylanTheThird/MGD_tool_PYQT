@@ -1,0 +1,384 @@
+{
+	"Perk modifiers":
+		{
+		"StatusIcon":
+			{"type":"filepath", "tooltip":"Declares a status icon for the perk whenever the player or monster possesses it. The provided file path to your image will be displayed as an icon in the status bar",
+			"options":["notmap"]
+			},
+		"TurnDuration":
+			{"type":"int", "tooltip":"Removes the perk from the wielder once the set duration has depleted to 0. Ticks down for every step or combat turn."
+			},
+		"TimeDuration":
+			{"type":"int", "tooltip":"Removes the perk from the wielder once the set duration has depleted to 0. Ticks down for every time jump (e.g. Morning -> Noon), note sleeping till morning will take a variable number of ticks depending on the current time. 6 would be a full day"
+			},
+		"RemovedOnOrgasm":
+			{"type":"int", "tooltip":"Perk is removed when the wielder orgasms. Set a value of 0, as EffectPower: is not needed",
+			"default":"0"
+			},
+		"EndMessage":
+			{"type":"text",
+			"options":["function"],
+			"tooltip":"Displays the given text via its correlating EffectPower string when the perk ends via TurnDuration or TimeDuration. This can use Text Markup, and thus in extension, Functions"
+			},
+		"NonPersistentEffect":
+			{"type":"int", "tooltip":"Declare the perk as a NonPersistentEffect, removing it whenever a Non-Persistent Status Effect (e.g. Charm) would be removed by the game Set a value of 0, as EffectPower: is not needed",
+			"default":"0"
+			},
+		"RemovableEffect":
+			{"type":"int", "tooltip":"Declare the perk as a RemovableEffect , that allows the effect to be cleared on use of a pancea(currently just this), or on combat end like NonPersistentEffect. EffectPower: is not needed",
+			"default":"0"
+			},
+		"RemovedOnOrgasm":
+			{"type":"int", "tooltip":"Perk is removed when the wielder orgasms. Set a value of 0, as EffectPower: is not needed"
+			}
+		},
+		"Reward":
+		{
+		"EroBoost":
+			{"type":"int", "tooltip":"Alters eros found by a percent. If wielded by a monster, alters their own eros dropped."
+			},
+		"ItemDropChance":
+			{"type":"int", "tooltip":"Alters item drop chance from monsters by a percent. If wielded by a monster, alters their own item drop chance"
+			},
+		"TreasureFindChance":
+			{"type":"int", "tooltip":"Alters percent chance of finding treasure during exploration, and by extension, higher chance of rare treasure"
+			},
+		"BetterPrices":
+			{"type":"int", "tooltip":"Alter all shop prices by a percent, for both selling and buying. Positive values lower purchase cost and increases sale price, negative values increase cost and lowers sale price"
+			},
+		"BuyPrices":
+			{"type":"int", "tooltip":"Alter all shop prices by a percent, for both selling and buying"
+			},
+		"SellPrices":
+			{"type":"int", "tooltip":"Alter all shop prices by a percent, for both selling and buying"
+			},
+		"ExpBoost":
+			{"type":"int", "tooltip":"Alter all exp gains by a percent. If wielded by a monster, alters their own exp drop amount."
+			},
+		"LossExp":
+			{"type":"int", "tooltip":"Alter exp gains from monster exp on loss by a percent."
+			}
+	},
+	"Damage":{
+		"DamageBoost":
+			{"type":"int", "tooltip":"Alters all types of damage dealt by a percent"
+			},
+		"MagicBoost":
+			{"type":"int", "tooltip":"Alters magic damage dealt by a percent"
+			},
+		"NonPenMagicBoost":
+			{"type":"int", "tooltip":"Alters non-penetrative (e.g. fire dildo, pole beam, ethereal hands) magic damage dealt by a percent."
+			},
+		"BreastBoost":
+			{"type":"int", "tooltip":"Alters breast/nipple damage by a percent."
+			},
+		"SeductionBoost":
+			{"type":"int", "tooltip":"Alters seduction damage dealt by a percent."
+			},
+		"KissBoost":
+			{"type":"int", "tooltip":"Alters kiss damage dealt by a percent."
+			},
+		"SexBoost":
+			{"type":"int", "tooltip":"Alters sex damage dealt by a percent."
+			},
+		"NonPenSexBoost":
+			{"type":"int", "tooltip":"Alters non-penetrative sex (e.g. dildo, fingering, stroking, etc.) damage dealt by a percent."
+			},
+		"AssBoost":
+			{"type":"int", "tooltip":"Alters ass damage dealt by a percent."
+			},
+		"NonPenAssBoost":
+			{"type":"int", "tooltip":"Alters non-penetrative ass (e.g. dildo, fingering, etc.) damage dealt by a percent."
+			},
+		"PainBoost":
+			{"type":"int", "tooltip":"Alters pain damage dealt by a percent."
+			},
+		"PenetrationBoost":
+			{"type":"int", "tooltip":"Alters penetration damage dealt by a percent."
+			},
+		"OralBoost":
+			{"type":"int", "tooltip":"Alters oral damage dealt by a percent."
+			},
+		"ForeplayBoost":
+			{"type":"int", "tooltip":"Alters foreplay damage dealt by a percent. "
+			},
+		"IndulgentBoost":
+			{"type":"int", "tooltip":"Alter indulgent  by a percent"
+			},
+		"SexToyBoost":
+			{"type":"int", "tooltip":"Alter sex toy damage by a percent"
+			},
+		"BaselineAllureFlatBuff":
+			{"type":"int", "tooltip":"Alter Allure’s natural flat damage buff scaling to everything by a flat amount."
+			},
+		"BaselineAllureFlatPercentBoost":
+			{"type":"int", "tooltip":"Alters Allure’s natural flat damage buff scaling to everything by a percent."
+			},
+		"ForeplayFlatDamage":
+			{"type":"int", "tooltip":"Alters foreplay damage dealt by a flat amount."
+			},
+		"CritChanceBoost":
+			{"type":"int", "tooltip":"Alters chance for the wielder’s skills to crit by a flat amount."
+			},
+		"CritDamageBoost":
+			{"type":"int", "tooltip":"Alters critical damage dealt by a percent amount on top of the original calculation."
+			},
+		"RecoilBoost":
+			{"type":"int", "tooltip":"Alters overall recoil damage dealt to opponents."
+			},
+		"AllureRecoilBoost":
+			{"type":"int", "tooltip":"Alters the percent of allure based recoil damage dealt to opponents. "
+			}
+	},
+	"Defense":{
+		"DamageReduction":
+			{"type":"int", "tooltip":"Alters all damage taken by a percent, take caution. "
+			},
+		"ForeplayEnergyRegen":
+			{"type":"int", "tooltip":"Alters energy regeneration through foreplay skills by a percent of the wielders max. "
+			},
+		"ForeplayArousalRegen":
+			{"type":"int", "tooltip":"Alters arousal regeneration through foreplay skills by a percent of the wielders max."
+			},
+		"RegenMaxArousal":
+			{"type":"int", "tooltip":"Restores a percent of the max arousal of the wielder."
+			},
+		"RegenMaxEnergy":
+			{"type":"int", "tooltip":"Restores a percent of the max arousal of the wielder"
+			},
+		"VirilityBoost":
+			{"type":"int", "tooltip":"Alters the players Virility by a percent. Player only."
+			},
+		"RecoilDamageTaken":
+			{"type":"int", "tooltip":"Alters recoil damage taken by a percent."
+			},
+		"CritDamageBoostSelf":
+			{"type":"int", "tooltip":"Alters critical damage the wielder receives prior to the final calculation."
+			},
+		"Edging":
+			{"type":"int", "tooltip":"Experimental perk type that gives percent chance to resist orgasm, stacks with other sources."
+			},
+		"MultiplySpirit Loss":
+			{"type":"int", "tooltip":"Multiply the spirit lost by the given number"
+			}
+	},
+	"Status Effects":{
+		"StatusEffectDuration":
+			{"type":"int", "tooltip":"Alters the duration of the users status effects"
+			},
+		"StatusChanceBoost":
+			{"type":"int", "tooltip":"Alter status effect application chances from skills."
+			},
+		"StartDeeperInTrance":
+			{"type":"int", "tooltip":"Player starts this many steps deeper in trance when hit with a trance related move. Anything below 1-10 will trigger instant trance."
+			},
+		"CantBreakFreeOfTranceWithoutItems":
+			{"type":"int","default":"0", "tooltip":"Can no longer automatically start to break free of trance after 3 consecutive turns without getting stunned"
+			},
+		"TranceStunChance":
+			{"type":"int", "tooltip":"Alters the chance for the player to be stunned each turn while fully tranced by a percent."
+			},
+		"ForeplayDefDown":
+			{"type":"int", "tooltip":"Applies a status effect that reduces the defense to the enemy targeted with a foreplay skill for 3 turns"
+			},
+		"StunDelay":
+			{"type":"int", "tooltip":"Alters the delay between stun status effects"
+			},
+		"SleepAmp":
+			{"type":"int", "tooltip":"Alters the flat amount of energy lost per turn upon being afflicted by Sleep"
+			},
+		"ParalysisAmp":
+			{"type":"int", "tooltip":"Alters the chance to be stunned by paralysis."
+			},
+		"AphrodisiacAmp":
+			{"type":"int", "tooltip":"Alters the damage taken from aphrodisiacs by a percent."
+			},
+		"AphrodisiacTurnCure":
+			{"type":"int", "tooltip":"Removes set amount from aphrodisiac potency every turn"
+			},
+		"DisableRun":
+			{"type":"int","default":"0", "tooltip":"Can disable the players ability to run from all fights."
+			}
+		},
+		"Stances & Evasion":{
+		"GetOutOfStance":
+			{"type":"int", "tooltip":"Alters chance to get out of stance by a percent."
+			},
+		"OutOfStanceEvade":
+			{"type":"int", "tooltip":"Alters evade chance when out of stances by a percent."
+			},
+		"RemoveRestraints":
+			{"type":"int", "tooltip":"Alters restraint escape chance by a percent."
+			},
+		"RestraintBoost":
+			{"type":"int", "tooltip":"Increases the effectiveness of your own restraints."
+			},
+		"StanceBoost":
+			{"type":"int", "tooltip":"Increases the effectiveness of your own stances."
+			},
+		"RunChance":
+			{"type":"int", "tooltip":"Alters run chance by a percent."
+			},
+		"Unbounded":
+			{"type":"int","default":"0", "tooltip":"If your action is interrupted by a restraint, you will struggle instead of doing nothing by default"
+			},
+		"Unshackled":
+			{"type":"int","default":"0", "tooltip":"If you break a restraint with struggle, you get to act immediately."
+			},
+		"OrgasmEnergyDrain":
+			{"type":"int", "tooltip":"Drains flat amount of energy upon the target orgasming. Has no stance restrictions."
+			},
+		"StanceStuck":
+			{"type":"int", "tooltip":"Alters chance of stance escape by a percent."
+			},
+		"InitiativeBonus":
+			{"type":"int", "tooltip":"Flatly alters perk type owners initiative, influencing turn order"
+			},
+		"MinStatCheckDie":
+			{"type":"int", "tooltip":"Flatly alters the minimum dice your d20 can roll in a stat check"
+			},
+		"RestSpiritRestored":
+			{"type":"int", "tooltip":"Recovers flat amount of spirit when resting at rest points"
+			},
+		"RestEnergyRestored":
+			{"type":"int", "tooltip":"Recovers percent amount of max energy when resting at rest points"
+			},
+		"RestArousalRestored":
+			{"type":"int", "tooltip":"Recovers percent amount of max arousal when resting at rest points"
+			},
+		"GainEnergy":
+			{"type":"int", "tooltip":""
+			},
+		"GainArousal":
+			{"type":"int", "tooltip":""
+			},
+		"Power":
+			{"type":"int", "tooltip":""
+			},
+		"Technique":
+			{"type":"int", "tooltip":""
+			},
+		"Intelligence":
+			{"type":"int", "tooltip":""
+			},
+		"Willpower":
+			{"type":"int", "tooltip":""
+			},
+		"Allure":
+			{"type":"int", "tooltip":""
+			},
+		"Luck":
+			{"type":"int", "tooltip":""
+			},
+		"StunRes":
+			{"type":"int", "tooltip":""
+			},
+		"CharmRes":
+			{"type":"int", "tooltip":""
+			},
+		"AphrodisiacRes":
+			{"type":"int", "tooltip":""
+			},
+		"RestraintsRes":
+			{"type":"int", "tooltip":""
+			},
+		"TranceRes":
+			{"type":"int", "tooltip":""
+			},
+		"ParalysisRes":
+			{"type":"int", "tooltip":""
+			},
+		"SexSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"AssSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"BreastsSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"MouthSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"SeductionSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"MagicSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"PainSensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"HolySensitivity":
+			{"type":"int", "tooltip":""
+			},
+		"UnholySensitivity":
+			{"type":"int", "tooltip":""
+			}
+	},
+	"Fetish Perks":{
+		"IncreaseFetish":
+			{"type":"int", "tooltip":""
+			},
+		"DecreaseFetish":
+			{"type":"int", "tooltip":""
+			}
+		},
+		"Player Specific":{
+		"GiveSensitivityPoints":
+			{"type":"int", "tooltip":"Give player points to reduce sensitivity. Only works if acquired at level up."
+			},
+		"GainSpirit":
+			{"type":"int", "tooltip":"Give the the player spirit. Only works if acquired at level up."
+			},
+		"ResistFinalOrgasm":
+			{"type":"int", "tooltip":"Gives a luck chance plus a base amount to resist their last orgasm."
+			}
+		},
+		"Monster Specific":
+		{
+		"SemenEnergyDrain":
+			{"type":"int", "tooltip":"Player loses given amount of energy on orgasm with monster if in sex, anal, blowjob, tailfuck, or titfuck stance."
+			},
+		"SemenHeal":
+			{"type":"int", "tooltip":"Monster recovers given amount of arousal on player orgasm if in sex, anal, blowjob, tailfuck, or titfuck stance."
+			},
+		"SemenAttackBoost":
+			{"type":"int", "tooltip":"Percent damage alteration if player orgasms in sex, anal, blowjob, tailfuck, or titfuck stance."
+			},
+		"KissingAdverse":
+			{"type":"int","default":"0", "tooltip":"tell the monster to try to get out of the related stance even if they have a skill for it"
+			},
+		"AnalAdverse":
+			{"type":"int","default":"0", "tooltip":"tell the monster to try to get out of the related stance even if they have a skill for it"
+			},
+		"SexAdverse":
+			{"type":"int","default":"0", "tooltip":"tell the monster to try to get out of the related stance even if they have a skill for it"
+			},
+		"NoAnus":
+			{"type":"int","default":"0", "tooltip":"make it impossible for the player to initiate or attack the given stances, excluding grope attacks on chests"
+			},
+		"NoChest":
+			{"type":"int","default":"0", "tooltip":"make it impossible for the player to initiate or attack the given stances, excluding grope attacks on chests"
+			},
+		"NoMouth":
+			{"type":"int","default":"0", "tooltip":"make it impossible for the player to initiate or attack the given stances, excluding grope attacks on chests"
+			},
+		"NoPussy":
+			{"type":"int","default":"0", "tooltip":"make it impossible for the player to initiate or attack the given stances, excluding grope attacks on chests"
+			},
+		"MonstrousBoost":
+			{"type":"int", "tooltip":"Damage boosts by a percent for the related fetish."
+			},
+		"FeetUseBoost":
+			{"type":"int", "tooltip":"Damage boosts by a percent for the related fetish."
+			},
+		"BreastUseBoost":
+			{"type":"int", "tooltip":"Damage boosts by a percent for the related fetish."
+			},
+		"AssUseBoost":
+			{"type":"int", "tooltip":"Damage boosts by a percent for the related fetish."
+			}
+		
+		}
+}

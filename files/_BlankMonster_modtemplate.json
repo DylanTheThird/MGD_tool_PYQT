@@ -1,0 +1,256 @@
+{
+    "name": {
+				"type":"text",
+				"tooltip":"name of monster to display",
+				"options":["addition"]
+			},
+	"IDname": {
+				"type":"text",
+				"tooltip":"The internal name of the monster for use in json files. \nYou will be working with this whenever the game \nasks for which monster you wish to refer to.",
+				"options":["addition"]
+			},
+	"species": {
+				"type":"text",
+				"tooltip":"This currently has no functionality, but is best included for forward-compatibility \nif it is ever introduced to the game. When making a monster, you can refer to existing monster \n.jsons to see what their species is as reference towards what you decide on for yours."
+			},
+    "gender": {
+				"type":"singlelist",
+				"choices":["female","male"]
+				},
+    "description": {
+				"type":"area",
+				"tooltip":"The description of a monster. \nThis is given to the player in a card if the monster has no art, \nor if they disabled it in the choices menu.",
+				"options":["markup"]
+			},
+    "encyclopedia": {
+				"type":"area",
+				"tooltip":"Lore related information given about monsters on the right hand side of the Grimoire during exploration. \nDoesn’t necessarily need to be a generic enemy.The string can be left blank if you don’t intend for the Monster \nto be available by themselves via the monster selection in the Grimoire."
+			},
+    "tags": {
+				"type":"text",
+				"tooltip":"Like species:, it currently has no functionality, \nbut is best included in case of future use. \nAll monsters are currently given a value of  none",
+				"default":"none"
+			},
+    "generic": {
+				"type":"singlelist",
+				"tooltip":"Decides whether system related combat dialogue should refer to the monster as a generic character,\n e.g. slimes, elves, etc. or as a unique character, e.g. Trisha, Perpetua, etc. True-generic",
+				"choices":["True","False"]
+				},
+    "requires": {
+						"type":"multilist",
+						"tooltip":"Name of a required item or items",
+						"options":[],
+						"choices":["currentMod-Items/itemType_Key","main-inc-/Items"]
+						},
+    "skillList": {
+						"type":"multilist",
+						"options":["multi_item","addition"],
+						"tooltip":"The list of Skills the monster can use while in combat. \nRepeating a skill will increase the chances the monster shall randomly call it.",
+						"choices":["currentMod-Skills", "main-inc-/Skills"]
+						},
+    "perks": {
+						"type":"multilist",
+						"options":["multi_item","addition"],
+						"tooltip":"The list of perks the monster can use while in combat.\nRepeating a Perk will apply it twice.",
+						"choices":["currentMod-Perks", "main-inc-/Perks"]
+						},
+	"stats": 			{ "type": "dictionary",
+                          "tooltip": "The stats of the monster in combat.",
+						"options":[],
+						  "fields":{
+									"lvl": { "type":"int",
+									"tooltip":"does effect exp gain modifiers relative to the player’s level, \nso be sure to scale it appropriately to be a rough match for the location\n and general stats of the monster"},
+									"Exp": { "type":"int",
+									"tooltip":"represents the amount of exp given at the end of combat."},
+									"max_hp":{ "type":"int"},
+             						 "max_ep":{ "type":"int",
+									"tooltip":"only pertains towards how quickly the monster can fall asleep. \nThey will recover it in its entirety on orgasm. \nThreshold likes to use 30-50 for normal enemies, 100 for most bosses."},
+             						 "max_sp": { "type":"int"},
+             						 "Power": { "type":"int"},
+             						 "Technique": { "type":"int"},
+            						  "Intelligence": { "type":"int"},
+            						  "Allure": { "type":"int"},
+            						  "Willpower": { "type":"int"},
+            						  "Luck": { "type":"int"}
+			  }},
+  "Fetishes":{
+				"type":"FetishApply",
+				"tooltip":"The list of fetishes a monster may have.\nChoose fetish and optionally apply level",
+				"fields":[
+							{"name":"Fetish name","type":"text","tooltip":"Fetish name. Leave empty if you want to delete"},
+							{"name":"Fetish level","type":"int","tooltip":"provide level of fetish. Can be left empty"}
+						]						
+				},					
+    "BodySensitivity":	{ "type": "dictionary",
+                          "tooltip": "The sensitivities of the monster. \nGoing above 100 makes them more sensitive, \ngoing below makes them less sensitive.",
+						"options":[],
+						  "fields":{
+									"Sex": { "type":"int",
+									"default":100},
+									"Ass": { "type":"int",
+									"default":100},
+									"Breasts":{ "type":"int",
+									"default":100},
+             						 "Mouth":{ "type":"int",
+									"default":100},
+             						 "Seduction": { "type":"int",
+									"default":100},
+             						 "Magic": { "type":"int",
+									"default":100},
+             						 "Pain": { "type":"int",
+									"default":100},
+            						  "Holy": { "type":"int",
+									"default":100},
+            						  "Unholy": { "type":"int",
+									"default":100}
+			  }},
+"resistancesStatusEffects": { "type": "dictionary",
+                          "tooltip": "how much resistance the equipment adds, or removes",
+						"options":[],
+						  "fields":{
+									"Stun": { "type":"int"},
+									"Charm": { "type":"int"},
+									"Aphrodisiac":{ "type":"int"},
+             						 "Restraints":{ "type":"int"},
+             						 "Sleep": { "type":"int"},
+             						 "Trance": { "type":"int"},
+             						 "Paralysis": { "type":"int"},
+            						  "Debuff": { "type":"int"}
+			  }},
+    "moneyDropped": {
+				"type":"int",
+				"tooltip":"dropped eros"
+			},
+			
+    "ItemDropList": 	{
+						"type":"dictionary",
+						"tooltip":"Specify the name of the Item and provide the percent chance the item drops in dropChance. \nRepeating items will increase the potential quantity of times they drop the item.",
+						"optional":"false",
+						"options":["optional","expand","multi_item,addition"],
+						"fields":{
+								    "name": {
+													"type":"multilist",
+													"options":["single_item"],
+													"choices":["currentMod-Items","main-inc-/Items"]
+													},
+								    "dropChance": {"type":"int",
+												"default":-99}
+									}
+						},						
+    "lossScenes": 	{	"type":"functionfield",
+						"tooltip":"scene that will play on loss.\n!Ensure you have one universal use scene with no requirements, else players can potentially cause the game \nto crash from going to a scene that doesn’t exist!",
+						"expand":"true",
+						"fields":{
+						          "NameOfScene": {"type":"text"},
+								  "move": {"type":"multilist",
+								  "options":["single_value"],
+											"tooltip":"skill that concluded the encounter.",
+											"choices":["currentMod-Skills","main-inc-/Skills"]
+											},
+								  "stance": {"type":"multilist",
+								  "options":["single_value"],
+						"tooltip":"the stance that the monster is currently in. \nIt currently can only cover one stance.",
+											"choices":["currentMod-Skills","exampleOption"]},
+								  "includes": {
+												"type":"multilist",
+												"options":["multi_value"],
+												"multi_value":"True",
+												"tooltip":"monsters that are needed for the scene.",
+												"choices":["currentMod-Items/itemType_Key", "main-inc/Monsters"]},
+								  "theScene": {"type":"scenesinglelist",
+												"functional":"true",
+												"choices":[]},
+									"picture":{"type":"filePath",
+				"options":"notmap",
+				"tooltip":"unused but technically functional. \nThis changes the background picture upon starting the scene"}
+                },
+				"options":["addition"]},
+    "combatDialogue": {
+						"type":"combatDialogue",
+						"tooltip":"contains triggers in the form of objects that are checked for \nduring combat to bring a result if it is matched. It extends well beyond just dialogue \nresponses and reactions during combat.",
+						"expand":"true",
+						"options":["expand", "addition"],
+						"fields":{
+								    "lineTrigger": {
+													"type":"multilist",
+													"options":["single_item"],
+													"choices":["Meta-Combat Reactions Counters Stance, Restraints"]
+													},
+									"move": {"type":"multilist",
+											"options":["autonomus"],
+													"choices":["currentMod-Skills", "main-inc-/Skills", "Items", "Monsters"],
+												"tooltip":"a conditional parameter, most commonly used to represent a skill that was used"},
+								    "theText": {"type":"combattext",
+												"tooltip":"contains a list of all possible results of the trigger. \nIt is random, but you can repeat strings to make some more common over others.",
+												"fields":{
+															"theText": {"type":"area"}
+														}
+												}
+									}
+						},
+  "victoryScenes": {	"type":"functionfield",
+						"tooltip":"scene that will play on victory.\n!Ensure you have one universal use scene with no requirements, else players can potentially cause the game \nto crash from going to a scene that doesn’t exist!",
+						"expand":"true",
+						"fields":{
+						          "NameOfScene": {"type":"text"},
+								  "move": {"type":"multilist",
+								  "options":["single_value"],
+											"tooltip":"skill that concluded the encounter.",
+											"choices":["currentMod-Skills","main-inc-/Skills"]
+											},
+								  "stance": {"type":"multilist",
+								  "options":["single_item"],
+						"tooltip":"the stance that the monster is currently in. It currently can only cover one stance.",
+											"choices":["currentMod-Skills","exampleOption"]},
+								  "includes": {
+												"type":"multilist",
+												"options":["multi_value"],
+												"multi_value":"True",
+												"tooltip":"monsters that are needed for the scene.",
+												"choices":["currentMod-Items/itemType_Key", "main-inc/Monsters"]},
+								  "theScene": {"type":"scenesinglelist",
+												"options":["functional"],
+												"functional":"true",
+												"choices":["exampleOption"]},
+								"picture":{"type":"filePath",
+				"options":"notmap",
+				"tooltip":"unused but technically functional. This changes the background picture upon starting the scene"}
+                },
+				"options":["addition"]},			
+	"pictures":		{
+						"type":"dictionary",
+						"tooltip":"array of objects, each representing a functional layer of images for the character. For example, one object for the body layer, and another for the expressions, would be a basic setup",
+						"expand":"false",
+						"optional":"true",
+						"options":["optional","expand","addition"],
+						"fields":{
+								    "Name": {"type":"text","tooltip":"Name of the layer for functions to call upon.."},
+								    "StartOn": {"type":"int","tooltip":"Whether the layer is on by default when the character is first displayed"},
+								    "AlwaysOn": {"type":"int","tooltip":"Whether the layer can never be turned off and instead always get the first image"},
+								    "IsScene": {"type":"int","tooltip":"Whether it is a scene, also ensuring it is centered on the screen, ignoring x and y align"},
+								    "TheBody": {"type":"int","tooltip":"If the layer is the characters base. The x and y align of this layer dictates the x and y of every other layer."},
+								    "Overlay": {"type":"text","tooltip":"Put the name of another layer here to overlay this one on it. Any images with matching name fields will sync up. Check Shizu and Elly for an example."},
+								    "setXalign": {"type":"int","tooltip":"Changes the alignment of the layer on the x axis."},
+								    "setYalign": {"type":"int","tooltip":"Changes the alignment of the layer on the y axis."},
+								    "Images": {
+						"type":"dictionary",
+						"tooltip":"array where all the images for the layer go",
+						"expand":"true",
+						"optional":"true",
+						"options":["optional","expand"],
+						"fields":{
+								    "Name": {"type":"text","tooltip":"Name of the image in the layer to be called in functions."},
+								    "File": {"type":"filePath",
+											"options":"notmap"},
+								    "setXalign": {"type":"int","tooltip":"Changes the alignment of the layer on the x axis."},
+								    "setYalign": {"type":"int","tooltip":"Changes the alignment of the layer on the y axis."}
+								}
+											}
+								}
+						},
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+    }

@@ -1,0 +1,31 @@
+{
+   "Name": {
+				"type":"text",
+				"tooltip":"name of fetish"
+			},
+   "BaseLevel": {
+				"type":"int",
+				"tooltip":"optionally give a default amount of the fetish, regardless if it is selected by the player in the creation menu. Give it a string of 0 if you do not wish to use it.",
+				"default":0
+			},
+	"Type": {
+				"type":"singlelist",
+				"tooltip":"fetish or addiction",
+				"choices":["Fetish","Addiction"]
+			},
+	"CreationOn": {
+				"type":"text",
+				"tooltip":"The provided strings will be the dialogue the Goddess gives in the creation menu when starting a new game. CreationOn being if the player selects the fetish, CreationOff: if the player unselects the fetish.",
+				"default":"placeholder. Required for Addiction to not break the game."
+			},
+	"CreationOff": {
+				"type":"text",
+				"tooltip":"The provided strings will be the dialogue the Goddess gives in the creation menu when starting a new game. CreationOn: being if the player selects the fetish, CreationOff: if the player unselects the fetish."
+			},
+	"optional":{
+				"type":"optional",
+				"choices":[],
+				"tooltip":""
+					}
+	
+}

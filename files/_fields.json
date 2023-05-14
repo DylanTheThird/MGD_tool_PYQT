@@ -1,0 +1,231 @@
+{
+"text field": {
+				"type":"text",
+				"tooltip":"information"
+			},
+			
+	"StatReq": {
+						"type":"PairFields",
+						"tooltip":"stats required for the perk and its value. To Delete, clear field with name",
+						"choices":["file-files/perkTypes.txt"],
+						"fields":[
+									{"name":"PerkType",
+									"type":"text"
+									},
+									{"name":"EffectPower",
+									"type":"int"
+									}
+								]
+						},						
+	"mapIcon - file map": {
+				"type":"filePath",
+				"options":["map"],
+				"tooltip":"will utilize the filepath you provide it to add your location to the map"
+			},
+	"picture": {
+				"type":"filePath",
+				"options":["notmap"],
+				"tooltip":"The background image to be used at the location when exploring and adventuring."
+			},
+			"MusicList": {
+    "type": "filePath",
+	"options":["list", "music"]
+  },
+   "skillList - multilist multiitem": {
+						"type":"multilist",
+						"options":["multi_item"],
+						"tooltip":"The list of Skills the monster can use while in combat. Repeating a skill will increase the chances the monster shall randomly call it.",
+						"choices":["currentMod-Skills", "main-inc-/Skills"]
+						}
+
+"text field": {
+				"type":"text",
+				"tooltip":"information"
+			},
+    "numeric": {"type":"int",
+					"default":0},
+	"area - Description": {
+				"type":"area",
+				"tooltip":"When used for Grimoire card types, it will present the string you provide on the right hand side of in the Grimoire when players are reviewing events and quests for selection.When used for locations in the town card type, providing it with the string 'EnterArea' will make it trigger when the player enters that location.When used for brothel shift card types, using a different shift type will make it count for that shift too. Repeating the same shift type increase its chances."
+			},
+	"CardType - list": {
+		"type":"singlelist",
+		"choices":["Event","Quest","Shopping","Church","Guild","Inn","BarShift","WaiterShift","GloryHoleShift","DayShift","","EndOfDay","TimePassed","StepTaken","EndOfTurn","EndOfCombat","PlayerOrgasm","Dream"]
+		},
+	"skillList - multilist multiitem": {
+						"type":"multilist",
+						"options":["multi_item"],
+						"tooltip":"The list of Skills the monster can use while in combat. Repeating a skill will increase the chances the monster shall randomly call it.",
+						"choices":["currentMod-Skills", "main-inc-/Skills"]
+						},
+   "requires - multilist no options": {
+						"type":"multilist",
+						"options":["unique"],
+						"tooltip":"Name of a required item or items",
+						"choices":["currentMod-Items/itemType_Key", "dir-game/Json/Items/KeyItems"]
+						},
+	"BodySensitivity - dictionary": {
+                          "type": "dictionary",
+						"options":[],
+                          "tooltip": "Only applicable to equipment and loot item types. Alters the given stat for the wielder, can use negative values.",
+						  "fields":{
+								    "Sex": { "type":"int"},
+								    "Ass": {"type":"int"},
+								    "Breasts": {"type":"int"}
+									}
+                        },
+	"Treasure - listdict": {
+						"type":"listDict",
+						"tooltip":"Decides the amount of eros given from chests for each type of treasure rarity. The listed objects and their keys must be included, and each key must provide a value in their string",
+						"fields":{
+								    "Common": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0},
+								    "Uncommon": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0},
+								    "Rare": {"type":"multilist",
+												"options":[],
+									"choices":["currentMod-Items","main-inc-/Items"],
+												"default":0}
+									}
+						},	
+	"ItemDropList - dict multi item": 	{
+						"type":"dictionary",
+						"tooltip":"Specify the name of the Item and provide the percent chance the item drops in dropChance. Repeating items will increase the potential quantity of times they drop the item.",
+						"optional":"false",
+						"options":["optional","expand","multi_item"],
+						"fields":{
+								    "name": {
+													"type":"multilist",
+													"options":["single_item"],
+													"choices":["currentMod-Items","main-inc-/Items"]
+													},
+								    "dropChance": {"type":"int",
+												"default":-99}
+									}
+						},
+    "Speakers": {
+						"type":"dictionary",
+						"tooltip":"gives functionality for the 'Speaks' function, used in dialogue. Each object added is correlated to a number in the 'Speaks' function, starting from 2 for the second object to a maximum of 12 added speakers, ordered by each object added from top to bottom.",
+						"options":["expand", "limit","addition"],
+						"limit":2,
+						"fields":{
+								    "name":
+											{"type":"multilist",
+											"choices":["currentMod-Monsters/name_all", "main-inc/Monsters"],
+											"options":["single_item"]
+											},
+								    "postName": {"type":"text",
+												"tooltip":"will place the data provided in the string after their name, for example, if you wanted to differentiate multiple generic monsters (Elf 1, Elf 2, etc). Can use the 'SetPostName' function to override it for all characters"},
+								    "SpeakerType": {"type":"singlelist",
+												"tooltip":"currently only serves one purpose. If set to '?' will let you put in any name you wish for the 'name' key, regardless if they even have a monster json. Alternatively, the 'Speak' function can be used instead. Otherwise, it can be left with an empty string",
+													"choices":["","?"],
+													"default":""}
+									}
+						},
+	"MonsterGroups": {
+						"type":"monstergroups",
+						"tooltip":"Decides the possible monsters formations",
+						"choices":["currentElement-RandomMonsters","main-inc-generic/Monsters"],
+						"options":["expand"]
+						},
+	"Deck": {
+						"type":"deck",
+						"tooltip":"Specify the order of encounters and events the player will face upon starting the adventure",
+				"options":[]
+						},
+	 "FetishesApply":{
+				"type":"FetishApply",
+				"tooltip":"The list of fetishes a monster may have.Choose fetish and optionally apply level",
+				"fields":[
+							{"name":"Fetish","type":"text","tooltip":"Fetish name. Leave empty if you want to delete"},
+							{"name":"level","type":"int","tooltip":"provide level of fetish. Can be left empty"}
+						]						
+				},
+
+{
+	"useOutcome - area with function": {
+				"type":"area",
+				"options":["function"],
+				"tooltip":"same as skill outcome, what happen on use. Can use the text functions."
+			},
+    "EventText": {
+						"type":"functionfield",
+						"tooltip":"series of scenes that will make up your event.",
+						"options":["expand"],
+						"fields":{
+						          "NameOfScene": {"type":"text"},
+								  "theScene": {"type":"scenesinglelist",
+									"options":["function"],
+												"choices":["exampleOption"]
+												}
+								  }
+                }
+	"mapIcon - file map": {
+				"type":"filePath",
+				"options":["map"],
+				"tooltip":"will utilize the filepath you provide it to add your location to the map"
+			}
+	"combatDialogue": {
+						"type":"combatDialogue",
+						"tooltip":"contains triggers in the form of objects that are checked for during combat to bring a result if it is matched. It extends well beyond just dialogue responses and reactions during combat.",
+						"expand":"true",
+						"options":["expand"],
+						"fields":{
+								    "lineTrigger": {
+													"type":"multilist",
+													"options":["single_item"],
+													"choices":["Meta-Combat Reactions Counters Stance, Restraints"]
+													},
+									"move": {"type":"multilist",
+											"options":["autonomus"],
+													"choices":["currentMod-Skills", "main-inc-/Skills", "Items", "Monsters"],
+												"tooltip":"a conditional parameter, most commonly used to represent a skill that was used"},
+								    "theText": {"type":"combattext",
+												"tooltip":"contains a list of all possible results of the trigger. It is random, but you can repeat strings to make some more common over others.",
+												"fields":{
+															"theText": {"type":"area"}
+														}
+												}
+									}
+						},
+	"pictures":		{
+						"type":"dictionary",
+						"tooltip":"array of objects, each representing a functional layer of images for the character. For example, one object for the body layer, and another for the expressions, would be a basic setup",
+						"expand":"false",
+						"optional":"true",
+						"options":["optional","expand"],
+						"fields":{
+								    "Name": {"type":"text","tooltip":"Name of the layer for functions to call upon.."},
+								    "StartOn": {"type":"int","tooltip":"Whether the layer is on by default when the character is first displayed"},
+								    "AlwaysOn": {"type":"int","tooltip":"Whether the layer can never be turned off and instead always get the first image"},
+								    "IsScene": {"type":"int","tooltip":"Whether it is a scene, also ensuring it is centered on the screen, ignoring x and y align"},
+								    "TheBody": {"type":"int","tooltip":"If the layer is the characters base. The x and y align of this layer dictates the x and y of every other layer."},
+								    "Overlay": {"type":"text","tooltip":"Put the name of another layer here to overlay this one on it. Any images with matching name fields will sync up. Check Shizu and Elly for an example."},
+								    "setXalign": {"type":"int","tooltip":"Changes the alignment of the layer on the x axis."},
+								    "setYalign": {"type":"int","tooltip":"Changes the alignment of the layer on the y axis."},
+								    "Images": {
+						"type":"dictionary",
+						"tooltip":"array where all the images for the layer go",
+						"expand":"true",
+						"optional":"true",
+						"options":["optional","expand"],
+						"fields":{
+								    "Name": {"type":"text","tooltip":"Name of the image in the layer to be called in functions."},
+								    "File": {"type":"filePath",
+											"options":"notmap"},
+								    "setXalign": {"type":"int","tooltip":"Changes the alignment of the layer on the x axis."},
+								    "setYalign": {"type":"int","tooltip":"Changes the alignment of the layer on the y axis."}
+								}
+											}
+								}
+						},
+	"optional":{
+				"type":"optional",
+				"choices":["global"],
+				"tooltip":""
+					}
+}
