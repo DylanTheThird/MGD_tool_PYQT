@@ -1322,6 +1322,7 @@ class FunctionField(SimpleFields.ElementsList):
         """each type of scene will have its own frame. in case there is a scene with different setup. 
             Then I just hide or show specific frame instead of all fields"""
         self.field_frame = {}
+        self.markup_win = None
         self.label = SimpleFields.CustomLabel(None, 'Scenes')
         self.layout.insertWidget(0, self.label, alignment=QtCore.Qt.AlignCenter)
         # self.button_AddData = SimpleFields.CustomButton(None, 'Add Scene')
@@ -1439,7 +1440,8 @@ class FunctionField(SimpleFields.ElementsList):
         # Window_txt_markup.SceneWindow(source_field=self, scene_data_to_load=scene_text, event_type=root_scene_setup_name,
         #                               master=self, fields_data=self.field_setup[root_scene_setup_name])
         # TODO here could be memory leak. when closing markup it might need to somehow remove this variable too
-        self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True, current_scene_list=self.scene_data_container)
+        if not self.markup_win:
+            self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True, current_scene_list=self.scene_data_container)
         self.markup_win.show()
     # if i figure out how to use this then ill uncomment it
     # def delete_scene(self):

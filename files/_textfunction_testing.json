@@ -110,6 +110,128 @@
 												"1":{"type":"multilist",
 												"options":[],
 												"choices":["currentmod-Skills", "main/Skills"]}}
+			},
+			{				"title": "ChangeImageLayer",
+				"explanation": "Changes a specific layer of art for the specified character in the scene, works almost the same as above. If you set the image name to '', it will stop displaying the layer. Excluding layers with 'alwaysOn': enabled. Instead of a number, you can instead designate a Monster's nameID. It will change their layer regardless of what position they are",
+				"options":["special"],
+				"steps":"4",
+				"structure":{
+							"Layer Type":{"type":"singlelist",
+												"choices":[]},
+							"Speaker":{"type":"combobox",
+										"choices":[]},
+							"Image":{"type":"singlelist",
+												"choices":[]}
+							}
+			},
+			{
+								"title": "AnimateImageLayer",
+				"explanation": "Changes a specific layer of art for the specified character in the scene, works almost the same as above. If you set the image name to '', it will stop displaying the layer. Excluding layers with 'alwaysOn': enabled. Instead of a number, you can instead designate a Monster's nameID. It will change their layer regardless of what position they are",
+				"options":["special"],
+				"steps":"EndLoop",
+				"structure":{
+							"Channel":{"type":"singlelist",
+												"choices":["Animation","Animatione2","Animation3"]},
+							"Layer Type":{"type":"singlelist",
+												"choices":[]},
+							"Speaker":{"type":"combobox",
+										"choices":[]},
+							"Time":{"type":"int"},
+							"Picture List":{
+									"type": "filePath",
+									"options":["list", "notmap"]}
+							}
+			},
+			{				"title": "StatCheck",
+				"explanation": "Rolls a d20 with the specified player stat, against the given number. If the roll is higher than the given opposed check number, it jumps the given scene. If it fails, it will go to the scene specified after 'Fail'. Note you can also check for 'Temptation', as a specialized stat check based on Willpower, Allure, and Intelligence. See Stat Reference.",
+				"options":["special", "subfunction"],
+				"steps":"6",
+				"structure":{
+							"Stats":{"type":"singlelist",
+								"choices":["game-core stats-simple"]},
+							"2":{"type":"int"},
+							"Success Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]},
+							"4":{"type":"text", "default":"Fail"},
+							"Fail Scene":{"type":"multilist",
+								"options":["single_item", "search"],
+								"choices":["Scene"]}
+								},
+				"subfunction":
+				{"position":1,
+				"type":"ChangeStatCheckDifficulty",
+				 "structure":{
+							"IfPlayerHasStatusEffect":{
+								"Status effect":{"type":"singlelist",
+								"choices":["file-files/itemStatusEffects.txt"]},
+								"Modifier":{"type":"int"}},
+							"IfHasPerk":
+								{"Perks":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["main/Perks"]},
+								"Modifier":{"type":"int"}},
+							"IfHasFetish":
+								{"Fetishes":{"type":"singlelist",
+													"choices":["Fetishes"]},
+								"Modifier":{"type":"int"}},
+							"IfHasFetishEqualOrGreater":
+								{"Fetishes":{"type":"singlelist",
+													"choices":["Fetishes"]},
+								"Amount":{"type":"int"},
+								"Modifier":{"type":"int"}},
+							"IfVirilityEqualOrGreater":
+								{"Amount":{"type":"int"},
+								"Modifier":{"type":"int"}},
+							"IfEncounterSizeGreaterOrEqualTo":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfEncounterSizeLessOrEqualTo":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfProgressEqualsOrGreater":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"GetAnEventsProgressThenIfEqualsOrGreater":
+							{"Amount":{"type":"int"},
+							"Modifier":{"type":"int"}},
+							"IfChoice":
+							{"choice":{"type":"choiceField"},							
+							"Modifier":{"type":"int"}},
+							"GetEventAndIfChoice":
+							{"choice":{"type":"choiceField"},							
+							"Modifier":{"type":"int"}}
+							}
+				}
+				},
+				{				"title": "PlayMotionEffectCustom",
+				"explanation": "Plays a custom motion effect",
+				"options":["special"],
+				"steps": "check",
+									"structure":{
+												"Effect":{"type":"singlelist",
+													"choices":["Bounce", "Sway", "Pump", "Ride","Vibrate", "blank"]},
+												"Target":{"type":"singlelist",
+													"choices":["Characters", "Character", "Bodypart"]},
+												"Speed":{"type":"int", "default":"1"},
+												"Distance":{"type":"int", "default":"1"}
+												}
+			},
+			{				"title": "ApplyStance",
+				"explanation": "Applies the stance to the player and the currently focused monster. Be sure to have a check for stance before this so you don't reapply the stance a second time. Or more.",
+				"options":["special"],
+				"steps": "2",
+									"structure":{
+												"Stance":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Stances"]}
+												}
+			},
+			{				"title": "CombatEncounter",
+				"explanation": "Starts a combat encounter with the specified monster(s), returns to the current scene after the combat IF the player wins. Supports up to 12 enemies.",
+				"options":["special","limit-12"],
+				"steps": "StartCombat",
+				"structure":{}
 			}
 												],
 				"change monster":[

@@ -74,13 +74,6 @@ class CustomButton(QtWidgets.QPushButton):
     def update_label(self, new_label):
         self.setText(new_label)
 
-    def change_position(self, position):
-        if position == 'center':
-            self.setAlignment(QtCore.Qt.AlignCenter)
-        elif position == 'left':
-            self.setAlignment(QtCore.Qt.AlignLeft)
-        elif position == 'right':
-            self.setAlignment(QtCore.Qt.AlignRight)
 
 
 class SimpleEntry(QtWidgets.QLineEdit):
@@ -507,9 +500,10 @@ class SingleList(QtWidgets.QComboBox):
         else:
             return self.currentText()
 
-    def set_val(self, value):
+    def set_val(self, value, sort=True):
         if isinstance(value, list):
-            value.sort()
+            if sort:
+                value.sort()
             if len(value) >= 1:
                 self.list = value
                 self.addItems(value)
@@ -789,6 +783,7 @@ class ElementsList(QtWidgets.QTreeView):
             self.flag_search = False
         self.layout.addWidget(self)
         self.layout.setAlignment(self, QtCore.Qt.AlignCenter)
+        self.layout.addStretch(1)
 
 
         # self.treeview = QtWidgets.QTreeView(parent=masterWun)
@@ -871,7 +866,7 @@ class ElementsList(QtWidgets.QTreeView):
         #              }, 'val 2']
         # self.add_data(data=temp_data)
 
-        self.setMinimumSize(200, 150)
+        self.setMinimumSize(100, 150)
         self.setMaximumSize(200, 350)
         self.model_index = QtCore.QModelIndex()
         self.back_up_deleted = []
@@ -898,6 +893,16 @@ class ElementsList(QtWidgets.QTreeView):
         else:
             GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
         super().focusInEvent(event)
+
+    def hide(self):
+        if self.flag_search:
+            self.entry_search.hide()
+        super().hide()
+    def show(self):
+        if self.flag_search:
+            self.entry_search.show()
+        super().show()
+
 
     def add_data(self, data=[], node=None, update_flag=False, insert_row=False):
         if update_flag:

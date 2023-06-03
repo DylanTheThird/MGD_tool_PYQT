@@ -48,6 +48,12 @@ class area_mark_up(SimpleFields.AreaEntry):
     def insert_text(self, text):
         """insert value where cursor is."""
         self.insertPlainText(text)
+    def mark_text(self, beg, end):
+        cursor = self.textCursor()
+        new_text = beg + cursor.selectedText() + end
+        self.insertPlainText(new_text)
+        # print("Selection start: %d end: %d" %
+        #       (cursor.selectionStart(), cursor.selectionEnd()))
 
 
 class MarkUp_Window(QtWidgets.QWidget):
@@ -55,6 +61,7 @@ class MarkUp_Window(QtWidgets.QWidget):
         super().__init__()
         if current_scene_list:
             self.current_scenes = current_scene_list
+            self.functions_list = list(GlobalVariables.Glob_Var.functions_data.keys())
         else:
             self.current_scenes = None
         """target field - either treeview for scenes or text field for some fields that allow markups
@@ -71,25 +78,31 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.setLayout(self.v_main_layout)
 
 
-        h_layout_buttons = QtWidgets.QHBoxLayout()
-        h_layout_buttons.setObjectName("button_layout")
+        v_layout_buttons = QtWidgets.QHBoxLayout()
+        v_layout_buttons.setObjectName("button_layout")
+        self.mark_up_buttons_background_player = QtWidgets.QWidget()
+        self.mark_up_buttons_background_text = QtWidgets.QWidget()
+        v_layout_buttons.addWidget(self.mark_up_buttons_background_player)
+        v_layout_buttons.addWidget(self.mark_up_buttons_background_text)
+        self.prepare_markup_buttons()
         """all the buttons for markups here"""
-        placeholder_buttons = SimpleFields.CustomButton(self, 'placeholder width')
-        # placeholder_buttons.clicked.connect(lambda: self.change_size(1))
-        placeholder_buttons.clicked.connect(self.test)
-        placeholder_buttons2 = SimpleFields.CustomButton(self, 'placeholder2 heigh')
-        placeholder_buttons2.clicked.connect(lambda: self.change_size(2))
-        h_layout_buttons.addWidget(placeholder_buttons)
-        h_layout_buttons.addWidget(placeholder_buttons2)
-        self.v_main_layout.addLayout(h_layout_buttons)
+        # placeholder_buttons = SimpleFields.CustomButton(self, 'placeholder width')
+        # # placeholder_buttons.clicked.connect(lambda: self.change_size(1))
+        # placeholder_buttons.clicked.connect(self.test)
+        # placeholder_buttons2 = SimpleFields.CustomButton(self, 'placeholder2 heigh')
+        # placeholder_buttons2.clicked.connect(lambda: self.change_size(2))
+        # h_layout_buttons.addWidget(placeholder_buttons)
+        # h_layout_buttons.addWidget(placeholder_buttons2)
+        self.v_main_layout.addLayout(v_layout_buttons)
+        # self.v_main_layout.addWidget(self.mark_up_buttons_widget_background)
 
         """main data. Area text for input and treeview for display on the left
         checkboxes, treeview for functions and functions creation on right"""
         """first, vertical, contains area text and treeview"""
         # v_layout_main_input = QtWidgets.QVBoxLayout()
         # v_layout_main_input.setObjectName("main_input_layout")
-        self.text_test = SimpleFields.SimpleEntry(self)
-        self.text_test.set_up_widget(self.v_main_layout)
+        # self.text_test = SimpleFields.SimpleEntry(self)
+        # self.text_test.set_up_widget(self.v_main_layout)
         # self.area_input = SimpleFields.AreaEntry(self, edit=False)
         self.area_input = area_mark_up()
         self.area_input.setMaximumSize(800, 100)
@@ -98,15 +111,49 @@ class MarkUp_Window(QtWidgets.QWidget):
         """on the left is only treeview for data from input.
         on the right is top - 2 checkboxes, then below area with explanation, treeview with functions and 2 buttons"""
         h_layout_display_f_gui = QtWidgets.QHBoxLayout()
+
         # v_layout_left_side = QtWidgets.QVBoxLayout()
         # h_layout_display_f_gui.addLayout(v_layout_left_side)
         if scenes_flag:
+            """first vertical to put button at the top"""
+            v_layout_display = QtWidgets.QVBoxLayout()
+            self.button_display_scenes = SimpleFields.CustomButton(None, 'Scenes')
+            self.button_display_scenes.setMaximumWidth(100)
+            self.button_display_scenes.clicked.connect(self.display_scene_list)
+            v_layout_display.addWidget(self.button_display_scenes)
+            """now add horizontal, to put scene display and text display next to each other.
+            Also, so I dont have to resize them each time, put it on a background widget"""
+            h_layout_display = QtWidgets.QHBoxLayout()
+            self.display_scene_widget_background = QtWidgets.QWidget()
+            # self.display_scene_widget_background.setMaximumWidth(400)
+            self.display_scene_widget_background.setFixedWidth(400)
+            # sp = self.display_scene_widget_background.sizePolicy()
+            # sp.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
+            # self.display_scene_widget_background.setSizePolicy(sp)
+            self.display_scene_widget_background.setLayout(h_layout_display)
+            v_layout_display.addWidget(self.display_scene_widget_background)
+            # v_layout_display.addLayout(h_layout_display)
+            self.scene_list = SimpleFields.ElementsList(self, search_field=True)
+            temp = {}
+            if self.current_scenes:
+                for event_type in self.current_scenes:
+                    templist = []
+                    for scene_name in self.current_scenes[event_type]:
+                        templist.append(scene_name)
+                    temp[event_type] = templist
+                self.scene_list.add_data(temp)
+            self.scene_list.set_up_widget(h_layout_display)
+            self.scene_list.hide()
+            self.scene_list.doubleClicked.connect(self.load_scene_to_display)
             self.display_data = SimpleFields.ElementsList(self, "Event text")
+            self.display_data.setMaximumSize(600, 350)
             self.display_data.parent_tag = 'function'
-            self.display_data.setMinimumSize(400, 300)
-            self.display_data.set_up_widget(h_layout_display_f_gui)
+            # self.display_data.setMinimumSize(200, 300)
+            self.display_data.set_up_widget(h_layout_display)
             self.display_data.doubleClicked.connect(self.update_row)
+            h_layout_display_f_gui.addLayout(v_layout_display)
         else:
+            self.scene_list = None
             self.display_data = None
         v_layout_right_side = QtWidgets.QVBoxLayout()
         h_layout_display_f_gui.addLayout(v_layout_right_side)
@@ -174,6 +221,232 @@ class MarkUp_Window(QtWidgets.QWidget):
         if scenes_flag:
             self.area_input.return_target = self.display_data
 
+    def prepare_markup_buttons(self):
+        v_lay_main = QtWidgets.QVBoxLayout()
+        label_chara = SimpleFields.CustomLabel(None, 'CHARACTER')
+        v_lay_main.addWidget(label_chara)
+
+        h_lay_first = QtWidgets.QHBoxLayout()
+        self.l_player_name = SimpleFields.SingleList(edit=False)
+        self.l_player_name.reload_options(['Player Name', 'normal', 'shout', 'initials'])
+        self.l_player_name.currentTextChanged.connect(self.player_name)
+        h_lay_first.addWidget(self.l_player_name)
+
+        b_player_money = SimpleFields.CustomButton(None, 'Player Money')
+        b_player_money.clicked.connect(lambda: self.area_input.insert_text('{PlayerMoney}'))
+        h_lay_first.addWidget(b_player_money)
+        b_player_progress = SimpleFields.CustomButton(None, 'Player Progress')
+        b_player_progress.clicked.connect(lambda: self.area_input.insert_text('{ProgressDisplay}'))
+        h_lay_first.addWidget(b_player_progress)
+        b_player_choice = SimpleFields.CustomButton(None, 'Player Choice')
+        b_player_choice.clicked.connect(lambda: self.area_input.insert_text('{DisplayPlayerChoice}'))
+        h_lay_first.addWidget(b_player_choice, alignment=QtCore.Qt.AlignRight)
+        b_player_orgasm = SimpleFields.CustomButton(None, 'Player Orgasm')
+        b_player_orgasm.setToolTip('displays the orgasm line for the player or monster respectively.\n'
+                                   ' To be used with OnPlayerOrgasm and OnOrgasm lineTriggers utilizing events respectively. \n'
+                                   'If using it in a loop, use the EmptySpiritCounter function after the line \n'
+                                   'to empty out how much spirit is counted')
+        b_player_orgasm.clicked.connect(lambda: self.area_input.insert_text('{PlayerOrgasmLine}'))
+        h_lay_first.addWidget(b_player_orgasm, alignment=QtCore.Qt.AlignRight)
+        v_lay_main.addLayout(h_lay_first)
+
+        h_lay_second = QtWidgets.QHBoxLayout()
+        self.l_damage_target = SimpleFields.SingleList(edit=False)
+        self.l_damage_target.reload_options(['Damage Target', 'player', 'enemy', 'final'])
+        self.l_damage_target.currentTextChanged.connect(self.damage_target)
+        h_lay_second.addWidget(self.l_damage_target)
+
+        self.l_mark_1 = SimpleFields.SingleList(edit=False)
+        self.l_mark_1.reload_options(['Attacker', 'YouOrMonsterName', 'HeOrShe', 'HisOrHer', 'HimOrHer'])
+        self.l_mark_1.currentTextChanged.connect(lambda: self.mark(self.l_mark_1))
+        h_lay_second.addWidget(self.l_mark_1)
+        self.l_mark_2 = SimpleFields.SingleList(edit=False)
+        # self.l_mark_2.reload_options(['ATarget', 'YouOrMonsterName', 'HeOrShe', 'HisOrHer', 'HimOrHer'])
+        self.l_mark_2.set_val(['Target', 'YouOrMonsterName', 'HeOrShe', 'HisOrHer', 'HimOrHer'], sort=False)
+        self.l_mark_2.currentTextChanged.connect(lambda: self.mark(self.l_mark_2))
+        h_lay_second.addWidget(self.l_mark_2)
+        b_m_choice = SimpleFields.CustomButton(None, 'Monster Choice')
+        b_m_choice.clicked.connect(lambda: self.area_input.insert_text('{DisplayMonsterChoice}'))
+        h_lay_second.addWidget(b_m_choice, alignment=QtCore.Qt.AlignRight)
+        b_m_orgasm = SimpleFields.CustomButton(None, 'Monster Orgasm')
+        b_m_orgasm.clicked.connect(lambda: self.area_input.insert_text('{MonsterOrgasmLine}'))
+        h_lay_second.addWidget(b_m_orgasm, alignment=QtCore.Qt.AlignRight)
+        v_lay_main.addLayout(h_lay_second)
+
+        """second part"""
+
+        label_text = SimpleFields.CustomLabel(None, 'TEXT')
+        v_lay_main.addWidget(label_text)
+
+        h_lay_3 = QtWidgets.QHBoxLayout()
+
+
+        b_colour_text = SimpleFields.CustomButton(None, 'C TEXT')
+        h_lay_3.addWidget(b_colour_text)
+        b_colour_example1 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        h_lay_3.addWidget(b_colour_example1)
+        b_colour_text.clicked.connect(lambda: self.show_color_picker(b_colour_example1))
+        b_colour_example1.clicked.connect(lambda: self.colour_text(b_colour_example1))
+        b_colour_outline = SimpleFields.CustomButton(None, 'C OUTLINE')
+        h_lay_3.addWidget(b_colour_outline)
+        b_colour_example2 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        h_lay_3.addWidget(b_colour_example2)
+        b_colour_outline.clicked.connect(lambda: self.show_color_picker(b_colour_example2))
+        b_colour_example2.clicked.connect(lambda: self.colour_text(b_colour_example2))
+
+
+        b_delay_input = SimpleFields.CustomButton(None, 'Delay until input')
+        b_delay_input.setToolTip('will delay the displayed text till user input is given to signal it to continue.\n'
+                                 ' It can be given an integer value via {w=int} to make it wait the given\n'
+                                 ' integer number in seconds, though it can continue early through user input\n'
+                                 ' before the given time has elapsed.')
+        # TODO
+        b_delay_input.clicked.connect(lambda: self.area_input.insert_text('{w}'))
+        h_lay_3.addWidget(b_delay_input)
+        b_delay_nline = SimpleFields.CustomButton(None, 'Delay until new line')
+        b_delay_nline.setToolTip('same as input but inserts line breaks for every time it is called')
+        b_delay_nline.clicked.connect(lambda: self.area_input.insert_text('{}'))
+        h_lay_3.addWidget(b_delay_nline)
+        b_get_over = SimpleFields.CustomButton(None, 'Get over here')
+        b_get_over.setToolTip('placed anywhere in the string causes the displayed text to instantly move towards the markup declaration. \n'
+                              'Given MGD by default has all text display instantly, this typically won’t be too useful unless combined with the {cps}')
+        b_get_over.clicked.connect(lambda: self.area_input.insert_text('{nw}'))
+        h_lay_3.addWidget(b_get_over)
+        v_lay_main.addLayout(h_lay_3)
+
+        h_lay_4 = QtWidgets.QHBoxLayout()
+        b_text_speed = SimpleFields.CustomButton(None, 'Game text speed')
+        b_text_speed.setToolTip('overrides the games default text speed when displaying text, \n'
+                                 'standing for characters per second. Useful given the game by default\n'
+                                 ' has all text display instantly.')
+        b_text_speed.clicked.connect(lambda: self.area_input.insert_text('{nw}'))
+        h_lay_4.addWidget(b_text_speed)
+        b_after_end = SimpleFields.CustomButton(None, 'Move after End')
+        b_after_end.setToolTip('placed anywhere in the string causes the displayed text to automatically\n'
+                               'move to the next screen once the final character has been displayed. \n'
+                               'Given MGD by default has all text display instantly, this typically\n'
+                               'won’t be too useful unless combined with the {cps}.')
+        b_after_end.clicked.connect(lambda: self.area_input.insert_text('{}'))
+        h_lay_4.addWidget(b_after_end)
+        b_remove_after = SimpleFields.CustomButton(None, 'Remove After')
+        b_remove_after.setToolTip('exists specifically for technical use with OnPlayerOrgasm,\n'
+                                  'ensuring any text in a string after it is called is removed')
+        b_remove_after.clicked.connect(lambda: self.area_input.insert_text('|c|'))
+        h_lay_4.addWidget(b_remove_after)
+        b_split_text = SimpleFields.CustomButton(None, 'Split Text')
+        b_split_text.setToolTip('splits the string, causing everything after the |n|, to display on the next screen of'
+                                ' text. Useful for long attack descriptions or player orgasm lines')
+        b_split_text.clicked.connect(lambda: self.area_input.insert_text('|c|'))
+        h_lay_4.addWidget(b_split_text)
+        b_vSpace = SimpleFields.CustomButton(None, 'V Space')
+        b_vSpace.setToolTip('insert vertical space.')
+        b_vSpace.clicked.connect(lambda: self.area_input.insert_text('{vspace=}'))
+        h_lay_4.addWidget(b_vSpace)
+        b_hSpace = SimpleFields.CustomButton(None, 'V Space')
+        b_hSpace.setToolTip('insert horizontal space.')
+        b_hSpace.clicked.connect(lambda: self.area_input.insert_text('{space=}'))
+        h_lay_4.addWidget(b_hSpace)
+        v_lay_main.addLayout(h_lay_4)
+
+        h_lay_5 = QtWidgets.QHBoxLayout()
+        b_sex_adjective = SimpleFields.CustomButton(None, 'Sex Adjective')
+        b_sex_adjective.setToolTip('gets an adjective from the below bank, Vaginal or Anal based depending on stance.\n'
+                                   'Note the space after each word. The empty string means it can roll a blank.\n'
+                                   'Sex: [“”, “wet “, “tight “, “wet “, “tight “, “receptive “, “warm “]\n'
+                                   'Anal: [“”, “tight “, “tight “, “curved “, “rounded “, “receptive “]')
+        b_sex_adjective.clicked.connect(lambda: self.area_input.insert_text('{SexAdjective}'))
+        h_lay_5.addWidget(b_sex_adjective)
+        b_sex_word = SimpleFields.CustomButton(None, 'Sex Word')
+        b_sex_word.setToolTip('gets a sex word from the bank, Vaginal or Anal based depending on stance.\n'
+                                                      ' It will pick a string randomly from an array, depending on either sex or anal stance\n'
+                                                      'Sex: [“pussy”, “pussy”, “slit”, “honeypot”]\n'
+                                                      'Anal: [“ass”, “ass”, “rear”, “behind”, “derriere”]')
+        b_sex_word.clicked.connect(lambda: self.area_input.insert_text('{SexWords}'))
+        h_lay_5.addWidget(b_sex_word)
+        simple_mark_ups = {'(Underline)': {'style': '', 'beg': '{u}', 'end': '{/u}', 'tooltip': ''},
+                           '(Italic)': {'style': '', 'beg': '{i}', 'end': '{/i}', 'tooltip': ''},
+                           '(Bold)': {'style': 'QPushButton { font-weight: bold; }', 'beg': '{b}', 'end': '{/b}', 'tooltip':''},
+                           '(Strike)': {'style': '', 'beg': '{s}', 'end': '{/s}', 'tooltip': ''},
+                           '(Plain)': {'style': '', 'beg': '{plain}', 'end': '{/plain}', 'tooltip': ''},
+                           '(Size)': {'style': '', 'beg': '{size=}', 'end': '{/size}', 'tooltip':'will make the following text size equal to the given integer value after = in the markup.\n'
+                                                      'You can also make it relatively bigger or smaller compared to its previous state based\n'
+                                                      ' on the given value through the use of either +int or -int.\n'
+                                                      ' You can layer them inside one another, but note {/size} will not end all instances of {size=int}, only one instance at a time.'}}
+        last_row_button = []
+        for marks in simple_mark_ups:
+            # b_simple_markup = SimpleFields.CustomButton(None, marks)
+            b_simple_markup = QtWidgets.QPushButton(text=marks)
+            if simple_mark_ups[marks]['tooltip']:
+                b_simple_markup.setToolTip(simple_mark_ups[marks]['tooltip'])
+            if simple_mark_ups[marks]['style']:
+                b_simple_markup.setStyleSheet(simple_mark_ups[marks]['style'])
+            # b_simple_markup.clicked.connect(lambda: self.area_input.mark_text(marks, simple_mark_ups[marks]['end']))
+            # b_simple_markup.clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups[marks]['beg'], simple_mark_ups[marks]['end']))
+            h_lay_5.addWidget(b_simple_markup)
+            last_row_button.append(b_simple_markup)
+        custom_font = last_row_button[3].font()
+        custom_font.setStrikeOut(True)
+        last_row_button[3].setFont(custom_font)
+        custom_font = last_row_button[1].font()
+        custom_font.setItalic(True)
+        last_row_button[1].setFont(custom_font)
+        custom_font = last_row_button[0].font()
+        custom_font.setUnderline(True)
+        last_row_button[0].setFont(custom_font)
+
+        last_row_button[0].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['U']['beg'], simple_mark_ups['U']['end']))
+        last_row_button[1].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['I']['beg'], simple_mark_ups['I']['end']))
+        last_row_button[2].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['B']['beg'], simple_mark_ups['B']['end']))
+        last_row_button[3].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['S']['beg'], simple_mark_ups['S']['end']))
+        last_row_button[4].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['P']['beg'], simple_mark_ups['P']['end']))
+        last_row_button[5].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['Size']['beg'], simple_mark_ups['Size']['end']))
+
+
+        v_lay_main.addLayout(h_lay_5)
+
+        self.mark_up_buttons_background_player.setLayout(v_lay_main)
+        return
+
+    def put_text(self, val):
+        self.area_input.insert_text(val)
+
+    def show_color_picker(self, field_to_colour):
+        # Create a color dialog
+        color_dialog = QtWidgets.QColorDialog(self)
+
+        # Get the selected color from the dialog
+        color = color_dialog.getColor()
+
+        if color.isValid():
+            # Update the button's background color
+            field_to_colour.setStyleSheet("background-color: " + color.name() + ";")
+    def colour_text(self, field_with_colour):
+        return
+    #     TODO
+    def player_name(self, value):
+        if value != 'Player Name':
+            if value == 'normal':
+                self.area_input.insert_text('{ThePlayerName}')
+            if value == 'shout':
+                self.area_input.insert_text('{THEPLAYERNAME}')
+            if value == 'initials':
+                self.area_input.insert_text('{TPN}')
+        self.l_player_name.setCurrentIndex(0)
+        self.area_input.setFocus()
+    def damage_target(self, value):
+        if value != 'Damage Target':
+            if value == 'player':
+                self.area_input.insert_text('{DamageToPlayer}')
+            if value == 'enemy':
+                self.area_input.insert_text('{DamageToEnemy}')
+            if value == 'final':
+                self.area_input.insert_text('{FinalDamage}')
+        self.l_damage_target.setCurrentIndex(0)
+        self.area_input.setFocus()
+    def mark(self, field):
+        if field.currentIndex() > 0:
+            self.area_input.insert_text('{'+field.itemText(0)+field.get_val()+'}')
+            field.setCurrentIndex(0)
     def on_checkbox_toggled(self, checkbox, checked):
         if checked:
             for button in self.button_group.buttons():
@@ -186,6 +459,12 @@ class MarkUp_Window(QtWidgets.QWidget):
             else:
                 self.functions.target_type = [0, self.area_input]
 
+    def display_scene_list(self):
+        if self.scene_list.isVisible():
+            self.scene_list.hide()
+        else:
+            self.scene_list.show()
+        return
 
     def change_size(self, param):
         self.adjustSize()
@@ -206,6 +485,30 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.area_input.set_val(selected_item.text())
             self.area_input.flag_update = True
 
+    def load_scene_to_display(self):
+        """user double cliked on scene in scene lookup. if its parent, clear display, if not, load scene"""
+        self.display_data.clear_tree()
+        item_data = self.scene_list.selected_element()
+        scene_data = []
+        if item_data.parent():
+            for scene_type in self.current_scenes:
+                for scene in self.current_scenes[scene_type]:
+                    if scene == item_data.text():
+                        scene_data = self.current_scenes[scene_type][scene]['theScene']
+                        break
+                if scene_data:
+                    break
+        else:
+            self.display_scene_list()
+            return
+        """now go over scene data, compare each row with functions. """
+        self.display_data.add_data(scene_data)
+        # for scene_row in scene_data:
+        #     temp = scene_row.split(' ')
+        #     if temp[0] in self.functions_list:
+        #         # TODO finish this
+        #         print('found functions')
+        #         print(scene_row)
     def test(self):
         temp = self.area_input.textCursor()
         print(temp.selectionStart())

@@ -887,8 +887,17 @@ def find_current_displayed_characters(event_type=None, current_scene_field=None)
 
 def FindMonsterSkills(girl_id, data_deep=None, save_data=None):
     if girl_id in Mod_Var.mod_data['Monsters']:
-        return Mod_Var.mod_data['Monsters'][girl_id]['skillList']
-    return Glob_Var.main_game_data['Girls'][girl_id]['skillList']
+        skill_list = Mod_Var.mod_data['Monsters'][girl_id]['skillList']
+    else:
+        skill_list = Glob_Var.main_game_data['Girls'][girl_id]['skillList']
+    return_list = []
+    for skill in skill_list:
+        if skill not in return_list:
+            return_list.append(skill)
+    return return_list
+    # if girl_id in Mod_Var.mod_data['Monsters']:
+    #     return Mod_Var.mod_data['Monsters'][girl_id]['skillList']
+    # return Glob_Var.main_game_data['Girls'][girl_id]['skillList']
     # if not data_deep:
     #     for current_mod_girls in Mod_Var.current_mod['Monsters']:
     #         if current_mod_girls == girl_id:
