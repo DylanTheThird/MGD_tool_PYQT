@@ -516,10 +516,16 @@ class SingleList(QtWidgets.QComboBox):
             self.clear()
             self.list = otherFunctions.getListOptions(options_list, "single")
             self.set_val(self.list)
-            w = self.fontMetrics().boundingRect(max(self.list, key=len)).width()
-            self.view().setFixedWidth(w + 20)
+            # TODO dropdown display adjust
+            """below should limit rectangle box that appeares when clicking dropdown, probably for choices, but otherwise limits view"""
+            # w = self.fontMetrics().boundingRect(max(self.list, key=len)).width()
+            # self.view().setFixedWidth(w + 20)
         else:
             return
+
+    def add_items_to_skip_sort(self, items=list):
+        self.list += items
+        self.addItems(items)
 
     def clear_val(self):
         self.setCurrentIndex(0)

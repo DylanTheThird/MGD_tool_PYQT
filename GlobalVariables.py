@@ -182,6 +182,7 @@ class ModVariable(object):
         # self.mod_data.copy = mod
         self.mod_data = copy.copy(self.clear_mod)
         self.mod_display = copy.copy(self.clear_mod)
+        self.mod_file_names = copy.copy(self.clear_mod)
         # self.mod_display = {
         #         "Adventures": {},
         #         "Events": {},

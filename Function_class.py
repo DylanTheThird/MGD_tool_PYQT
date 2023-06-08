@@ -2634,19 +2634,20 @@ class main_game_for_functions_treeview:
 
 
 class Function_Gui:
-    def __init__(self, functionType, game_data=None, master=None, event_type=None, fields_lay=None, target_area=None,
-                 checkboxes=None, scene_list=None):
+    def __init__(self, functionType=None, game_data=None, master=None, event_type=None, fields_lay=None, target_area=None,
+                 adding_config=None, scene_list=None):
         """functionType - scene or text
         list_flag - should probably be flag if include event functions
         event_type - if eventtext, losscene, victoryscene
-        fields_lay - this is part of bigger layout, so fields lay is layout only for fields from functions"""
+        fields_lay - this is part of bigger layout, so fields lay is layout only for fields from functions
+        adding config. list of 3 values. first is flag, second area displa and 3 is scene display, might be none"""
         if event_type:
             self.event = event_type
         else:
             self.event = None
         self.functions_layout = fields_lay
-        """target type is either TRUE - add data to treeview display, or FALSE, add as text to area"""
-        self.target_type = functionType
+        # """target type is either TRUE - add data to treeview display, or FALSE, add as text to area"""
+        # self.target_type = functionType
         """temp data is for holding temporary data to display in fields"""
         self.temp_data = None
         """event temporary data"""
@@ -2666,6 +2667,38 @@ class Function_Gui:
         # self.ending_field = SimpleFields.SimpleEntry(master=end_loop_frame, field_name='temp', label_position='U',
         #                                              tooltip_text=None, field_data=None)
         # self.prepared_fields['text'].append(SceneSimpleEntry(master=end_loop_frame))
+        """checkboxes and buttons. check for adding as function or text, button to prepare and add functions"""
+        h_lay_checkboxes = QtWidgets.QHBoxLayout()
+
+            # tk.Button(self.frame_functions, text='Prepare function', wraplength=50,
+            #                                     command=lambda: self.prepare_function_fields())
+        self.buttonADD_function = SimpleFields.CustomButton(None, 'Add')
+        self.buttonADD_function.setMaximumWidth(40)
+        self.buttonADD_function.clicked.connect(self.add_function_fields)
+        h_lay_checkboxes.addWidget(self.buttonADD_function)
+        self.checkbox_text = SimpleFields.CheckBox(self.parent_widget, 'TEXT', 't')
+        self.checkbox_text.set_up_widget(h_lay_checkboxes)
+        self.checkbox_event = SimpleFields.CheckBox(self.parent_widget, 'EVENT', 'e')
+        self.checkbox_event.set_up_widget(h_lay_checkboxes)
+        self.buttonPREPARE_function = SimpleFields.CustomButton(None, 'Prep')
+        self.buttonPREPARE_function.setMaximumWidth(40)
+        self.buttonPREPARE_function.clicked.connect(self.prepare_function_fields)
+        h_lay_checkboxes.addWidget(self.buttonPREPARE_function)
+        self.button_group = QtWidgets.QButtonGroup()
+        self.button_group.addButton(self.checkbox_text)
+        self.button_group.addButton(self.checkbox_event)
+        self.button_group.buttonToggled.connect(self.on_checkbox_toggled)
+        """flag function will be list. first its a 0/1, second, target field"""
+        self.flag_function_target_type = []
+        self.adding_config = adding_config
+        if not adding_config[0]:
+            # if 0, only text, disable event adding
+            self.checkbox_event.setEnabled(False)
+            self.checkbox_text.set_val(True)
+            self.checkbox_text.setEnabled(False)
+        h_lay_checkboxes.setAlignment(QtCore.Qt.AlignCenter)
+        self.custom_layout.addLayout(h_lay_checkboxes)
+
         self.treeview_functions = SimpleFields.ElementsList(None, 'functions', True, False, False, delete_flag=False)
         self.treeview_functions.setMinimumWidth(300)
         self.treeview_functions.set_up_widget(self.custom_layout)
@@ -2674,22 +2707,6 @@ class Function_Gui:
         self.area_instruction = SimpleFields.AreaEntry()
         self.area_instruction.setMaximumSize(300, 200)
         self.area_instruction.set_up_widget(self.custom_layout)
-
-        h_lay_buttons = QtWidgets.QHBoxLayout()
-        self.buttonPREPARE_function = SimpleFields.CustomButton(None, 'Prepare')
-        self.buttonPREPARE_function.clicked.connect(self.prepare_function_fields)
-
-            # tk.Button(self.frame_functions, text='Prepare function', wraplength=50,
-            #                                     command=lambda: self.prepare_function_fields())
-        self.buttonADD_function = SimpleFields.CustomButton(None, 'Add')
-        self.buttonADD_function.clicked.connect(self.add_function_fields)
-        h_lay_buttons.addWidget(self.buttonPREPARE_function)
-        h_lay_buttons.addWidget(self.buttonADD_function)
-        self.custom_layout.addLayout(h_lay_buttons)
-        self.checkboxes_group = checkboxes
-
-
-
 
         # self.function_data = otherFunctions.load_json_data('game/_textfunction.json')
         # for function_place in GlobalVariables.functions_data:
@@ -2738,6 +2755,8 @@ class Function_Gui:
         self.field_title.setEnabled(False)
         self.field_title.set_up_widget(self.functions_layout)
         self.field_title.setMaximumWidth(300)
+
+        self.flag_error_checkbox = False
         # self.field_title = SceneSimpleEntry(self.frame_function_fields)
         # self.field_title = SimpleFields.SimpleEntry(self.frame_function_fields, field_name='temp', label_position='U',
         #                                             tooltip_text=None, field_data=None, fill_option='left')
@@ -2896,14 +2915,16 @@ class Function_Gui:
         tag = self.field_title.get_val()
         if not tag:
             return
-        if len(self.target_type) == 0:
-            for checkbox in self.checkboxes_group.buttons():
+        checked_button = self.button_group.checkedButton()
+        if checked_button is None:
+            for checkbox in self.button_group.buttons():
                 checkbox.setStyleSheet("QCheckBox { color: red }")
+                self.flag_error_checkbox = True
             return
-        """if flag TRUE, should add as data to treeview(scene)
-        if flag FALSE, add as text to area"""
-        if self.target_type[0]:
-            selected_element = self.target_type[1].selected_element()
+        """if flag TRUE, should add as data to treeview(scene)2
+        if flag FALSE, add as text to area1"""
+        if checked_button.text() == 'EVENT':
+            selected_element = self.adding_config[2].selected_element()
             if isinstance(self.function_fields_list[0], str):
                 function_values = self.function_fields_list[0]
             else:
@@ -2937,9 +2958,9 @@ class Function_Gui:
                 if not selected_element.child(0, 0):
                     parent = selected_element.parent()
                     if parent:
-                        self.target_type[1].new_insert_data(function_values, parent)
+                        self.adding_config[2].new_insert_data(function_values, parent)
                         return
-            self.target_type[1].new_insert_data(function_values)
+            self.adding_config[2].new_insert_data(function_values)
         else:
             final_function = self.field_title.get_val() + '|'
             # else:
@@ -2948,7 +2969,7 @@ class Function_Gui:
                     break
                 value = function.get_val()
                 final_function += value + '|'
-            self.target_type[1].insert_text('|f|' + final_function + 'n|')
+            self.adding_config[1].insert_text('|f|' + final_function + 'n|')
 
     def prepare_special(self, function_name):
         if 'Jump' in function_name or "Call" in function_name:
@@ -2991,25 +3012,15 @@ class Function_Gui:
         # elif function_name == 'DisplayCharacters':
         #     PrepareSpeakers(self.function_fields_list[0])
         elif function_name == 'ChangeImageLayer':
-            self.SpecialChangeImageLayer(1)
-            # self.function_fields_list[2].traceId = self.function_fields_list[2].var.trace(
-            #     'w', lambda: SpecialChangeImageLayerStep2(temp_data=self.temp_data,
-            #                                                      source_field=self.function_fields_list[2],
-            #                                                      target_field=self.function_fields_list[1],
-            #                                                      data_level=1))
-            self.function_fields_list[1].var.trace_id = self.function_fields_list[1].var.trace(
-                'w', lambda *args, data_level='Layer', girl_field=1: self.load_layer_picture_data(data_level, girl_field))
-            self.function_fields_list[0].traceId = self.function_fields_list[0].var.trace(
-                'w', lambda *args, data_level='Image', girl_field=1: self.load_layer_picture_data(data_level, girl_field))
+            self.SpecialChangeImageLayer_prep_speakers_field(1)
+            self.function_fields_list[1].currentTextChanged.connect(lambda: self.load_layer_picture_data('Layer'))
+            self.function_fields_list[0].currentTextChanged.connect(lambda: self.load_layer_picture_data('Image'))
+
         elif function_name == 'AnimateImageLayer':
-            self.SpecialChangeImageLayer(2)
-            # self.function_fields_list[2].traceId = self.function_fields_list[2].var.trace(
-            #     'w', lambda: SpecialChangeImageLayerStep2(temp_data=self.temp_data,
-            #                                                      source_field=self.function_fields_list[2],
-            #                                                      target_field=self.function_fields_list[1],
-            #                                                      data_level=1))
-            self.function_fields_list[2].var.trace_id = self.function_fields_list[2].var.trace(
-                'w', lambda *args, data_level='Layer', girl_field=2: self.load_layer_picture_data(data_level, girl_field))
+            self.SpecialChangeImageLayer_prep_speakers_field(2)
+            # self.function_fields_list[2].var.trace_id = self.function_fields_list[2].var.trace(
+            #     'w', lambda *args, data_level='Layer', girl_field=2: self.load_layer_picture_data(data_level, girl_field))
+            self.function_fields_list[2].currentTextChanged.connect(lambda: self.load_layer_picture_data('Layer'))
         elif 'Choice' in function_name:
             if 'Event' in function_name:
                 SimpleFields.mod_temp_data.prepare_fields_for_choice_set_up(self.function_fields_list[1], self.function_fields_list[2], self.function_fields_list[0])
@@ -3107,7 +3118,7 @@ class Function_Gui:
     # def Special_function_swapline(self, *args):
     #     self.field_for_end_loop.prepare_line_fields(self.function_fields_list[0].get_val())
 
-    def SpecialChangeImageLayer(self, field_no):
+    def SpecialChangeImageLayer_prep_speakers_field(self, field_no):
         """almost done, but its not gonna work. Speaker show not from speaker fields, but from function
          displayCharacters, which are based on speakers list. So first, it need to check displaycharacters in memory
           somewher, if not used, because we loaded the mod, then it need to find that by searching backwards by scene
@@ -3131,8 +3142,9 @@ class Function_Gui:
         #             displayed_speakers_list.append(speaker['name'])
         #             index = 0
         #             break
+        # TODO might be problem when girls name is not equeal to girl id or something like that
         speaker_data = PrepareSpeakers()
-        temp_list =[]
+        temp_list = ['']
         for speaker in speaker_data:
             if speaker['name'] not in temp_list:
                 temp_list.append(speaker['name'])
@@ -3183,28 +3195,31 @@ class Function_Gui:
 
     def load_layer_picture_data(self, data_level='temp', girl_id_field=1):
         """find field with speaker name - should be labeled Speaker"""
-        girl_id = ''
+        # girl_id = girl[0].lower()
+        # girl_id = girl_id.replace(' ', '')
+        # girl_id = girl[0]
         for field in self.function_fields_list:
-            if field.field_label['text'] == 'Speaker':
-                girl_id = field.get_val().lower()
-                girl_id = girl_id.replace(' ', '')
+            if field.title == 'Speaker':
+                girl_id = field.get_val()
+                # girl_id = field.get_val().lower()
+                # girl_id = girl_id.replace(' ', '')
                 break
         # girl_id = self.function_fields_list[girl_id_field].get_val().lower()
-        if girl_id == 'select options' or girl_id == ''or len(girl_id) < 3:
+        if girl_id == 'select options' or girl_id == '' or len(girl_id) < 3:
             return
         """get pictures of girls, first check mod, if not there, look in main game data"""
-        if girl_id in GlobalVariables.current_mod['Monsters']:
-            pictures_list = GlobalVariables.current_mod['Monsters'][girl_id]['pictures']
+        if girl_id in GlobalVariables.Mod_Var.mod_data['Monsters']:
+            pictures_list = GlobalVariables.Mod_Var.mod_data['Monsters'][girl_id]['pictures']
         else:
-            pictures_list = GlobalVariables.main_game_data['Girls'][girl_id]['pictures']
+            pictures_list = GlobalVariables.Glob_Var.main_game_data['Girls'][girl_id]['pictures']
 
         results_list = []
         if data_level == 'Layer':
             for field in self.function_fields_list:
-                if field.field_label['text'] == 'Layer Type':
+                if field.title == 'Layer Type':
                     """instead of hardcoded field no, find field by label"""
                     # self.function_fields_list[0].clear_val('')
-                    field.clear_val('')
+                    field.clear_val()
                     for pictures in pictures_list:
                         if 'Set' in pictures:
                             for pict_set in pictures['Set']:
@@ -3212,15 +3227,16 @@ class Function_Gui:
                             break
                         else:
                             results_list.append(pictures['Name'])
-                    results_list.append('ImageSet')
-                    results_list.append('ImageSetPersist')
-                    results_list.append('ImageSetDontCarryOver')
+                    # results_list.append('ImageSet')
+                    # results_list.append('ImageSetPersist')
+                    # results_list.append('ImageSetDontCarryOver')
                     field.reload_options(results_list)
+                    field.add_items_to_skip_sort(['ImageSet', 'ImageSetPersist', 'ImageSetDontCarryOver'])
                     # self.function_fields_list[0].reload_options(results_list)
                     break
         elif data_level == 'Image':
             for field in self.function_fields_list:
-                if field.field_label['text'] == 'Layer Type':
+                if field.title == 'Layer Type':
                     layer_name = field.get_val()
                     break
             # layer_name = self.function_fields_list[0].get_val()
@@ -3239,13 +3255,14 @@ class Function_Gui:
                         else:
                             for images in pictures['Images']:
                                 results_list.append(images['Name'])
-            results_list.append('ActivateOverlay')
-            results_list.append('DeactivateOverlay')
-            results_list.append('None')
+            # results_list.append('ActivateOverlay')
+            # results_list.append('DeactivateOverlay')
+            # results_list.append('None')
 
             for field in self.function_fields_list:
-                if field.field_label['text'] == 'Image':
+                if field.title == 'Image':
                     field.reload_options(results_list)
+                    field.add_items_to_skip_sort(['ActivateOverlay', 'DeactivateOverlay', 'None'])
                     break
             # self.function_fields_list[2].reload_options(results_list)
 
@@ -3460,6 +3477,14 @@ class Function_Gui:
         if len(function_data['steps']) == 1:
             for field, values in zip(self.function_fields_list, attributes_list[1:]):
                 field.set_val(values)
+
+    def on_checkbox_toggled(self, checkbox, checked):
+        if self.flag_error_checkbox:
+            if checked:
+                for button in self.button_group.buttons():
+                    button.setStyleSheet("QCheckBox { color: black }")
+
+
 #
 #
 #

@@ -1441,7 +1441,8 @@ class FunctionField(SimpleFields.ElementsList):
         #                               master=self, fields_data=self.field_setup[root_scene_setup_name])
         # TODO here could be memory leak. when closing markup it might need to somehow remove this variable too
         if not self.markup_win:
-            self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True, current_scene_list=self.scene_data_container)
+            self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True, current_scene_list=self.scene_data_container,
+                                                         scene_data=self.field_setup)
         self.markup_win.show()
     # if i figure out how to use this then ill uncomment it
     # def delete_scene(self):

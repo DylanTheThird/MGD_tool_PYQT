@@ -267,15 +267,18 @@ class Templates:
         for field in self.frame_fields:
             self.frame_fields[field].clear_val()
 
-    def load_element_data(self, element_name, element_data):
-        if isinstance(element_data, str):
-            with open(GlobalVariables.startPath + '/' + element_data, encoding='utf-8-sig') as file:
-                element_data = json.load(file, object_hook=OrderedDict)
-                # element_data = {self.element_type: {element_name: file_data}}
+    def load_element_data(self, element_name, element_data=None):
+        """below is in case element data is just file name, but i dont see reason for this anymore"""
+        # if isinstance(element_data, str):
+        #     with open(GlobalVariables.startPath + '/' + element_data, encoding='utf-8-sig') as file:
+        #         element_data = json.load(file, object_hook=OrderedDict)
+        #         # element_data = {self.element_type: {element_name: file_data}}
         if element_name == '':
             messagebox.showerror("Nothing", "No details to display", parent=self)
         else:
-                self.input_filename.set_val(element_name)
+                # self.input_filename.set_val(element_name)
+                self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
+                element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
             # elementType == 'Items':
             # try:
                 # elementName = re.sub('[^A-Za-z0-9]+', '', elementName)
@@ -320,21 +323,23 @@ class Templates:
         error_flag = False
         if 'name' in list(self.frame_fields.keys()):
             unique_field = 'name'
+        elif self.element_type == 'Monsters':
+            unique_field = 'IDname'
         else:
             unique_field = 'Name'
 
         # element_name = item_temp['name']
-        element_name = self.input_filename.get_val()
-        if not element_name and self.element_type != 'Fetishes':
+        file_name = self.input_filename.get_val()
+        if not file_name and self.element_type != 'Fetishes':
             show_message('File name', 'Please provide', 'Error 1')
             return
-        if self.element_type == 'Fetishes':
-            element_name = self.frame_fields[unique_field].get_val()
+        # if self.element_type == 'Fetishes':
+        element_name = self.frame_fields[unique_field].get_val()
         """if provided only filename, it should return with prefix and add only 1 row, as folder"""
-        if self.frame_fields[unique_field].get_val() == '':
-            return 'folder_' + element_name
+        if element_name == '':
+            return 'folder_' + file_name
         # current_mod[elementType] = elementname
-
+        GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name] = file_name
         # if 'Addition' in current_mod[self.element_type][element_name]:
         if element_name in current_mod[self.element_type]:
             if 'Addition' in current_mod[self.element_type][element_name]:
@@ -406,9 +411,9 @@ class EventsTemplate(Templates):
         #TODO check size after adding other stuff
         self.size = [800, 620]
 
-    def load_element_data(self, element_name, element_data):
+    def load_element_data(self, element_name):
         mod_temp_data.current_editing_event = element_name
-        super().load_element_data(element_name, element_data)
+        super().load_element_data(element_name)
     def save_element_details_in_current_mod(self, current_mod):
         return
         # save element data into the current mod dictionary and add it into the lists.
@@ -1795,13 +1800,15 @@ class PerkTemplate(Templates):
         self.save_data_in_current_mod(current_mod)
         return True
 
-    def load_element_data(self, element_name, element_data):
+    def load_element_data(self, element_name):
         # print("function display element")
         # print('elementtype-  '+ elementType + ', element name - ' + elementName)
         if element_name == '':
             messagebox.showerror("Nothing", "No details to display", parent=self)
         else:
-                self.input_filename.set_val(element_name)
+                # self.input_filename.set_val(element_name)
+                self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
+                element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
                 for field in self.frame_fields:
                         # try:
                     self.frame_fields[field].clear_val()

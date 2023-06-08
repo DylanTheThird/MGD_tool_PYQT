@@ -75,10 +75,15 @@ def load_item(mod_path, element_type='', depth=0, list_parent=None):
             with open(mod_path+'/'+file_names, encoding='utf-8-sig') as file:
                 file_data = json.load(file, object_hook=OrderedDict)
                 # current_mod[element_type][files[:-5]] = file_data
-                name = file_names[:-5]
+                # name = file_names[:-5]
+                if element_type == 'Monsters':
+                    name = file_data['IDname']
+                else:
+                    name = file_data['name']
                 # list_parent['files'].append(name)
                 list_parent.append(name)
                 Mod_Var.mod_data[element_type][name] = file_data
+                Mod_Var.mod_file_names[element_type][name] = file_names[:-5]
                 # new_item = GlobalVariables.list_elementlists[list_number].treeview.insert(new_parent, 'end', [name], text=name)
                 # GlobalVariables.list_elementlists[list_number].add_leaves(new_parent, [name], update_flag=False)
 
@@ -86,6 +91,7 @@ def new_mod():
     for element in Mod_Var.mod_data:
         Mod_Var.mod_data[element] = {}
         Mod_Var.mod_display[element] = {}
+        Mod_Var.mod_file_names[element] = {}
 
 # def load_item(mod_path, element_type='', current_mod='', list_number=0, depth=0, list_parent=''):
 #     # print('')
@@ -164,7 +170,7 @@ def prepare_folders(list_no, files_path):
     return curr_folder
 
 
-
+# obsolete?
 def load_mod_elements(current_mod):
     # if loadItem works, loadMoadElements is obsolete, but might still be usefull for element types
     # load data from current_mod into the lists

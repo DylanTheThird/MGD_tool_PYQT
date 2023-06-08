@@ -118,7 +118,7 @@
 				"structure":{
 							"Layer Type":{"type":"singlelist",
 												"choices":[]},
-							"Speaker":{"type":"combobox",
+							"Speaker":{"type":"singlelist",
 										"choices":[]},
 							"Image":{"type":"singlelist",
 												"choices":[]}
@@ -134,7 +134,7 @@
 												"choices":["Animation","Animatione2","Animation3"]},
 							"Layer Type":{"type":"singlelist",
 												"choices":[]},
-							"Speaker":{"type":"combobox",
+							"Speaker":{"type":"singlelist",
 										"choices":[]},
 							"Time":{"type":"int"},
 							"Picture List":{

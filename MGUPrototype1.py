@@ -650,7 +650,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 # if selected_item.text() == root_parent or selected_item.child(0, 0):
                     return
                 Glob_Var.edit_element = False
-                self.templates[root_parent].load_element_data(self.current_selected_item.text(), Mod_Var.mod_data[root_parent][self.current_selected_item.text()])
+                self.templates[root_parent].load_element_data(self.current_selected_item.text())
+                # self.templates[root_parent].load_element_data(self.current_selected_item.text(), Mod_Var.mod_data[root_parent][self.current_selected_item.text()])
                 Glob_Var.edit_element = True
             # print(str(selected_item.text()))
             self.layout_templates.setCurrentIndex(self.templates[root_parent].layer_index)
