@@ -2723,20 +2723,21 @@ class SubFunction(QtWidgets.QWidget):
         if state == 2:
             next_event_field = SimpleFields.MultiListDisplay(None, 'Scene',
                                                                    field_data={"type":"multilist","options":
-                                                                       ["single_item", "search"],"choices": ["scene"]},
+                                                                       ["single_item", "search"],"choices": ["Scenes"]},
                                                                    main_data_treeview=self.treeview_main_game_items)
 
             self.fields_list[-2].final_data.function_on_modify(self.scene_reload)
+            self.scene_reload()
             self.fields_list.append(next_event_field)
             next_event_field.set_up_widget(self.created_fields_layout)
         else:
-            self.fields_list[-1].destroy()
-            self.fields_list[-1].pop()
+            gone = self.fields_list.pop(-1)
+            gone.destroy()
 
         """checkbox in menu function event jump > should display another multilist for scene for that event"""
         return
     def scene_reload(self):
-        self.treeview_main_game_items.scene_source = self.fields_list[-2].get_val()
+        self.treeview_main_game_items.scene_source = self.fields_list[-3].get_val()
 class main_game_for_functions_treeview:
     """fused with maine game items treeview."""
     def __init__(self, master=None, field_name=None):
