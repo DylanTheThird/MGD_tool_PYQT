@@ -170,6 +170,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
 
     def function_on_modify(self, function=None):
         self.textChanged.connect(function)
+        # TODO this not always working
 
     def destroy(self):
         for idx in range(self.custom_layout.count()):
@@ -741,7 +742,7 @@ class UniqueView(QtWidgets.QListView):
 
 """complicated fields contains more widgers, display fields should only have 1 to display,
  so here create inherits from display"""
-
+# TODO check delete on element lists
 class ElementsList(QtWidgets.QTreeView):
     def __init__(self, masterWun, listTitle=None, search_field=False, folders=False, all_edit=False, treeview_height=5,
                  delete_flag=True, class_connector=None):
@@ -877,6 +878,8 @@ class ElementsList(QtWidgets.QTreeView):
         self.model_index = QtCore.QModelIndex()
         self.back_up_deleted = []
 
+        self.flag_delete = delete_flag
+
         self.shortcut_restore = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+z'), self)
         self.shortcut_restore.activated.connect(self.restore_deleted)
         self.shortcut_cut = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+x'), self)
@@ -888,7 +891,8 @@ class ElementsList(QtWidgets.QTreeView):
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         if event.key() == Qt.Key_Delete:
             # print('pressed delete')
-            self.delete_with_backup()
+            if self.flag_delete:
+                self.delete_with_backup()
         super().keyPressEvent(event)
 
 
@@ -1963,7 +1967,7 @@ class MultiListDisplay:
     several items - this allows several items with no duplication. will be a treeview and maybe add something like above
     multiple items - several with duplicates."""
     def __init__(self, master=None, field_name=None,
-                 field_data=None, template_name=None, main_data_treeview=None):
+                 field_data=None, template_name=None, main_data_treeview=None, single_edit=True):
         self.title = field_name
         self.type = 'multilist'
         self.template_name = template_name
@@ -2010,7 +2014,7 @@ class MultiListDisplay:
         """
         self.custom_layout = QtWidgets.QVBoxLayout()
         if self.version == 'single':
-            self.final_data = SimpleEntry(master, None, class_connector=self, main_data_treeview=main_data_treeview)
+            self.final_data = SimpleEntry(master, None, class_connector=self, main_data_treeview=main_data_treeview, edit=single_edit)
             self.label_custom.change_position('R')
             self.custom_layout = QtWidgets.QHBoxLayout()
             self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
@@ -2140,7 +2144,7 @@ class Main_MultiList:
             self.label_info.setToolTip('CTRL A or double click lowest element to add to selected field')
             self.custom_layout.addWidget(self.label_info)
 
-        self.main_data = ElementsList(None, 'Available element', search_field=True,
+        self.main_data = ElementsList(None, 'Available element', search_field=True, delete_flag=False,
                                       folders=False, all_edit=False, class_connector=self)
         # """testing global model"""
         # self.main_data.tree_model = GlobalVariables.Glob_Var.main_game_tree_model
@@ -3310,7 +3314,7 @@ class InputList(CustomWidget):
         default customer widget with defs instead of making customer Entry, list etc and each having same defs
         and here specific widget should be named self.field"""
         self.label_custom.setToolTip(pass_tooltip)
-        self.label_custom.change_position('L')
+        # self.label_custom.change_position('L')
         self.title = field_name
         self.type = 'text_list'
         self.field = QtWidgets.QComboBox()
@@ -3443,6 +3447,7 @@ class ModTempData:
     def __init__(self):
         # self.mod_data = {'choices': {}, 'displaycharacters': {}}
         self.mod_data = {'events': {}, 'girls': {}}
+        """since I change how events name are displayes - event title - I neend event filename to access its data"""
         self.current_editing_event = ''
         self.data_filename = ''
         self.templates_access = None
@@ -3511,6 +3516,8 @@ class ModTempData:
                             prev_chara = current_chara
                     # this not working still
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
+                # self.mod_data['events'][event]['name'] = event
+        self.save_file()
     # TODO when closing program, this should run
     def save_file(self):
         if self.data_filename:
@@ -3529,8 +3536,11 @@ class ModTempData:
             self.mod_data['events'][event_name]['choices'][choice_number] = [choice_text]
 
     def get_choices(self, get_val, event_name=None):
+        # issues - seems to run when reloading list of choices for each choise. should run only once
         if not event_name:
             event_name = self.current_editing_event
+        # for event in self.mod_data['events']:
+        #     if self.mod_data['events'][event]['name'] == event_name:
         if event_name in self.mod_data['events']:
             choices_list = list(self.mod_data['events'][event_name]['choices'].keys())
             if get_val == 'gate':
@@ -3610,14 +3620,14 @@ class ModTempData:
 
     def set_up_event_source(self, field_choice_no, field_choice_text, event_field_source=None):
         if event_field_source:
-            self.current_editing_event = event_field_source.get_val()
+            scene_source = event_field_source.get_val()
         else:
-            self.current_editing_event = self.templates_access['Events'].input_filename.get_val()
+            scene_source = self.current_editing_event
         """first field should be choice number, second field should be choice text"""
-        choice_list = self.get_choices(get_val='gate', event_name=self.current_editing_event)
+        choice_list = self.get_choices(get_val='gate', event_name=scene_source)
         field_choice_no.reload_options(choice_list)
         # self.field_choice_no.event_name = event_name
-        choice_list = self.get_all_choices_text(event_name=self.current_editing_event)
+        choice_list = self.get_all_choices_text(event_name=scene_source)
         field_choice_text.reload_options(choice_list)
         # self.field_choice_text.event_name = event_name
 

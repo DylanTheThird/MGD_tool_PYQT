@@ -120,7 +120,7 @@ class GlobalVariable:
         #
 
     def get_functions(self, function_name):
-        function_data = self.functions_data[function_name]
+        function_data = copy.copy(self.functions_data[function_name])
         print('retrievieg function data')
         print(function_data)
         return function_data

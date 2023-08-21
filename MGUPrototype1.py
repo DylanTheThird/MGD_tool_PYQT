@@ -22,7 +22,8 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO load a bit of data from eleement in mod to template display
+# TODO 1. in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
+# TODO 2. scroll bars disappeare when loading different element type
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -86,7 +87,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.layout_main.addWidget(self.entry_mod_name)
         # self.gridLayout.addWidget(self.entry_mod_name, 1, 0, 1, 1)
         # self.treeWidget = QtWidgets.QTreeWidget(self.layoutWidget)
-        self.tree_mod_elements = ElementsList(self.centralwidget, folders=True)
+        self.tree_mod_elements = ElementsList(self.centralwidget, folders=True, delete_flag=True)
         self.tree_mod_elements.flag_edit = False
         self.tree_mod_elements.parent_tag = 'folder'
         self.tree_mod_elements.doubleClicked.connect(self.load_element_data)
@@ -507,6 +508,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
             check what element is prepared and clear template
             block loading details of element"""
 
+        if self.flag_creating_element:
+            self.cancel()
         selected_element = self.tree_mod_elements.selected_element()
         if selected_element:
             self.actionCancel_New.setEnabled(True)
@@ -629,6 +632,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.main_game_elements.update_with_mod_item(self.tree_mod_elements.get_data())
 
     def load_element_data(self, event, just_display=False):
+        """load data of item into template. """
         if self.flag_creating_element:
             return
         if_edited = self.actionSave_New.isEnabled()
@@ -655,7 +659,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 Glob_Var.edit_element = True
             # print(str(selected_item.text()))
             self.layout_templates.setCurrentIndex(self.templates[root_parent].layer_index)
-            # TODO ajust size
+            # TODO adjust size
             if self.MainWindow.isMaximized() is False:
                 if self.templates[root_parent].size:
                     # self.MainWindow.setMaximumSize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])

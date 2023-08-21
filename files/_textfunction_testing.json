@@ -26,10 +26,79 @@
 				"explanation": "Gives the player an option menu of choices. Each choice is a scene in the same event file. Make sure the scene names exactly match the choice. Will always end current scene and jump to a new one, thus it is recommended to only have them at the end of a scene.By default, if there are more than 6 choices, page arrows will automatically be added.",
 				"options":["special"],
 				"steps": "EndLoop",
-				"structure":{}
+				"structure":{},
+				"subfunction":
+				{"position":2,
+				"type":"IF",
+				 "structure":{
+							"Energy":
+								{"":{"type":"int"}},
+							"MinimumProgress":
+								{"":{"type":"int"}},
+							"LessProgress":
+								{"":{"type":"int"}},
+							"Virility":
+								{"":{"type":"int"}},
+							"FetishLevelEqualOrGreater":{
+								"Fetish":{"type":"singlelist",
+								"choices":["Fetishes"]},
+								"":{"type":"int"}},
+							"FetishLevelEqualOrLess":{
+								"Fetish":{"type":"singlelist",
+								"choices":["Fetishes"]},
+								"":{"type":"int"}},
+							"Stat":{
+								"Stat":{"type":"singlelist",
+								"choices":["game-core stats-simple"]},
+								"":{"type":"int"}},
+							"Item":
+								{"Items":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Items"]}},
+							"ItemEquipped":
+								{"Items":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Items"]}},
+							"Perk":
+								{"Perks":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Perks"]}},
+							"Skill":
+								{"Skills":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Skills"]}},
+							"MinimumProgressFromEvent":
+								{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"":{"type":"int"}},
+							"LessProgressFromEvent":
+								{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"":{"type":"int"}},
+							"Time":{
+								"Time":{"type":"singlelist",
+								"choices":["Day", "Night", "DayFaked", "DayTrue", "NightFaked", "NightTrue", "Morning", "Noon", "Afternoon", "Dusk", "Evening", "Midnight"]}},
+							"Choice":
+								{"":{"type":"choice"}},
+							"ChoiceFromEvent":
+								{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"":{"type":"choice"}},
+							 "FinalOption":{},
+							 "EventJump":
+										{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"ThenJumpToScene":{"type":"checkbox"}},
+							 "HideOptionOnRequirementFail":{},
+							 "InverseRequirement":{}
+										}}
 			},
 			{				"title": "HitMonsterWith",
-				"explanation": "Hit the monster with a skill. Will not apply stances or status effects from the skill, and does apply recoil damage. It will only damage to the target, and can crit. It will never miss. Uses the player stats. Do not use any skill with a targetType that isn't 'single'.",
+				"explanation": "",
 				"options":["special", "limit skills"],
 				"steps": "2",
 									"structure":{												
@@ -39,7 +108,7 @@
 												}
 			},
 			{				"title": "IfPlayerHasStances",
-				"explanation": "Checks the player for every specified stance in the loop. If all stances are true, it jumps to the given scene.",
+				"explanation": "",
 				"options":["simple"],
 				"steps": "EndLoop-1",
 									"structure":{
@@ -61,9 +130,66 @@
 									"options":["special", "swapline"],
 									"steps":"EndLoop",
 									"structure":{
-												"1":{"type":"singlelist",
-												"choices":["", "Random", "Stat", "Arousal", "MaxArousal", "Energy", "MaxEnergy", "Virility", "HasFetish", "HasFetishLevelEqualOrGreater", "Perk", "EncounterSize", "Item", "Eros", "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]}
-												}
+												},
+				"subfunction":
+				{"position":2,
+				"type":"IF",
+				 "structure":{
+							"Stat":{
+								"Core Attribute":{"type":"singlelist",
+								"choices":["Power", "Technique", "Willpower", "Allure",
+								"Intelligence", "Luck"]}},
+							"Arousal":
+								{"":{"type":"int"}},
+							"MaxArousal":
+								{"":{"type":"int"}},
+							"Energy":
+								{"":{"type":"int"}},
+							"MaxEnergy":
+								{"":{"type":"int"}},
+							"Virility":
+								{"":{"type":"int"}},
+							"EncounterSize":
+								{"":{"type":"int"}},
+							"Eros":
+								{"":{"type":"int"}},
+							"Progress":
+								{"":{"type":"int"}},
+							"HasFetish":	{						
+								"Fetishes":{"type":"singlelist",
+								"choices":["Fetishes"]}},
+								
+							"HasFetishLevelEqualOrGreater":{							
+								"Fetishes":{"type":"singlelist",
+								"choices":["Fetishes"]},
+								"":{"type":"int"}},
+								
+							"Perk":
+								{"Perks":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Perks"]}},
+								
+							"Item":
+								{"Items":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Items"]}},
+							"IfTimeIs":
+								{"Time of day":{"type":"singlelist",
+													"choices":["Day", "Night"]}},
+							"OtherEventsProgress":
+								{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+								"":{"type":"int"}},
+							"Choice":
+								{"":{"type":"choice"}},
+							"OtherEventsChoice":
+							
+								{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"":{"type":"choice"}}
+				}}
 								},
 								{				"title": "DamagePlayerFromMonster",
 				"explanation": "Deal randomized damage to the player via a skill and monster.",
@@ -152,11 +278,11 @@
 							"2":{"type":"int"},
 							"Success Scene":{"type":"multilist",
 								"options":["single_item", "search"],
-								"choices":["Scene"]},
+								"choices":["Scenes-current"]},
 							"4":{"type":"text", "default":"Fail"},
 							"Fail Scene":{"type":"multilist",
 								"options":["single_item", "search"],
-								"choices":["Scene"]}
+								"choices":["Scenes-current"]}
 								},
 				"subfunction":
 				{"position":1,
@@ -271,21 +397,7 @@
 									"structure":{
 												"Text":{"type":"text"}
 												}
-									},
-									{
-									"title": "IfPlayerHasStances",
-									"explanation": "Checks the player for every specified stance in the loop. If all stances are true, it jumps to the given scene.",
-									"options":["simple"],
-									"steps": "EndLoop",
-									"structure":{
-												"1":{"name":"multilist",
-												"options":["single_item", "search"],
-												"choices":["currentmod-Skills-Stances"]},
-												"2":{"name":"multilist",
-												"options":["single_item", "search"],
-												"choices":["currentmod-Events-Scenes"]}
-												}
-												}
+									}
 									
 								]
 				}

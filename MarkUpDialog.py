@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import SimpleFields
 import GlobalVariables
 from Function_class import Function_Gui
-from otherFunctions import wrap
+from otherFunctions import wrap, show_message
 
 class area_mark_up(SimpleFields.AreaEntry):
     def __init__(self):
@@ -34,7 +34,7 @@ class area_mark_up(SimpleFields.AreaEntry):
         super().keyPressEvent(event)
 
     def add_verse(self):
-        text = wrap(self.get_val(), length=150)
+        text = wrap(self.get_val(), length=50)
         if text:
             if self.flag_update:
                 self.return_target.update_leaf(text)
@@ -506,6 +506,7 @@ class MarkUp_Window(QtWidgets.QWidget):
     def __init__(self, target_field=None, scenes_flag=None, data_for_functions=None, current_scene_list=None,
                  scene_data=None):
         super().__init__()
+        self.target_field = target_field
         if current_scene_list:
             self.current_scenes = current_scene_list
             self.functions_list = list(GlobalVariables.Glob_Var.functions_data.keys())
@@ -556,47 +557,58 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.area_input.setMaximumSize(800, 100)
         self.area_input.set_up_widget(self.v_main_layout)
         """now, display data on the left and on the right, checkboxes and functions gui"""
-        """on the left is only treeview for data from input.
-        on the right is top - 2 checkboxes, then below area with explanation, treeview with functions and 2 buttons"""
+        """on the left is treeview for data from input, hidden scene list and hidden scene data.
+        on the right area with explanation, treeview with functions and 2 buttons"""
         h_layout_display_f_gui = QtWidgets.QHBoxLayout()
 
         # v_layout_left_side = QtWidgets.QVBoxLayout()
         # h_layout_display_f_gui.addLayout(v_layout_left_side)
+
+        v_layout_left_side = QtWidgets.QVBoxLayout()
         if scenes_flag:
-            """first vertical to put button at the top"""
-            v_layout_display = QtWidgets.QVBoxLayout()
+            """first horizontal to put buttons at the top"""
+            h_lay_scene_buttons = QtWidgets.QHBoxLayout()
             self.button_display_scenes = SimpleFields.CustomButton(None, 'Scenes')
             self.button_display_scenes.setMaximumWidth(100)
             self.button_display_scenes.clicked.connect(self.display_scene_list)
-            v_layout_display.addWidget(self.button_display_scenes)
+            h_lay_scene_buttons.addWidget(self.button_display_scenes)
             self.button_display_scenes_data = SimpleFields.CustomButton(None, 'Data')
             self.button_display_scenes_data.setMaximumWidth(100)
             self.button_display_scenes_data.clicked.connect(self.switch_to_data)
             self.flag_data = False
-            v_layout_display.addWidget(self.button_display_scenes_data)
-            """now add horizontal, to put scene display and text display next to each other.
+            h_lay_scene_buttons.addWidget(self.button_display_scenes_data)
+            """now add horizontal, to put scene list and scene text next to each other.
             Also, so I dont have to resize them each time, put it on a background widget"""
             h_layout_display = QtWidgets.QHBoxLayout()
-            """look up for scene list for current event"""
             self.display_scene_widget_background = QtWidgets.QWidget()
             # self.display_scene_widget_background.setMaximumWidth(400)
-            self.display_scene_widget_background.setFixedWidth(400)
+            # self.display_scene_widget_background.setFixedWidth(400)
             # sp = self.display_scene_widget_background.sizePolicy()
             # sp.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
             # self.display_scene_widget_background.setSizePolicy(sp)
-            self.display_scene_widget_background.setLayout(h_layout_display)
-            v_layout_display.addWidget(self.display_scene_widget_background)
+            temp_lay = QtWidgets.QHBoxLayout()
+            self.display_scene_widget_background.setLayout(temp_lay)
+            h_layout_display.addWidget(self.display_scene_widget_background)
             # v_layout_display.addLayout(h_layout_display)
             self.scene_list = SimpleFields.ElementsList(self, search_field=True)
-            temp = {}
-            if self.current_scenes:
-                for event_type in self.current_scenes:
-                    templist = []
-                    for scene_name in self.current_scenes[event_type]:
-                        templist.append(scene_name)
-                    temp[event_type] = templist
-                self.scene_list.add_data(temp)
-            self.scene_list.set_up_widget(h_layout_display)
+            """since this scene list is basicly same as in function field in main view, instead to duplicatind
+            data and after done making a copy, I passed tree models and assigned them here.
+            This way any changes should be reflected in both treeviews.
+            added if for testing"""
+            if target_field:
+                self.scene_list.tree_model = self.target_field.tree_model
+                self.scene_list.sorting = self.target_field.sorting
+                self.scene_list.setModel(self.scene_list.sorting)
+            else:
+                temp = {}
+                if self.current_scenes:
+                    for event_type in self.current_scenes:
+                        templist = []
+                        for scene_name in self.current_scenes[event_type]:
+                            templist.append(scene_name)
+                        temp[event_type] = templist
+                    self.scene_list.add_data(temp)
+            self.scene_list.set_up_widget(temp_lay)
             self.scene_list.hide()
             self.scene_list.doubleClicked.connect(self.load_scene_to_display)
             """hidden setup of basic scene data"""
@@ -643,20 +655,26 @@ class MarkUp_Window(QtWidgets.QWidget):
                     # v_layout_display_scene_data.addWidget(tempfield)
             self.scene_data_widget_background.hide()
             v_layout_display_scene_data.addStretch(1)
+            h_layout_display.addWidget(self.scene_data_widget_background)
             """here is display data. is where iines and functions for scene are displayed and can be modified"""
+            # TODO for some reason, this display data is not streched out as it should be
             self.display_data = SimpleFields.ElementsList(self, "Event text")
-            self.display_data.setMaximumSize(600, 350)
+            # self.display_data.setMaximumSize(600, 350)
             self.display_data.parent_tag = 'function'
-            # self.display_data.setMinimumSize(200, 300)
+            self.display_data.setMinimumWidth(100)
+            self.display_data.setMinimumWidth(300)
             self.display_data.set_up_widget(h_layout_display)
             self.display_data.doubleClicked.connect(self.update_row)
-            h_layout_display_f_gui.addLayout(v_layout_display)
+            # h_layout_display_f_gui.addLayout(H_layout_display)
+            v_layout_left_side.addLayout(h_lay_scene_buttons)
+            v_layout_left_side.addLayout(h_layout_display)
         else:
             self.scene_list = None
             self.display_data = None
             self.scene_button = None
 
         v_layout_right_side = QtWidgets.QVBoxLayout()
+        h_layout_display_f_gui.addLayout(v_layout_left_side)
         h_layout_display_f_gui.addLayout(v_layout_right_side)
         """layout for functions field creations, already added"""
         self.v_layout_function_fields = QtWidgets.QVBoxLayout()
@@ -707,11 +725,17 @@ class MarkUp_Window(QtWidgets.QWidget):
         # self.flag_function_target_type = None
         # v_layout_function_window.addLayout(h_lay_checkboxes)
         self.v_main_layout.addLayout(h_layout_display_f_gui)
-        # TODO fix save button, save data into scene list
+        # TODO save data into scene list
+        h_final_buttons_layout = QtWidgets.QHBoxLayout()
         but_save = SimpleFields.CustomButton(None, 'SAVE')
         but_save.setMaximumWidth(100)
         but_save.clicked.connect(self.save_data)
-        self.v_main_layout.addWidget(but_save)
+        h_final_buttons_layout.addWidget(but_save)
+        but_done = SimpleFields.CustomButton(None, 'DONE')
+        but_done.setMaximumWidth(100)
+        but_done.clicked.connect(self.done)
+        h_final_buttons_layout.addWidget(but_done, alignment=QtCore.Qt.AlignCenter)
+        self.v_main_layout.addLayout(h_final_buttons_layout)
         #
         # v_layout_function_fields = QtWidgets.QVBoxLayout()
         # # self.functions = Function_Gui(self.flag_function_target_type, None, fields_lay=v_layout_function_fields)
@@ -732,6 +756,17 @@ class MarkUp_Window(QtWidgets.QWidget):
         # QtCore.QMetaObject.connectSlotsByName(Dialog)
         if scenes_flag:
             self.area_input.return_target = self.display_data
+
+    def done(self):
+        if self.display_data:
+            check_if_data_remains = self.display_data.get_data()
+            if check_if_data_remains:
+                qm = QtWidgets.QMessageBox()
+                answer = qm.question(None, 'Not done', "Are you sure you are done with scenes?", qm.Yes | qm.No)
+                if answer == qm.No:
+                    return
+        self.close()
+
 
     def prepare_markup_buttons(self):
         v_lay_main = QtWidgets.QVBoxLayout()
@@ -962,17 +997,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         if field.currentIndex() > 0:
             self.area_input.insert_text('{'+field.itemText(0)+field.get_val()+'}')
             field.setCurrentIndex(0)
-    # def on_checkbox_toggled(self, checkbox, checked):
-    #     if checked:
-    #         for button in self.button_group.buttons():
-    #             # TODO change back to black, this is not working
-    #             button.setStyleSheet("QCheckBox { color: blue }")
-    #             if button != checkbox:
-    #                 button.setChecked(False)
-    #         if checkbox.text() == 'EVENT':
-    #             self.functions.target_type = [1, self.display_data]
-    #         else:
-    #             self.functions.target_type = [0, self.area_input]
 
     def display_scene_list(self):
         if self.scene_list.isVisible():
@@ -1000,8 +1024,52 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.area_input.set_val(selected_item.text())
             self.area_input.flag_update = True
     def save_data(self):
-
-        return
+        """first, check if scene name is defined"""
+        scene_title = self.data_fields[0].get_val()
+        if not scene_title:
+            show_message('Missing scene title', 'Please provide scene title', 'MisMandatory')
+            return
+        current_selection = self.scene_list.selected_element()
+        if not current_selection:
+            """if nothing selected"""
+            show_message('Missing scene type', 'Please select scene type from scene list(top item)', 'MisMandatory')
+            return
+        scene_data = {}
+        """go over display data manually, whatever is nested need to be put top level.
+        In the end, scene is a list of values"""
+        scene_text = self.display_data.get_data()
+        final_text = []
+        for text in scene_text:
+            if isinstance(text, dict):
+                for i in text:
+                    final_text.append(i)
+                    for ii in text[i]:
+                        final_text.append(ii)
+            else:
+                final_text.append(text)
+        for fields in self.data_fields:
+            scene_data[fields.title] = fields.get_val()
+        scene_data['theScene'] = final_text
+        """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
+        so check what is selected and take its parent"""
+        insert_row = -1
+        if current_selection.parent():
+            temp = current_selection.parent()
+            scene_type = temp.text()
+            insert_row = current_selection.row()
+        else:
+            scene_type = current_selection.text()
+        if insert_row > -1:
+            """user selected scene, insert new scene above selection"""
+            self.scene_list.insert_row([scene_title])
+            # self.current_scenes[scene_type].insert(insert_row, scene_data)
+        else:
+            """user selected parent"""
+            self.scene_list.add_data([scene_title], current_selection)
+        self.current_scenes[scene_type][scene_title] = scene_data
+        self.display_data.clear_tree()
+        for field in self.data_fields:
+            field.clear_val()
     def switch_to_data(self):
         if self.flag_data:
             """if true, hide data and display scenes"""
@@ -1032,7 +1100,6 @@ class MarkUp_Window(QtWidgets.QWidget):
                 if scene_data:
                     break
         else:
-            self.display_scene_list()
             return
         """now go over scene data, compare each row with functions. """
         self.display_data.add_data(scene_data)

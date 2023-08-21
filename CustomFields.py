@@ -1311,10 +1311,11 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
 
 class FunctionField(SimpleFields.ElementsList):
     def __init__(self, flag_for_list_of_functions=False, master=None, view_title="Scenes"):
-        super().__init__(masterWun=master, listTitle=view_title, search_field=False, folders=False)
+        super().__init__(masterWun=master, listTitle=view_title, search_field=True, folders=False)
         """this is just container for scenes. Most of stuff will be done by MarkUpWindow.
         Basicly, its just element list. Double click on root - eventText, to open Markup with no data.
         Doubleclick on bottom element - load scene to edit"""
+        self.entry_search.hide()
         self.title = view_title
         self.type = 'functionfield'
         self.row_size = 12  # testing
@@ -1439,9 +1440,8 @@ class FunctionField(SimpleFields.ElementsList):
         # SimpleFields.mod_temp_data.current_editing_event = Glob_Var.access_templates['Events'].input_filename.get_val()
         # Window_txt_markup.SceneWindow(source_field=self, scene_data_to_load=scene_text, event_type=root_scene_setup_name,
         #                               master=self, fields_data=self.field_setup[root_scene_setup_name])
-        # TODO here could be memory leak. when closing markup it might need to somehow remove this variable too
         if not self.markup_win:
-            self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True, current_scene_list=self.scene_data_container,
+            self.markup_win = MarkUpDialog.MarkUp_Window(target_field=self.treeview_scenes, scenes_flag=True, current_scene_list=self.scene_data_container,
                                                          scene_data=self.field_setup)
         self.markup_win.show()
     # if i figure out how to use this then ill uncomment it

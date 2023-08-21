@@ -414,6 +414,8 @@ class EventsTemplate(Templates):
     def load_element_data(self, element_name):
         mod_temp_data.current_editing_event = element_name
         super().load_element_data(element_name)
+        # print('check if this apepares after super is done')
+        # mod_temp_data.current_editing_event = self.input_filename.get_val()
     def save_element_details_in_current_mod(self, current_mod):
         return
         # save element data into the current mod dictionary and add it into the lists.

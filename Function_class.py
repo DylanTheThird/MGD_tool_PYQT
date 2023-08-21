@@ -1243,7 +1243,7 @@ class StatCheckField:
     def __init__(self, master_frame):
         self.frame_data = tk.Frame(master_frame)
         # TODO correct path for function
-        self.sub_functions_structure_data = GlobalVariables.functions_data['Event Only']['Stat Checks'][0]['subfunction']
+        self.sub_functions_structure_data = GlobalVariables.Glob_Var.functions_data['Event Only']['Stat Checks'][0]['subfunction']
         self.button_start = tk.Button(master=self.frame_data, text='Change difficulty options', command=self.display_data)
         self.flag_displayed_data = False
         self.col_span = 6
@@ -1405,6 +1405,407 @@ class StatCheckField:
         self.frame_data.destroy()
 #
 class MenuField(QtWidgets.QWidget):
+    def __init__(self, master_frame=None, mod_elements_treeview=None):
+        super().__init__(None)
+        self.treeview_main_game_items = mod_elements_treeview
+        master_frame.addWidget(self)
+        self.main_layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self.main_layout)
+        """first, menu options - MaxMenuSlots and ShuffleMenu"""
+        self.menu_main_options = SimpleFields.SingleList(None, 'Options',
+                                                         {'choices': ['blank', 'MaxMenuSlots', 'ShuffleMenu']}, edit=False)
+        self.menu_main_options.set_val('blank')
+        self.menu_main_options.set_up_widget(self.main_layout)
+        self.maxmenu_amount = SimpleFields.NumericEntry(None)
+        """to add options amount next to Single list"""
+        self.maxmenu_amount.set_up_widget(self.menu_main_options.custom_layout)
+        # self.options_amount.set_up_widget(self.main_layout)
+        self.maxmenu_amount.hide()
+        self.menu_main_options.currentTextChanged.connect(self.menu_slots)
+
+        """second, text field called 'choices-scenes' its selection are scenes in current event.
+        Press enter to add new choice to menu - new branch to tree called same as scene"""
+
+        self.choices_text = SimpleFields.MultiListDisplay(None, 'choices-scenes',
+                                      field_data={'choices': ["Scenes-current"], 'options': ["single_item", "search"]},
+                                      main_data_treeview=self.treeview_main_game_items)
+        self.choices_text.final_data.returnPressed.connect(self.new_choice)
+        self.choices_text.set_up_widget(self.main_layout)
+
+        """now make creator of choices conditions. This has lots of options"""
+        conditions_list = ['', 'FinalOption', 'EventJump', 'HideOptionOnRequirementFail', 'InverseRequirement',
+                        'RequiresStat','RequiresItem', 'RequiresSkill', 'RequiresPerk', 'RequiresEnergy',
+                        'RequiresVirility', 'RequiresItemEquipped', 'RequiresTime', 'RequiresFetishLevelEqualOrGreater',
+                        'RequiresFetishLevelEqualOrLess', 'RequiresMinimumProgress', 'RequiresMinimumProgressFromEvent',
+                        'RequiresLessProgress', 'RequiresLessProgressFromEvent', 'RequiresChoice',
+                        'RequiresChoiceFromEvent']
+        conditions_list.sort()
+        self.menu_conditions = SubFunction(None, 'Menu', mod_elements_treeview)
+
+        # self.menu_conditions = SimpleFields.SingleList(None, 'Conditions', label_pos='V')
+        # self.menu_conditions.label_custom.change_position('C')
+        # self.menu_conditions.reload_options(conditions_list)
+        """connect to def that controls fields to display and hide and load choices"""
+        # self.menu_conditions.currentTextChanged.connect(self.menu_choice_options)
+        # self.menu_conditions.set_up_widget(self.main_layout)
+        self.main_layout.addWidget(self.menu_conditions)
+        """not all elements should be added to main layouts, so other stuff should be in seperate widget"""
+        # self.field_widget_for_easy_remove = QtWidgets.QWidget()
+        # self.created_fields_layout = QtWidgets.QHBoxLayout()
+        # self.created_fields_layout.setAlignment(QtCore.Qt.AlignCenter)
+        # self.field_widget_for_easy_remove.setLayout(self.created_fields_layout)
+        # self.main_layout.addWidget(self.field_widget_for_easy_remove)
+        """these fields are what will be used"""
+        # field_number = SimpleFields.NumericEntry(edit=False)
+        # field_list = SimpleFields.SingleList(edit=False)
+        # field_list_2 = SimpleFields.SingleList(edit=False)
+        # field_multi = SimpleFields.MultiListDisplay(None, field_data={'options': ["single_item"]},main_data_treeview=self.treeview_main_game_items)
+        # field_multi.final_data.textChanged.disconnect()
+        # field_multi2 = SimpleFields.MultiListDisplay(None, field_data={'choices': ["Scenes"], 'options': ["single_item"]},main_data_treeview=self.treeview_main_game_items)
+        # field_multi2.final_data.textChanged.disconnect()
+        # field_checkbox = SimpleFields.CheckBox(None, 'ThenJumpToScene', 'ThenJumpToScene')
+        # field_checkbox.change_f(self.set_up_scene_field)
+        # # field_checkbox.value.trace_id = field_checkbox.value.trace('w', lambda *args: self.set_up_scene_field())
+        # self.fields_list = {'multi': field_multi, 'list1': field_list, 'list2': field_list_2,
+        #                     'check': field_checkbox, 'multi2': field_multi2, 'int': field_number}
+        # for field in self.fields_list:
+        #     self.fields_list[field].set_up_widget(self.created_fields_layout)
+        #     self.fields_list[field].hide()
+        """here is where all is displayed"""
+
+        self.button_add_condition = SimpleFields.CustomButton(None, 'Add Condition')
+        self.button_add_condition.clicked.connect(self.add_condition)
+        self.main_layout.addWidget(self.button_add_condition)
+        # self.data_display = SimpleFields.ElementsList(self.frame_for_fields, 2, 0, 'Menu choices', 2, False)
+        self.final_data = SimpleFields.ElementsList(None, 'Menu choices', all_edit=True)
+        self.final_data.set_up_widget(self.main_layout)
+        self.prev_options = ''
+        self.options_row = 1
+    def set_val(self, values_to_set_list):
+        """should accept list of values"""
+        """first check for main menu options"""
+        length_of_list = len(values_to_set_list)
+        start_checking = 0
+        if length_of_list[start_checking] in 'MaxMenuSlots ShuffleMenu':
+            value = length_of_list[start_checking]
+            if value == 'MaxMenuSlots':
+                start_checking = 2
+                self.menu_main_options.set_val('MaxMenuSlots')
+                self.max_menu_slots.set_val(int(length_of_list[1]))
+            elif value == 'ShuffleMenu':
+                self.menu_main_options.set_val('ShuffleMenu')
+                start_checking = 1
+        choices_no = 1
+        temp_list = []
+        skip_no = 0
+        for index in range(start_checking, length_of_list):
+            if skip_no >= 0:
+                skip_no -= 1
+                continue
+            selected_option = values_to_set_list[index]
+            temp_list.append(selected_option)
+            if selected_option in 'FinalOption HideOptionOnRequirementFail InverseRequirement':
+                continue
+            elif selected_option in 'RequiresMinimumProgress RequiresLessProgress RequiresEnergy RequiresVirility' \
+                                    'RequiresItem RequiresItemEquipped RequiresPerk RequiresSkill RequiresTime' \
+                                    ' EventJump ThenJumpToScene':
+                temp_list.append(values_to_set_list[index + 1])
+                skip_no = 1
+            elif selected_option in 'RequiresFetishLevelEqualOrGreater RequiresFetishLevelEqualOrLess RequiresStat ' \
+                                    'RequiresMinimumProgressFromEvent RequiresLessProgressFromEvent RequiresChoice':
+                temp_list.append(values_to_set_list[index + 1])
+                temp_list.append(values_to_set_list[index + 2])
+                skip_no = 2
+            elif selected_option in 'RequiresChoiceFromEvent':
+                temp_list.append(values_to_set_list[index + 1])
+                temp_list.append(values_to_set_list[index + 2])
+                temp_list.append(values_to_set_list[index + 3])
+                skip_no = 3
+            else:
+                self.data_display.add_branch('Choice ' + str(choices_no), temp_list, update_flag=False)
+                temp_list.clear()
+                choices_no += 1
+                # data_to_load.append({str(len(data_to_load)+1): temp_list})
+
+
+
+
+
+
+
+
+        return
+    def get_val(self):
+        return_values = []
+        """first get main options, then what was added in the data display"""
+        main_options = self.menu_main_options.get_val()
+        if main_options != 'blank':
+            return_values.append(main_options)
+            if main_options == 'MaxMenuSlots':
+                return_values.append(self.maxmenu_amount.get_val())
+        displayed_data_list = self.final_data.get_data()
+        for choice in displayed_data_list:
+            for choice_element in choice:
+                choice_elements_list = choice[choice_element]
+                return_values += choice_elements_list
+                return_values.append(choice_element)
+        self.final_data.clear_tree()
+        return return_values
+    def clear_val(self):
+        self.pack_forget()
+    def destroy(self):
+        self.setParent(None)
+        self.deleteLater()
+
+    def new_choice(self):
+        new_choice = self.choices_text.get_val()
+        self.final_data.add_data(new_choice)
+
+    def add_condition(self):
+        """add condition to choice. Choice is branch name in final data."""
+        selected_choice_name = self.final_data.selected_element()
+        if selected_choice_name:
+            conditions = self.menu_conditions.get_val() # this will be list, 0 - option, rest are values
+            if conditions[0] not in ['', 'FinalOption', 'EventJump', 'HideOptionOnRequirementFail', 'InverseRequirement']:
+                conditions[0] = 'Requires' + conditions[0]
+            self.final_data.add_data_to_display(conditions, selected_choice_name)
+        else:
+            otherFunctions.show_message('Condition placement', 'Press "enter" on selected scene to add new condition.\n'
+                                                               'Then select added scene to add condition to it', '')
+    def menu_slots(self, slots_val):
+        # slots_val = self.menu_main_options.get_val()
+        if slots_val == 'MaxMenuSlots':
+            self.maxmenu_amount.show()
+        else:
+            self.maxmenu_amount.hide()
+    # def menu_choice_options(self, selected_option):
+    #     # selected_option = self.menu_choice_list.get_val()
+    #     if selected_option not in self.prev_options:
+    #         self.clear_fields()
+    #         self.prev_options = selected_option
+    #         if selected_option in 'FinalOption HideOptionOnRequirementFail InverseRequirement':
+    #             self.prev_options = 'FinalOption HideOptionOnRequirementFail InverseRequirement'
+    #             self.selected_filter_fields = []
+    #         elif selected_option in 'RequiresMinimumProgress RequiresLessProgress RequiresEnergy RequiresVirility':
+    #             self.prev_options = 'RequiresMinimumProgress RequiresLessProgress RequiresEnergy RequiresVirility'
+    #             self.setup_int()
+    #         elif selected_option in 'RequiresFetishLevelEqualOrGreater RequiresFetishLevelEqualOrLess RequiresStat':
+    #             self.setup_list_int()
+    #         elif selected_option in 'RequiresItem RequiresItemEquipped RequiresPerk RequiresSkill':
+    #             self.setup_multi()
+    #         elif selected_option in 'RequiresMinimumProgressFromEvent RequiresLessProgressFromEvent':
+    #             self.prev_options = 'RequiresMinimumProgressFromEvent RequiresLessProgressFromEvent'
+    #             self.setup_int_multi()
+    #         elif selected_option in 'RequiresTime':
+    #             self.setup_list()
+    #         elif selected_option == 'RequiresChoice':
+    #             self.set_up_choice('current')
+    #         elif selected_option == 'RequiresChoiceFromEvent':
+    #             self.set_up_choice('event')
+    #         else:
+    #             # self.prev_options = 'EventJump ThenJumpToScene' - thise should be together, not separate
+    #             self.prev_options = 'EventJump'
+    #             self.setup_scene()
+    # def clear_fields(self):
+    #     for field in self.fields_list:
+    #         self.fields_list[field].hide()
+    #         self.fields_list[field].clear_val()
+    # def setup_int(self):
+    #     self.fields_list['int'].show()
+    #     # self.fields_list['int'].grid(row=self.options_row, column=2)
+    #     self.selected_filter_fields = ['int']
+    # def setup_list_int(self):
+    #     self.fields_list['list1'].show()
+    #     # self.fields_list['list1'].grid(row=self.options_row, column=2)
+    #     data_to_load = self.menu_conditions.get_val()
+    #     if 'Stat' in data_to_load:
+    #         # values = GlobalVariables.Glob_Var.game_hard_data
+    #         values = otherFunctions.getListOptions(['game-core stats-simple'], 'single')
+    #     else:
+    #         values = otherFunctions.getListOptions(['Fetishes'], 'single')
+    #         # values = otherFunctions.getListOptions(['Fetishes'], 'single')
+    #     self.fields_list['list1'].reload_options(values)
+    #     self.fields_list['int'].show()
+    #     # self.fields_list['int'].grid(row=self.options_row, column=3)
+    #     self.selected_filter_fields = ['list1', 'int']
+    # def setup_list(self):
+    #     self.fields_list['list1'].show()
+    #     # self.fields_list['list1'].grid(row=self.options_row, column=2)
+    #     self.fields_list['list1'].reload_options(["Day", "Night", "DayFaked", "DayTrue", "NightFaked", "NightTrue", "Morning", "Noon", "Afternoon", "Dusk", "Evening", "Midnight"])
+    #     self.selected_filter_fields = ['list1']
+    # def setup_multi(self):
+    #     self.fields_list['multi'].show()
+    #     data_to_load = self.menu_conditions.get_val()
+    #     if 'Item' in data_to_load:
+    #         data_to_load = 'Items'
+    #     elif 'Perk' in data_to_load:
+    #         data_to_load = 'Perks'
+    #     elif 'Skill' in data_to_load:
+    #         data_to_load = 'Skills'
+    #     self.fields_list['multi'].selection_type = data_to_load
+    #     self.treeview_main_game_items.disconnect_multilist()
+    #     self.selected_filter_fields = ['multi']
+    # def setup_int_multi(self):
+    #     self.fields_list['multi'].show()
+    #     self.fields_list['int'].show()
+    #     self.fields_list['multi'].selection_type = 'Events'
+    #     self.fields_list['multi'].label_custom.setText('Events')
+    #     self.selected_filter_fields = ['multi', 'int']
+    # def setup_scene(self):
+    #     data_to_load = self.menu_conditions.get_val()
+    #     if data_to_load == 'EventJump':
+    #         # if eventjump, need to set first multilist display for events.
+    #         # second multi could display scenes. either from current event - "choice" options, or from selected event from eventjump - first multi
+    #         values = ['Events']
+    #
+    #         self.fields_list['multi'].label_custom.setText('Events')
+    #         self.fields_list['multi'].selection_type = 'Events'
+    #         self.fields_list['multi'].show()
+    #         # self.fields_list['multi'].var.trace_id = self.fields_list['multi'].var.trace('w', lambda *args: self.special_event_jumping_load_scenes_to_list(''))
+    #         self.fields_list['multi'].final_data.function_on_modify(self.special_event_jumping_load_scenes_to_list)
+    #         self.fields_list['check'].show()
+    #         self.selected_filter_fields = ['multi', 'check']
+    #     #     Else below never happens, since this reacts to option value, which is only EventText. Scene is a checkbox
+    #     # else:
+    #     #     self.special_event_jumping_load_scenes_to_list('', flag_current_event=True)
+    #     #     # values = ['Scenes']
+    #     #     # self.fields_list['multi2'].update_list(values)
+    #     #     self.fields_list['multi2'].show()
+    #     #     # self.fields_list['multi2'].grid(row=self.options_row, column=2)
+    #     #     self.selected_filter_fields = ['multi2']
+    #     # # values = otherFunctions.getListOptions(['currentmod-Events'], 'multi')
+    #     # # self.fields_list['multi'].update_list(values)
+    #
+    #     # self.fields_list['multi'].grid(row=self.options_row, column=3)
+    # def set_up_scene_field(self):
+    #     flag_trigger = self.fields_list['check'].get_val()
+    #     if flag_trigger:
+    #         self.fields_list['multi2'].show()
+    #         # self.fields_list['multi2'].grid(row=1, column=5)
+    #         self.selected_filter_fields.append('multi2')
+    #     else:
+    #         self.fields_list['multi2'].hide()
+    #         if len(self.selected_filter_fields) == 5:
+    #             self.selected_filter_fields.pop()
+    # def set_up_choice(self, with_event):
+    #     self.selected_filter_fields = ['list1', 'list2']
+    #     choice_startup = 'current'
+    #     if with_event == 'event':
+    #         self.fields_list['multi'].selection_type = 'Events'
+    #         self.fields_list['multi'].label_custom.setText('Events')
+    #         self.fields_list['multi'].show()
+    #         self.selected_filter_fields.insert(0, 'multi')
+    #         choice_startup = 'Event'
+    #
+    #     self.fields_list['list1'].show()
+    #     self.fields_list['list2'].show()
+    #     self.Special_Set_Up_Choices_Fields(choice_startup)
+    #
+    # def Special_Set_Up_Choices_Fields(self, function_name):
+    #     if 'Event' in function_name:
+    #         """if event, link first multi field with function to find choices based on event"""
+    #         # self.fields_list['list1'].clear_val()
+    #         # otherFunctions.duplicate_treeview(GlobalVariables.list_elementlists[1].treeview,
+    #         #                                   self.function_fields_list[0].tree_options_choose.treeview,
+    #         #                                   destination_leaf='mod-Events')
+    #         # self.fields_list['multi'].var.trace_id =\
+    #         #     self.fields_list['multi'].var.trace("w", lambda *args, arg1='true': self.special_set_up_choices_1(arg1))
+    #         self.fields_list['multi'].final_data.function_on_modify(self.special_set_up_choices_1)
+    #     else:
+    #         """if not event, then return choices from current scene"""
+    #
+    #         event_name = SimpleFields.mod_temp_data.current_editing_event
+    #         self.prev_options = event_name
+    #         self.special_set_up_choices_1()
+    #     """first field should be choice number, second field should be choice text"""
+    #     # # self.function_fields_list[field_order].var.trace_add("write", lambda order: self.Special_Set_Up_Choices_2(field_order))
+    #     self.fields_list['list1'].currentTextChanged.connect(self.Special_Set_Up_Choices_2)
+    #     # self.fields_list['list1'].var.trace_id =\
+    #     #     self.fields_list['list1'].var.trace("w", lambda *args: self.Special_Set_Up_Choices_2())
+    #     # self.fields_list['list1'].delete_place = 'gate'
+    #     # self.fields_list['list2'].delete_place = 'choice'
+    #     # self.fields_list['list2'].choice_no_field = self.fields_list['list1']
+    #     # self.fields_list['list2'].currentTextChanged.connect(self.Special_Set_Up_Choices_2_1)
+    #     # self.fields_list['list2'].var.trace_id = self.fields_list[
+    #     #     'list2'].var.trace("w", lambda *args: self.Special_Set_Up_Choices_2_1())
+    #
+    #     # old version, when it searched on the spot
+    #     # choices_list = []
+    #     # if 'Event' in function_name:
+    #     #     return
+    #     # else:
+    #     #     if self.event == 'EventText':
+    #     #         element = 'Events'
+    #     #     else:
+    #     #         element = 'Monsters'
+    #     #     list_of__dictionary_scenes = GlobalVariables.templates[element].frame_fields[self.event].get_val()
+    #     #     for dictionary_scene in list_of__dictionary_scenes:
+    #     #         theText = dictionary_scene['theScene']
+    #     #         index = 0
+    #     #         for texts in theText:
+    #     #             if len(texts) == 9:
+    #     #                 if texts == 'SetChoice':
+    #     #                     choices_list.append(theText[index+1])
+    #     #             index += 1
+    #     #     self.function_fields_list[1].reload_options(choices_list)
+    #
+    # def special_set_up_choices_1(self):
+    #     if 'multi' in self.selected_filter_fields:
+    #         """this means choices should be set by event name in first field"""
+    #         event_name = self.fields_list['multi'].get_val()
+    #         self.prev_options = event_name
+    #     """first field should be choice number, second field should be choice text"""
+    #     choice_list = SimpleFields.mod_temp_data.get_choices(get_val='gate', event_name=self.prev_options)
+    #     self.fields_list['list1'].reload_options(choice_list)
+    #     # self.fields_list['list1'].event_name = event_name
+    #     choice_list = SimpleFields.mod_temp_data.get_all_choices_text(event_name=self.prev_options)
+    #     self.fields_list['list2'].reload_options(choice_list)
+    #     # self.fields_list['list2'].event_name = event_name
+    #
+    # def Special_Set_Up_Choices_2(self, choice_gate):
+    #     """get choice number and load choices text"""
+    #     # choice_text = self.fields_list['list2'].get_val()
+    #     # if not choice_text:
+    #     # choice_gate = choice_no
+    #     # choice_gate = self.fields_list['list1'].get_val()
+    #     if choice_gate:
+    #         choices_list = SimpleFields.mod_temp_data.get_choices(get_val=choice_gate, event_name=self.prev_options)
+    #         self.fields_list['list2'].reload_options(choices_list)
+    #
+    # # def Special_Set_Up_Choices_2_1(self):
+    # #     """get choice text and load its number"""
+    # #     choice_no = self.fields_list['list1'].get_val()
+    # #     if not choice_no:
+    # #         choice_text = self.fields_list['list2'].get_val()
+    # #         if choice_text:
+    # #             choices_no = SimpleFields.mod_temp_data.get_gates(choice=choice_text, event_name=self.prev_options)
+    # #             self.fields_list['list1'].set_val(choices_no)
+    #
+    #     return
+    # def special_event_jumping_load_scenes_to_list(self, event, flag_current_event=False):
+    #     self.fields_list['multi2'].clear_val()
+    #     if flag_current_event:
+    #         self.treeview_main_game_items.scene_source = 'current'
+    #         # event_name = GlobalVariables.templates['Events'].frame_fields['name'].get_val()
+    #         # list_of_dictionary_scenes = GlobalVariables.Mod_Var.templates['Events'].frame_fields['EventText'].get_val()
+    #         # for scene in list_of_dictionary_scenes:
+    #         #     # self.fields_list['multi2'].tree_options_choose.treeview.insert('mod-Scenes', 'end', text=scene['NameOfScene'])
+    #         #     self.fields_list['multi2'].tree_options_choose.treeview.insert('', 'end', text=scene['NameOfScene'])
+    #         # return
+    #     # selected_item = self.fields_list['multi'].tree_options_choose.treeview.selection()
+    #     selected_event = self.fields_list['multi'].get_val()
+    #     if selected_event:
+    #         self.treeview_main_game_items.scene_source = selected_event
+    #         # self.fields_list['multi2'].clear_val('all')
+    #         # selected_event = self.fields_list['multi'].tree_options_choose.treeview.item(selected_item)['text']
+    #         # scenes_list = GlobalVariables.current_mod['Events'][selected_event]['EventText']
+    #         # temp_scene_names = []
+    #         # for scene in scenes_list:
+    #         #     self.fields_list['multi2'].tree_options_choose.treeview.insert('', 'end',
+    #         #                                                                      text=scene['NameOfScene'])
+    #         # temp_scene_names.append(scene['NameOfScene'])
+    #     # self.function_fields_list[2].treeview_optionstochoose.treeview.insert('', 'end',values=temp_scene_names)
+class MenuField_backup_working(QtWidgets.QWidget):
     def __init__(self, master_frame=None, mod_elements_treeview=None):
         super().__init__(None)
         self.treeview_main_game_items = mod_elements_treeview
@@ -1578,6 +1979,9 @@ class MenuField(QtWidgets.QWidget):
                 if self.fields_list[field].get_val():
                     final_values_to_add.append(self.fields_list[field].get_val())
             self.final_data.add_data_to_display(final_values_to_add, selected_choice_name)
+        else:
+            otherFunctions.show_message('Condition placement', 'Press enter on selected scene to add new condition.\n'
+                                                               'Then select added scene to add condition to it', '')
     def menu_slots(self, slots_val):
         # slots_val = self.menu_main_options.get_val()
         if slots_val == 'MaxMenuSlots':
@@ -1819,6 +2223,7 @@ class Choices:
         self.field_choice_no.field.setMaximumWidth(60)
         self.field_choice_text = SimpleFields.InputList(field_name='Text')
         self.event_source = ''
+        self.event_source_field = None
         if event_field:
             self.event_source_field = event_field
             self.event_source_field.final_data.function_on_modify(self.set_up_event_source)
@@ -1832,7 +2237,7 @@ class Choices:
         self.field_choice_text.choice_no_field = self.field_choice_no
         # self.field_choice_text.var.trace_id = self.field_choice_text.var.trace("w", lambda *args: self.set_up_choices_no())
     def set_up_event_source(self):
-        if not self.event_source:
+        if self.event_source_field:
             self.event_source = self.event_source_field.get_val()
         """first field should be choice number, second field should be choice text"""
         choice_list = SimpleFields.mod_temp_data.get_choices(get_val='gate', event_name=self.event_source)
@@ -2050,7 +2455,7 @@ class FunctionTests(QtWidgets.QWidget):
 
 class SwapLine_Field:
     def __init__(self, main_layout=None, main_game_items=None):
-        # TODO for some reason, when this is created, other function after it are created at the bottom of main layout instead of the top
+        # TODO for some reason, when this is created, other function after it are created at the bottom of main layout instead of the top. maybe remake it similar to menu, as a widget
         """main idea:
         first line - dropdown with options
         second line - will create fields according to above. mostly int and text, sometime input with staff from tree
@@ -2062,7 +2467,7 @@ class SwapLine_Field:
         #                         "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]}
 
         self.main_layout = main_layout
-        self.treeview_main_game_items = main_game_items
+        # self.treeview_main_game_items = main_game_items
         # options = {'choices': ["","Random", "Stat", "Arousal", "MaxArousal", "Energy", "MaxEnergy", "Virility",
         #                         "HasFetish", "HasFetishLevelEqualOrGreater", "Perk", "EncounterSize", "Item", "Eros",
         #                         "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]
@@ -2070,13 +2475,16 @@ class SwapLine_Field:
         # self.list_options = SimpleFields.SingleList(field_data=options)
         # self.list_options.set_up_widget(self.main_layout)
         # self.list_options.currentTextChanged.connect(self.prepare_line_fields)
-        self.list_fields_not_going_to_treeview = []
+        self.list_fields_not_going_to_treeview = ''
+        # self.list_fields_not_going_to_treeview = []
         """in case options has additional options, like event for progress, which should not repeat for each text"""
-        self.field_widget_for_easy_remove = QtWidgets.QWidget()
-        self.created_fields_layout = QtWidgets.QHBoxLayout()
-        self.created_fields_layout.setAlignment(QtCore.Qt.AlignCenter)
-        self.field_widget_for_easy_remove.setLayout(self.created_fields_layout)
-        self.main_layout.addWidget(self.field_widget_for_easy_remove)
+        # self.field_widget_for_easy_remove = QtWidgets.QWidget()
+        # self.created_fields_layout = QtWidgets.QHBoxLayout()
+        # self.created_fields_layout.setAlignment(QtCore.Qt.AlignCenter)
+        # self.field_widget_for_easy_remove.setLayout(self.created_fields_layout)
+        # self.main_layout.addWidget(self.field_widget_for_easy_remove)
+        self.options_fields = SubFunction(function_name='SwapLineIf', main_treeview=main_game_items)
+        self.main_layout.addWidget(self.options_fields)
         self.field_text = SimpleFields.SimpleEntry(None, 'Text', label_pos='V')
         self.field_text.label_custom.change_position('C')
         self.field_text.center()
@@ -2089,27 +2497,35 @@ class SwapLine_Field:
         self.data_tree = SimpleFields.ElementsList(None,folders=True, all_edit=True)
         self.data_tree.set_up_widget(self.main_layout)
         self.data_tree.setWordWrap(True)
-        self.fields_list = []
+        # self.fields_list = []
+        # self.fields_list.append(self.options_fields)
         self.changed_selection = 'none'
 
     def add_multi_value(self):
-        title = ''
-        for field in self.fields_list:
-            title += field.get_val() + '   '
-        title = title.rstrip()
-        text = self.field_text.get_val()
-        self.data_tree.add_data({title: text})
+        options_data = self.options_fields.get_val()
+        # title = ''
+        # for field in self.fields_list:
+        #     title += field.get_val() + '   '
+        # title = title.rstrip()
+        self.option = options_data[0]
+        if self.option in ['OtherEventsChoice', 'OtherEventsProgress','HasFetishLevelEqualOrGreater']:
+            start_idx = 2
+            self.list_fields_not_going_to_treeview = options_data[1]
+        else:
+            start_idx = 1
+            self.list_fields_not_going_to_treeview = ''
+        title = options_data[start_idx]
+        self.data_tree.add_data({title: self.field_text.get_val()})
         self.data_tree.change_row_height(40)
         self.data_tree.expandAll()
 
     def deselect_row(self):
         self.data_tree.treeview.selection_remove(self.data_tree.treeview.selection()[0])
+
     def prepare_line_fields(self, prepare_options):
-        # probably useless, as for example, from fetish to fetish level will not update
-        # if prepare_options in self.changed_selection:
-        #     return
-        # else:
-        #     self.changed_selection = prepare_options
+        self.options_fields.set_fields(prepare_options)
+        self.data_tree.clear_tree()
+        return
         # self.treeview_main_game_items.disconnect_multilist()
         for field in self.fields_list:
             field.destroy()
@@ -2195,50 +2611,132 @@ class SwapLine_Field:
             self.fields_list.append(field_list.field_choice_text)
 
     def get_val(self):
-        templist = []
-        for additiona_field in self.list_fields_not_going_to_treeview:
-            templist.append(additiona_field.get_val())
+        templist = [self.option]
+        # for additiona_field in self.list_fields_not_going_to_treeview:
+        #     templist.append(additiona_field.get_val())
+        if self.list_fields_not_going_to_treeview:
+            templist.append(self.list_fields_not_going_to_treeview)
         swap_attributes = self.data_tree.get_data()
         for dict_in_list in swap_attributes:
             for keyV in dict_in_list:
                 templist.append(keyV)
                 templist.append(dict_in_list[keyV][0])
+
+        self.data_tree.clear_tree()
+        self.options_fields.set_val('')
+        self.field_text.clear_val()
         return templist
     def clear_val(self):
         self.data_tree.clear_tree()
     def destroy(self):
         self.main_layout.removeWidget(self.field_text)
         self.field_text.destroy()
-        self.main_layout.removeWidget(self.field_widget_for_easy_remove)
-        self.field_widget_for_easy_remove.deleteLater()
+        self.main_layout.removeWidget(self.options_fields)
+        self.options_fields.destroy()
+        # self.main_layout.removeWidget(self.field_widget_for_easy_remove)
+        # self.field_widget_for_easy_remove.deleteLater()
         self.main_layout.removeWidget(self.data_tree)
         self.data_tree.deleteLater()
         # self.main_layout.removeWidget(self.list_options)
         # self.list_options.destroy()
 
-class Special_Options(QtWidgets.QWidget):
-    # TODO
+class SubFunction(QtWidgets.QWidget):
+    # TODO - there is something called 'subfunction' which contains information similar to what is created in swap file.
+    # it should be working in STATCHECK, so copy from there.
     """functions like MENU, SWAPLINE and now i see that STATCHECK, got options with various values to select.
     Some if not most of those options seems different, but are actually the same. So instead of having
     different code(menu has different way to working for that), I've decided to create seperate class, that should
     work on those options itself."""
-    def __init__(self):
+    def __init__(self, main_lay=None, function_name=None, main_treeview=None):
         super().__init__()
-        # options = {'choices': ["","Random", "Stat", "Arousal", "MaxArousal", "Energy", "MaxEnergy", "Virility",
-        #                         "HasFetish", "HasFetishLevelEqualOrGreater", "Perk", "EncounterSize", "Item", "Eros",
-        #                         "IfTimeIs", "Progress", "OtherEventsProgress", "Choice", "OtherEventsChoice"]
-        #            }
-        # self.list_options = SimpleFields.SingleList(field_data=options)
-        # self.list_options.set_up_widget(self.main_layout)
-        # self.list_options.currentTextChanged.connect(self.prepare_line_fields)
         """in case options has additional options, like event for progress, which should not repeat for each text"""
-        self.field_widget_for_easy_remove = QtWidgets.QWidget()
-        self.created_fields_layout = QtWidgets.QHBoxLayout()
+        self.created_fields_layout = QtWidgets.QVBoxLayout()
         self.created_fields_layout.setAlignment(QtCore.Qt.AlignCenter)
-        self.field_widget_for_easy_remove.setLayout(self.created_fields_layout)
-        self.main_layout.addWidget(self.field_widget_for_easy_remove)
+        self.setLayout(self.created_fields_layout)
+        temp = GlobalVariables.Glob_Var.get_functions(function_name)
+        self.sub_functions_structure_data = temp['subfunction']
+        list_options_values = list(self.sub_functions_structure_data['structure'].keys())
+        list_options_values.insert(0, '')
+        self.list_options = SimpleFields.SingleList()
+        self.list_options.reload_options(list_options_values)
+        self.list_options.set_up_widget(self.created_fields_layout)
+        self.list_options.currentTextChanged.connect(self.set_fields)
+        self.fields_list = []
+        self.treeview_main_game_items = main_treeview
 
+    def set_fields(self, sub_function_name):
+        for field in self.fields_list:
+            field.destroy()
+        self.fields_list.clear()
+        if sub_function_name:
+            structure = self.sub_functions_structure_data['structure'][sub_function_name]
+            for field in structure:
+                tooltip = ''
+                tempfield = ''
+                if structure[field]["type"] == "text":
+                    tempfield = SimpleFields.SimpleEntry(None)
+                elif structure[field]["type"] == "int":
+                    tempfield = SimpleFields.NumericEntry(None)
+                elif structure[field]["type"] == "singlelist":
+                    tempfield = SimpleFields.SingleList(label_text=field, label_pos='V',
+                                                         field_data=structure[field])
+                elif structure[field]["type"] == 'multilist':
+                    tempfield = SimpleFields.MultiListDisplay(None, field,
+                                                               field_data=structure[field],
+                                                               main_data_treeview=self.treeview_main_game_items)
+                    # tempfield.update_label(field)
+                elif structure[field]["type"] == 'checkbox':
+                    tempfield = SimpleFields.CheckBox(None, field, field)
+                    tempfield.change_f(self.custom_function)
+                elif 'choice' in structure[field]['type']:
+                    if 'Events' in structure.keys():
+                        # need to change below. field for event is already created.
+                        # either remove it from structure from file or here just make connection
+                        # field_atr1 = SimpleFields.MultiListDisplay(None, 'Event',
+                        #                                            field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
+                        #                                            main_data_treeview=self.treeview_main_game_items)
+                        # self.fields_list.append(self.fields_list[0])
+                        # field_atr1.set_up_widget(self.created_fields_layout)
+                        tempfield = Choices(self.fields_list[0])
+                    else:
+                        tempfield = Choices()
+                    tempfield.set_up_widget(self.created_fields_layout)
+                    self.fields_list.append(tempfield.field_choice_no)
+                    self.fields_list.append(tempfield.field_choice_text)
+                    continue
+                self.fields_list.append(tempfield)
+                tempfield.set_up_widget(self.created_fields_layout)
+        return
 
+    def get_val(self):
+        """return all data from fields"""
+        ret_list = [self.list_options.currentText()]
+        for field in self.fields_list:
+            ret_list.append(field.get_val())
+        return ret_list
+
+    def set_val(self, value):
+        if not value:
+            self.list_options.setCurrentIndex(0)
+    def custom_function(self, state):
+        # if state = 2 - checked. if 0 - unchechekd
+        if state == 2:
+            next_event_field = SimpleFields.MultiListDisplay(None, 'Scene',
+                                                                   field_data={"type":"multilist","options":
+                                                                       ["single_item", "search"],"choices": ["scene"]},
+                                                                   main_data_treeview=self.treeview_main_game_items)
+
+            self.fields_list[-2].final_data.function_on_modify(self.scene_reload)
+            self.fields_list.append(next_event_field)
+            next_event_field.set_up_widget(self.created_fields_layout)
+        else:
+            self.fields_list[-1].destroy()
+            self.fields_list[-1].pop()
+
+        """checkbox in menu function event jump > should display another multilist for scene for that event"""
+        return
+    def scene_reload(self):
+        self.treeview_main_game_items.scene_source = self.fields_list[-2].get_val()
 class main_game_for_functions_treeview:
     """fused with maine game items treeview."""
     def __init__(self, master=None, field_name=None):
@@ -2663,7 +3161,8 @@ class Function_Gui:
         # end_loop_frame = tk.Frame(self.frame_function_fields)
         """this ending field is for endlopps. data is taken from function fields by getVal. If here is endloop,
         this field is added to the list at specific place and value taken from it."""
-        self.ending_field = SimpleFields.SimpleEntry(None)
+        # self.ending_field = SimpleFields.SimpleEntry(None)
+        self.ending_field = ''
         # self.ending_field = SimpleFields.SimpleEntry(master=end_loop_frame, field_name='temp', label_position='U',
         #                                              tooltip_text=None, field_data=None)
         # self.prepared_fields['text'].append(SceneSimpleEntry(master=end_loop_frame))
@@ -2700,7 +3199,7 @@ class Function_Gui:
         self.custom_layout.addLayout(h_lay_checkboxes)
 
         self.treeview_functions = SimpleFields.ElementsList(None, 'functions', True, False, False, delete_flag=False)
-        self.treeview_functions.setMinimumWidth(300)
+        self.treeview_functions.setMinimumWidth(250)
         self.treeview_functions.set_up_widget(self.custom_layout)
         self.treeview_functions.add_data(data=GlobalVariables.Glob_Var.functions_display)
         self.treeview_functions.clicked.connect(self.display_explanation)
@@ -2786,7 +3285,8 @@ class Function_Gui:
                 # tempfield = SceneMultiList(self.frame_function_fields, structure[field]['choices'],
                 #                                    field_options=structure[field]['options'])
                 # tempfield.update_label(field)
-                tempfield = SimpleFields.MultiListDisplay(None, field, structure[field], main_data_treeview=self.treeview_main_game_items)
+                tempfield = SimpleFields.MultiListDisplay(None, field, structure[field], main_data_treeview=self.treeview_main_game_items
+                                                          , single_edit=False)
                 self.flag_main_game_items = True
             elif structure[field]["type"] == 'combobox':
                 tempfield = SimpleFields.InputList(None, flag_delete=True, field_name=field
@@ -2801,14 +3301,16 @@ class Function_Gui:
             # tempfield.pack(side=tk.LEFT, fill=tk.BOTH)
             if tempfield is not None:
                 tempfield.set_up_widget(self.functions_layout, True)
-            if self.flag_main_game_items:
-                self.treeview_main_game_items.show()
+        if self.flag_main_game_items:
+            self.treeview_main_game_items.show()
 
     # def close_window(self):
     #     self.flag_if_window_open = False
     #     self.window_function.destroy()
 #     # TODO check setchoice if choice is deleted when press X on input least. maybe add confirmation window too.
     def display_explanation(self):
+        self.ending_field = ''
+        # self.ending_field.clear_val()
         # treevieID is just variable for elementlist, so access treeview in it, gets its name and parent name and search
         # in function_data for explanation to put
         selected_function_item = self.treeview_functions.selected_element()
@@ -2829,17 +3331,23 @@ class Function_Gui:
             self.area_instruction.set_val(explanation_text)
             """also, if there is only 1 step it is title, might as well hide prep button and add button will add it"""
             if function_data['steps'] == '1':
-                self.buttonPREPARE_function.hide()
-                self.buttonADD_function.show()
+                # self.buttonPREPARE_function.hide()
+                self.buttonPREPARE_function.setDisabled(True)
+                # self.buttonADD_function.show()
+                self.buttonADD_function.setEnabled(True)
                 self.function_fields_list.append(function_data['title'])
             else:
-                self.buttonPREPARE_function.show()
-                self.buttonADD_function.hide()
+                # self.buttonPREPARE_function.show()
+                self.buttonPREPARE_function.setEnabled(True)
+                # self.buttonADD_function.hide()
+                self.buttonADD_function.setDisabled(True)
             self.field_title.set_val(function_data['title'])
             self.field_title.adjustSize()
         else:
-            self.buttonADD_function.hide()
-            self.buttonPREPARE_function.hide()
+            # self.buttonADD_function.hide()
+            self.buttonADD_function.setDisabled(True)
+            # self.buttonPREPARE_function.hide()
+            self.buttonPREPARE_function.setDisabled(True)
         self.treeview_main_game_items.hide()
 
     def prepare_function_fields(self, function_values=[]):
@@ -2852,7 +3360,7 @@ class Function_Gui:
             function_name = function_item.text()
         function_data = GlobalVariables.Glob_Var.get_functions(function_name)
         # function_data = GlobalVariables.Glob_Var.functions_data[function_name]
-        self.buttonADD_function.show()
+        self.buttonADD_function.setEnabled(True)
         # field_data = function_data['structure']
         """fields data should be a dictionary with all data for specific funtion from file."""
         # if field_data:
@@ -2863,12 +3371,12 @@ class Function_Gui:
         # if "simple" in function_data['options']:
         # self.prepare_title(function_name)
         # self.frame_function_fields.pack()
-        if "TODO" in function_data['options']:
-            struct_len = len(function_data['structure'].keys())
-            function_data['structure'] = {}
-            function_data['options'] = []
-            for idx in range(1, struct_len + 1):
-                function_data['structure'][idx] = {"type": "text"}
+        # if "TODO" in function_data['options']:
+        #     struct_len = len(function_data['structure'].keys())
+        #     function_data['structure'] = {}
+        #     function_data['options'] = []
+        #     for idx in range(1, struct_len + 1):
+        #         function_data['structure'][idx] = {"type": "text"}
         if function_data['steps'] != '1':
             """create all fields for function. Later, if special, adjust them"""
             self.create_function_field(function_data['structure'])
@@ -2883,15 +3391,15 @@ class Function_Gui:
         if 'EndLoop' in function_data['steps'] or 'EndMusicList' in function_data['steps']:
         # if len(function_data['steps']) > 2:
             """codename should be 'EndLoop-2' first part is string, usually EndLoop, sometime EndMusicList,
-             second is where"""
-            end_loop_place = function_data['steps'].split('-')
-            self.ending_field.set_val(end_loop_place[0])
-            if len(end_loop_place) > 1:
-
-                self.function_fields_list.insert(len(self.function_fields_list) - int(end_loop_place[1]),
-                                                 self.ending_field)
-            else:
-                self.function_fields_list.append(self.ending_field)
+             second is position where"""
+            self.ending_field = function_data['steps']
+            # self.ending_field.set_val(function_data['steps'])
+            # if len(end_loop_place) > 1:
+            #
+            #     self.function_fields_list.insert(len(self.function_fields_list) - int(end_loop_place[1]),
+            #                                      self.ending_field)
+            # else:
+            #     self.function_fields_list.append(self.ending_field)
         """previously it was separated, but now i dont see purpose for it"""
         ## self.prepare_function_fields_step2(function_name, function_data)
             # if function_values:
@@ -2905,7 +3413,7 @@ class Function_Gui:
             #     #     field.set_val(values)
         # else:
         #     self.function_fields_list = ['nothing to make']
-        self.buttonPREPARE_function.hide()
+        self.buttonPREPARE_function.setDisabled(True)
         # print(final_functions)
 
     # def prepare_function_fields_step2(self, function_name, function_data):
@@ -2941,7 +3449,18 @@ class Function_Gui:
                 elif 'ChoiceTo' in tag:
                     self.function_fields_list.pop(-1)
                 temp_vals = []
+                """here check, if ending place is populated. if yes, then add ENDLOOP in correct place"""
+                end_loop_place = -1
+                if self.ending_field:
+                    temp = self.ending_field.split('-')
+                    # ending field might be 1,2 or with different word Endmusic-2
+                    if len(temp) > 1:
+                        end_loop_place = temp[1]
+                    else:
+                        end_loop_place = len(self.function_fields_list)
                 for function_field in self.function_fields_list:
+                    if self.function_fields_list.index(function_field) == int(end_loop_place):
+                        temp_vals.append(temp[0])
                     value = function_field.get_val()
                     if isinstance(value, list):
                         for val in value:
@@ -3002,8 +3521,8 @@ class Function_Gui:
         elif function_name == "SwapLineIf":
             special_field = SwapLine_Field(self.functions_layout, self.treeview_main_game_items)
             self.function_fields_list.append(special_field)
-            self.function_fields_list[0].currentTextChanged.connect(special_field.prepare_line_fields)
-            self.function_fields_list[0].set_val('')
+            # self.function_fields_list[0].currentTextChanged.connect(special_field.prepare_line_fields)
+            # self.function_fields_list[0].set_val('')
             self.flag_main_game_items = True
             self.treeview_main_game_items.show()
         elif 'Damage' in function_name:
@@ -3044,18 +3563,9 @@ class Function_Gui:
             self.temp_data = temp_field
         elif function_name == 'StatCheck':
             self.function_fields_list[3].set_val('Fail')
-            self.function_fields_list.insert(0, StatCheckField(self.frame_function_fields))
-            self.function_fields_list[0].show_field()
-            if self.event == 'EventText':
-                element = 'Events'
-            else:
-                element = 'Monsters'
-            list_of__dictionary_scenes = GlobalVariables.templates[element].frame_fields[self.event].get_val()
-            for scene in list_of__dictionary_scenes:
-                self.function_fields_list[-1].tree_options_choose.treeview.insert('mod-Scene', 'end',
-                                                                                 text=scene['NameOfScene'])
-                self.function_fields_list[-3].tree_options_choose.treeview.insert('mod-Scene', 'end',
-                                                                                 text=scene['NameOfScene'])
+            self.function_fields_list[3].setDisabled(True)
+            # self.function_fields_list.insert(0, StatCheckField(self.frame_function_fields))
+            # self.function_fields_list[0].show_field()
         elif function_name == 'PlayMotionEffectCustom':
             self.function_fields_list[1].var.trace_id = self.function_fields_list[1].var.trace(
                 'w', lambda *args: self.Set_Up_Motion_Effect())
