@@ -279,6 +279,7 @@ def load_main_game_files_data(file_path=''):
                 scene_list['victoryScenes'] = victory_scene_list
                 scene_list['generic'] = file_data['generic']
                 scene_list['skillList'] = file_data['skillList']
+                scene_list['pictures'] = file_data['pictures']
                 # temp_file_list.append({name: scene_list})
                 """new organization. file data in main_game_data. later change main_game_item_data to only have path display"""
                 girl_data = {'lossScenes': loss_scene_list, 'victoryScenes': victory_scene_list,

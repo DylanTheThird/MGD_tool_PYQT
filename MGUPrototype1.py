@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import QStandardItem
+import random
 import VisualOptions
 import MarkUpDialog
 
@@ -24,6 +25,8 @@ import TemplatesPreparation
 
 # TODO 1. in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO 2. scroll bars disappeare when loading different element type
+# TODO 3. function menu > choice from event. works only on debug
+# TODO function - stat check
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -662,9 +665,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
             # TODO adjust size
             if self.MainWindow.isMaximized() is False:
                 if self.templates[root_parent].size:
+                    # change size on each template to more or less adjustable.
                     # self.MainWindow.setMaximumSize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
                     self.MainWindow.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
-                    # workaround. scroll bars disappear, so its always something
+                    # workaround. scroll bars disappear, so its always something. problem with line below!!!!
                     self.scroll_area.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
         # print('double clicked mod tree')
 
@@ -673,6 +677,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # dialog_markup = MarkUpDialog.Ui_Dialog()
         # dialog_markup.setupUi(Dialog=dialog_win)
         # dialog_win.show()
+        self.testing()
+        return
         """need to gather data from main data display in this window"""
         # data_for_functions = self.main_game_elements.main_data.get_data()
         self.markup_win = MarkUpDialog.MarkUp_Window(scenes_flag=True)
@@ -683,7 +689,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # TODO testing function window
         # self.test_functions = FunctionTests()
         # self.test_functions.show()
-        print(mod_temp_data.current_editing_event)
+        # print(mod_temp_data.current_editing_event)
+        self.layout_templates.setCurrentIndex(random.randint(1,6))
         # file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory"))
         print('testing prorotype')
         # print(Glob_Var.functions_display)
