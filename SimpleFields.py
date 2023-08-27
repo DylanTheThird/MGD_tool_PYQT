@@ -30,10 +30,12 @@ class CustomWidget:
             self.label_custom = CustomLabel(master_widget, field_name)
             self.custom_layout.addWidget(self.label_custom)
 
-    def set_up_widget(self, outside_layout, insert_for_optional=False):
+    def set_up_widget(self, outside_layout, insert_for_optional=False, insert_pos=0):
         """insert for optional is mostly for optional fields to insert widget before last stretch"""
         if insert_for_optional:
-            outside_layout.insertLayout(outside_layout.count() - 1, self.custom_layout)
+            if insert_pos == 0:
+                insert_pos = outside_layout.count() - 1
+            outside_layout.insertLayout(insert_pos, self.custom_layout)
         else:
             outside_layout.addLayout(self.custom_layout)
 
@@ -535,10 +537,12 @@ class SingleList(QtWidgets.QComboBox):
     def field_modified_check(self):
         self.currentIndexChanged.connect(GlobalVariables.Glob_Var.edited_field)
 
-    def set_up_widget(self, outside_layout, insert_for_options=False):
+    def set_up_widget(self, outside_layout, insert_for_options=False, insert_pos=0):
         if self.custom_layout:
             if insert_for_options:
-                outside_layout.insertLayout(outside_layout.count() - 1, self.custom_layout)
+                if insert_pos == 0:
+                    insert_pos = outside_layout.count() - 1
+                outside_layout.insertLayout(insert_pos, self.custom_layout)
             else:
                 outside_layout.addLayout(self.custom_layout)
         else:
@@ -1426,35 +1430,23 @@ class ElementsList(QtWidgets.QTreeView):
         else:
             self.add_data_to_display(values)
 
-    def add_leaves_TODO(self, iid, values, update_flag=True):  # dodawanie podgałęzi do istniejącej gałęzi drzewa
-        # need to find proper parent iid as root branches are normatl, but leaves are generated with index and parent name
-        #might cause problems when some leaves are similar
-        value = None
-        if iid != '':
-            iid = self.find_iid(iid)
-            if not iid:
-                print('something wrong with find iid - return none type')
-                return
-        currentleaves = self.treeview.get_children(iid)
-        # if not currentleaves:
-        #     print('test')
-        if update_flag:
-            value = None
-            for i in currentleaves: #first clean all leaves
-                self.treeview.delete(i)
-            for i in values:
-                # if i not in currentleaves:
-                #     self.treeview.insert(iid, 'end', i, text=i)  # dodawanie podgałęzi drzewa
-                # else:   #update branch
-                self.treeview.insert(iid, 'end', i, text=i)  # dodawanie podgałęzi drzewa
+    def add_branch(self, row_text, row=None, parent=None, row_height=0):
+        # this returns added item, in case to use with add leaves-next
+        new_branch = QStandardItem(row_text)
+        new_branch.setEditable(True)
+        if row_height > 0:
+            new_branch.setSizeHint(QSize(0, row_height))
+        if parent:
+            if row:
+                parent.insertRow(row, new_branch)
+            else:
+                parent.appendRow(new_branch)
         else:
-            index = len(currentleaves) + 1
-            for i in values:
-                if i not in currentleaves:
-                    value = self.treeview.insert(iid, 'end', i + '_' + iid + '_' + str(index), text=i)  # dodawanie podgałęzi drzewa
-                    index += 1
-        if value:
-            return value
+            if row:
+                self.tree_model.insertRow(row, new_branch)
+            else:
+                self.tree_model.appendRow(new_branch)
+        return new_branch
 
     def add_folder(self, folder_name):
         """add 1 item, which suppose to contains more items"""
@@ -3275,6 +3267,13 @@ class FileField:
         #         self.file_display.clear()
         #         self.file_display.addItem(filename)
 
+    def hide(self):
+        self.file_display.hide()
+        self.button_file_field.hide()
+
+    def show(self):
+        self.file_display.show()
+        self.button_file_field.show()
 
     def set_up_widget(self, outside_layout, insert_for_options=False):
         if insert_for_options:
@@ -3397,6 +3396,10 @@ class CheckBox(QtWidgets.QCheckBox):
         super().__init__(parent=master_window)
         self.return_value = return_value
         self.setText(field_name)
+        # self.custom_widget = QtWidgets.QWidget()
+        # cl = QtWidgets.QHBoxLayout()
+        # self.custom_widget.setLayout(cl)
+        # cl.addWidget(self)
         # self.stateChanged.connect(self.test)
 
     def test(self):
@@ -3424,7 +3427,9 @@ class CheckBox(QtWidgets.QCheckBox):
 
     def set_up_widget(self, outside_layout):
         outside_layout.addWidget(self)
-
+        # outside_layout.addWidget(self.custom_widget)
+    def destroy(self):
+        self.deleteLater()
     # def focusInEvent(self, event):
     #     if self.connector_to_outside_complex_class:
     #         GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)

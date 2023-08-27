@@ -1210,35 +1210,31 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 # #         self.frame_multi.grid_forget()
 # #         self.multi_value_flag = False
 #
-# class SceneSpeaks:
-#     def __init__(self, master_frame, title_frame):
-#         self.title_field = title_frame
-#         self.var = tk.StringVar()
-#         self.values_list = []
-#         temp_list = GlobalVariables.templates['Events'].frame_fields['Speakers'].get_val()
-#         for dict_data in temp_list:
-#             self.values_list.append(dict_data['name'])
-#
-#         self.value_field_list = tk.OptionMenu(master_frame, self.var, *self.values_list)
-#         self.var.trace('w', self.set_val)
-#
-#
-#     def destroy(self):
-#         # self.value_field_list.pack_forget()
-#         return
-#
-#     def show_field(self):
-#         self.value_field_list.pack(side=tk.LEFT)
-#         self.hidden_flag = False
-#
-#     def set_val(self, *args):
-#         val_idx = self.values_list.index(self.var.get())
-#         if val_idx == 0:
-#             val_idx = ''
-#         self.title_field.set_val('Speaks' + str(val_idx))
-#     def get_val(self):
-#         self.value_field_list.destroy()
-#
+
+
+class SceneSpeaks(SimpleFields.SingleList):
+    def __init__(self, title_field):
+        super().__init__(label_text='Speakers')
+        """in these case, it should be only 1 word, so return empty value and instead update title field"""
+        self.title = 'Speakers'
+        self.t_field = title_field
+        temp_list = PrepareSpeakers()
+        f_list = []
+        for speaker in temp_list:
+            f_list.append(speaker['name'])
+        self.set_val(f_list, sort=False)
+        self.currentTextChanged.connect(self.update_title)
+
+    def get_val(self):
+        return ''
+
+    def update_title(self):
+        cur_idx = self.currentIndex()
+        if cur_idx == 0:
+            cur_idx = ''
+        self.t_field.set_val('Speakers' + str(cur_idx))
+
+
 class StatCheckField:
     def __init__(self, master_frame):
         self.frame_data = tk.Frame(master_frame)
@@ -1403,7 +1399,8 @@ class StatCheckField:
 
     def destroy(self):
         self.frame_data.destroy()
-#
+
+
 class MenuField(QtWidgets.QWidget):
     def __init__(self, master_frame=None, mod_elements_treeview=None):
         super().__init__(None)
@@ -1526,14 +1523,6 @@ class MenuField(QtWidgets.QWidget):
                 temp_list.clear()
                 choices_no += 1
                 # data_to_load.append({str(len(data_to_load)+1): temp_list})
-
-
-
-
-
-
-
-
         return
     def get_val(self):
         return_values = []
@@ -1805,6 +1794,8 @@ class MenuField(QtWidgets.QWidget):
     #         #                                                                      text=scene['NameOfScene'])
     #         # temp_scene_names.append(scene['NameOfScene'])
     #     # self.function_fields_list[2].treeview_optionstochoose.treeview.insert('', 'end',values=temp_scene_names)
+
+
 class MenuField_backup_working(QtWidgets.QWidget):
     def __init__(self, master_frame=None, mod_elements_treeview=None):
         super().__init__(None)
@@ -2224,6 +2215,7 @@ class Choices:
         self.field_choice_text = SimpleFields.InputList(field_name='Text')
         self.event_source = ''
         self.event_source_field = None
+        # TODO here is not working in case it should take from another event
         if event_field:
             self.event_source_field = event_field
             self.event_source_field.final_data.function_on_modify(self.set_up_event_source)
@@ -2239,6 +2231,7 @@ class Choices:
     def set_up_event_source(self):
         if self.event_source_field:
             self.event_source = self.event_source_field.get_val()
+            print("updating event source. seems like event source field is not connecting to this function")
         """first field should be choice number, second field should be choice text"""
         choice_list = SimpleFields.mod_temp_data.get_choices(get_val='gate', event_name=self.event_source)
         self.field_choice_no.reload_options(choice_list)
@@ -2266,6 +2259,166 @@ class Choices:
         outside_layout.addWidget(self.field_choice_no.field)
         outside_layout.addWidget(self.field_choice_text.field)
         # self.frame_fields.destroy()
+
+
+class CombatEncounter(QtWidgets.QWidget):
+    def __init__(self, master_frame=None, mod_elements_treeview=None):
+        super().__init__(None)
+        self.treeview_main_game_items = mod_elements_treeview
+        master_frame.addWidget(self)
+        self.main_layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self.main_layout)
+        """first, menu options - MaxMenuSlots and ShuffleMenu"""
+        self.menu_main_options = SimpleFields.SingleList(None, 'Options',
+                                                         {'choices': ['blank', 'NoRunning', 'RunningWontSkipEvent', 'SetBGOnRun', 'DenyInventory']}, edit=False)
+        self.menu_main_options.set_val('blank')
+        self.menu_main_options.set_up_widget(self.main_layout)
+        self.background_file = SimpleFields.FileField(None, 'Background')
+        """to add options amount next to Single list"""
+        self.background_file.set_up_widget(self.menu_main_options.custom_layout)
+        # self.options_amount.set_up_widget(self.main_layout)
+        self.background_file.hide()
+        self.menu_main_options.currentTextChanged.connect(self.menu_background)
+
+        """second, text field called 'monsters' its selection are monsters.
+        Press enter to add new choice to menu - new branch to tree called same as scene"""
+        self.choices_text = SimpleFields.MultiListDisplay(None, 'Monsters',
+                                      field_data={'choices': ["Monsters"], 'options': ["single_item", "search"]},
+                                      main_data_treeview=self.treeview_main_game_items, single_edit=False)
+        self.choices_text.final_data.returnPressed.connect(self.new_choice)
+        self.choices_text.set_up_widget(self.main_layout)
+
+        """there are only 2 conditions:apply stance and restrainer, where later is just word"""
+        """if only 2 options, stance will be similar to first field, also with 'enter' to add.
+        Restrainer might as well be a simple button"""
+        layout_buttons = QtWidgets.QHBoxLayout()
+        self.main_layout.addLayout(layout_buttons)
+        """first stances - will be added later"""
+        self.stances = SimpleFields.MultiListDisplay(None, 'Stances',
+                                      field_data={'choices': ["Stances"], 'options': ["single_item", "search"]},
+                                      main_data_treeview=self.treeview_main_game_items, single_edit=False)
+        self.stances.set_up_widget(layout_buttons)
+        self.stances.final_data.function_on_modify(self.add_condition)
+        self.button_restrainer = SimpleFields.CustomButton(None, "RESTRAINER")
+        self.button_restrainer.clicked.connect(self.add_condition)
+        layout_buttons.addWidget(self.button_restrainer)
+        # choices_list = ['Monster', 'ApplyStance', 'Restrainer']
+        # self.menu_choice_list = SimpleFields.SingleList(self.frame_for_fields, 'Conditions', '', 'L', choices_list)
+        # """trace var to def that controls fields to display and hide and load choices"""
+        # self.menu_choice_list.var.trace_id = self.menu_choice_list.var.trace('w', lambda *args: self.menu_choice_options())
+        # self.menu_choice_list.grid(row=1, column=1)
+        """here is where all is displayed"""
+        self.prev_options = ''
+        self.options_row = 1
+        self.final_data = SimpleFields.ElementsList(None, 'Encounters', all_edit=True)
+        self.final_data.set_up_widget(self.main_layout)
+    def set_val(self, values_to_set_list):
+        """should accept list of values"""
+        """first check for main menu options"""
+        length_of_list = len(values_to_set_list)
+        if values_to_set_list[0] in 'NoRunning RunningWontSkipEvent SetBGOnRun DenyInventory':
+            value = values_to_set_list.pop(0)
+            if value == 'SetBGOnRun':
+                self.menu_main_options.set_val(value)
+                self.background_file.set_val(values_to_set_list.pop(0))
+            elif value == 'NoRunning RunningWontSkipEvent DenyInventory':
+                self.menu_main_options.set_val(value)
+        skip_no = 0
+        """now start checking for all conditional choices"""
+        for index in range(0, length_of_list):
+            if skip_no >= 0:
+                skip_no -= 1
+                continue
+            selected_option = values_to_set_list[index]
+            # temp_list.append(selected_option)
+            if selected_option in 'Restrainer':
+                self.final_data.add_leaf([selected_option], None, current_leaf)
+                continue
+            elif selected_option in 'ApplyStance':
+                self.final_data.add_leaf([selected_option, values_to_set_list[index + 1]], None, current_leaf)
+                # temp_list.append(values_to_set_list[index + 1])
+                skip_no = 1
+            else:
+                current_leaf = self.final_data.add_branch(selected_option)
+                # current_leaf = self.final_data.add_branch('monster' + str(index))
+        return
+    def get_val(self):
+        return_values = []
+        """first get main options, then what was added in the data display"""
+        main_options = self.menu_main_options.get_val()
+        if main_options != 'blank':
+            return_values.append(main_options)
+            if main_options == 'SetBGOnRun':
+                return_values.append(self.background_file.get_val())
+        displayed_data_list = self.final_data.get_data()
+        # displayed_data_list = self.final_data.gather_data()
+        for choice in displayed_data_list:
+            for choice_element in choice:
+                choice_elements_list = choice[choice_element]
+                return_values.append(choice_element)
+                return_values += choice_elements_list
+        return return_values
+    def destroy(self):
+        self.setParent(None)
+        self.deleteLater()
+    def set_up_widget(self, outside_layout, insert_for_options=False, insert_pos=0):
+            if insert_for_options:
+                if insert_pos == 0:
+                    insert_pos = outside_layout.count() - 1
+                outside_layout.insertLayout(insert_pos, self.custom_layout)
+            else:
+                outside_layout.addWidget(self)
+
+    def new_choice(self):
+        current_leaves = self.final_data.tree_model.children()
+        if len(current_leaves) == 12:
+            otherFunctions.show_message("Monster Limit", "Too many enemies. Cannot add more", '')
+            return
+        new_choice = self.choices_text.get_val()
+        self.final_data.add_data(new_choice)
+
+    def add_condition(self, flag=None):
+        """little gimmick - change button title to stances"""
+        print(flag)
+        if flag or flag == '':
+            """button was clicked"""
+            if flag != '':
+                self.button_restrainer.setText('Apply stance')
+            else:
+                self.button_restrainer.setText('Restrainer')
+            return
+        """add condition to choice. Choice is branch name in final data."""
+        selected_choice_name = self.final_data.selected_element()
+        if selected_choice_name and selected_choice_name.parent() == None:
+            value = self.stances.get_val()
+            """check if stance was selected. if yes, add astance and clear field, if not, add restrainer"""
+            if value == '':
+                self.final_data.add_data_to_display('Restrainer', selected_choice_name)
+            else:
+                """here get stance"""
+                self.final_data.add_data_to_display('ApplyStance', selected_choice_name)
+                self.final_data.add_data_to_display(value, selected_choice_name)
+                self.stances.clear_val()
+                # self.button_restrainer.setText('Restrainer')
+            return
+
+    # def add_rest(self):
+    #     self.final_data.add_data_to_display('Restrainer', selected_choice_name)
+
+    def menu_background(self, val):
+        # val = self.menu_main_options.get_val()
+        if val == 'SetBGOnRun':
+            self.background_file.show()
+        else:
+            self.background_file.hide()
+
+    def clear_fields(self):
+        # for field in self.fields_list:
+        #     self.fields_list[field].grid_forget()
+        #     self.fields_list[field].clear_val()
+        # self.fields_list['multi'].var.trace_id = ''
+        print('combat encounter clear fields - should be obsolete')
+        return
 #
 #
 # class CombatEncounter:
@@ -2678,7 +2831,7 @@ class SubFunction(QtWidgets.QWidget):
                 elif structure[field]["type"] == "int":
                     tempfield = SimpleFields.NumericEntry(None)
                 elif structure[field]["type"] == "singlelist":
-                    tempfield = SimpleFields.SingleList(label_text=field, label_pos='V',
+                    tempfield = SimpleFields.SingleList(label_text=field, label_pos='H',
                                                          field_data=structure[field])
                 elif structure[field]["type"] == 'multilist':
                     tempfield = SimpleFields.MultiListDisplay(None, field,
@@ -2737,7 +2890,7 @@ class SubFunction(QtWidgets.QWidget):
         """checkbox in menu function event jump > should display another multilist for scene for that event"""
         return
     def scene_reload(self):
-        self.treeview_main_game_items.scene_source = self.fields_list[-3].get_val()
+        self.treeview_main_game_items.scene_source = self.fields_list[0].get_val()
 class main_game_for_functions_treeview:
     """fused with maine game items treeview."""
     def __init__(self, master=None, field_name=None):
@@ -3558,19 +3711,22 @@ class Function_Gui:
             # self.Special_Set_Up_Choices_Fields(function_name)
 
         elif function_name == 'Speaks':
-            temp_field = SceneSpeaks(self.frame_function_fields, self.field_title)
-            temp_field.show_field()
+            temp_field = SceneSpeaks(self.field_title)
+            temp_field.set_up_widget(self.functions_layout, True)
             self.function_fields_list.append(temp_field)
-            self.temp_data = temp_field
         elif function_name == 'StatCheck':
             self.function_fields_list[3].set_val('Fail')
             self.function_fields_list[3].setDisabled(True)
             # self.function_fields_list.insert(0, StatCheckField(self.frame_function_fields))
             # self.function_fields_list[0].show_field()
         elif function_name == 'PlayMotionEffectCustom':
-            self.function_fields_list[1].var.trace_id = self.function_fields_list[1].var.trace(
-                'w', lambda *args: self.Set_Up_Motion_Effect())
+            self.function_fields_list[1].currentTextChanged.connect(self.Set_Up_Motion_Effect)
+            self.function_fields_list[1].set_val(' ')
+            # self.function_fields_list[1].var.trace_id = self.function_fields_list[1].var.trace(
+            #     'w', lambda *args: self.Set_Up_Motion_Effect())
         elif function_name == 'ApplyStance':
+            return
+            # TODO
             temp_field = SimpleFields.CheckBox(self.frame_function_fields, 'SetAttack', 'SetAttack')
             temp_field.field.configure(command=lambda: self.set_attack(temp_field.value))
             temp_field.pack()
@@ -3582,9 +3738,10 @@ class Function_Gui:
             self.flag_main_game_items = True
             self.treeview_main_game_items.show()
         elif function_name == 'CombatEncounter':
-            temp_field = CombatEncounter(self.frame_function_fields)
-            temp_field.pack()
+            temp_field = CombatEncounter(self.functions_layout, self.treeview_main_game_items)
             self.function_fields_list.append(temp_field)
+            self.flag_main_game_items = True
+            self.treeview_main_game_items.show()
 
         return
     def special_event_jumping_load_scenes_to_list(self, selected_event, flag_current_event=False):
@@ -3704,11 +3861,12 @@ class Function_Gui:
         #     #             break
         # self.temp_data = layer_data
 
-    def load_layer_picture_data(self, data_level='temp', girl_id_field=1):
+    def load_layer_picture_data(self, data_level='temp', not_motion=True):
         """find field with speaker name - should be labeled Speaker"""
         # girl_id = girl[0].lower()
         # girl_id = girl_id.replace(' ', '')
         # girl_id = girl[0]
+        girl_id = ''
         for field in self.function_fields_list:
             if field.title == 'Speaker':
                 girl_id = field.get_val()
@@ -3742,7 +3900,8 @@ class Function_Gui:
                     # results_list.append('ImageSetPersist')
                     # results_list.append('ImageSetDontCarryOver')
                     field.reload_options(results_list)
-                    field.add_items_to_skip_sort(['ImageSet', 'ImageSetPersist', 'ImageSetDontCarryOver'])
+                    if not_motion:
+                        field.add_items_to_skip_sort(['ImageSet', 'ImageSetPersist', 'ImageSetDontCarryOver'])
                     # self.function_fields_list[0].reload_options(results_list)
                     break
         elif data_level == 'Image':
@@ -3951,24 +4110,21 @@ class Function_Gui:
             field = self.function_fields_list.pop(2)
             field.destroy()
         if setup_val in 'Character Bodypart':
-            temp_field = SimpleFields.InputList(self.frame_function_fields, field_name='Speaker')
+            temp_field = SimpleFields.SingleList(label_text='Speaker', edit=False)
+            # temp_field = SimpleFields.InputList(field_name='Speaker')
             speakers = PrepareSpeakers()
             temp_list = []
             for speaker in speakers:
                 if speaker['name'] not in temp_list:
                     temp_list.append(speaker['name'])
             temp_field.reload_options(temp_list)
-            temp_field.pack(side=tk.LEFT)
+            temp_field.set_up_widget(self.functions_layout, True, 3)
             self.function_fields_list.insert(2, temp_field)
             if setup_val == 'Bodypart':
-                temp_field = SceneSingleList(self.frame_function_fields)
-                temp_field.update_label('Layer Type')
-                self.function_fields_list[2].traceId = self.function_fields_list[2].var.trace(
-                    'w', lambda *args, data_level='Layer', girl_field=1: self.load_layer_picture_data(data_level,
-                                                                                                      girl_field))
+                temp_field.currentTextChanged.connect(lambda *args: self.load_layer_picture_data(data_level='Layer', not_motion=False))
+                temp_field = SimpleFields.InputList(field_name='Layer Type')
                 self.function_fields_list.insert(3, temp_field)
-                temp_field.pack(side=tk.LEFT)
-
+                temp_field.set_up_widget(self.functions_layout, True, 3)
     def set_attack(self, check_val):
         if check_val.get() == 1:
             print('it might work')
