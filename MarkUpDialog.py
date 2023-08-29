@@ -577,6 +577,10 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.button_display_scenes_data.clicked.connect(self.switch_to_data)
             self.flag_data = False
             h_lay_scene_buttons.addWidget(self.button_display_scenes_data)
+            self.button_load_function = SimpleFields.CustomButton(None, '>>')
+            self.button_load_function.setMaximumWidth(100)
+            self.button_load_function.clicked.connect(self.load_function)
+            h_lay_scene_buttons.addWidget(self.button_load_function)
             """now add horizontal, to put scene list and scene text next to each other.
             Also, so I dont have to resize them each time, put it on a background widget"""
             h_layout_display = QtWidgets.QHBoxLayout()
@@ -767,6 +771,15 @@ class MarkUp_Window(QtWidgets.QWidget):
                     return
         self.close()
 
+    def load_function(self):
+        selected_item = self.display_data.selected_element()
+        if selected_item.parent():
+            data = []
+            """for some reason it works. probably its like that for folders"""
+            self.display_data.get_data(parent_index=selected_item.parent(), root_list=data)
+            f_data = data[0]
+            """now fdata is dictionary with key as function title and list of function values"""
+            self.functions.prepare_function_fields(list(f_data.keys()))
 
     def prepare_markup_buttons(self):
         v_lay_main = QtWidgets.QVBoxLayout()

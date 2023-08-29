@@ -5,7 +5,7 @@ from os.path import isdir, join, isfile, getmtime
 import json
 from collections import OrderedDict
 # import GlobalVariables
-from GlobalVariables import Glob_Var, Mod_Var
+from GlobalVariables import Glob_Var, Mod_Var, test_flag
 # from GlobalVariables import Glob_Var
 from otherFunctions import wrap
 
@@ -355,8 +355,11 @@ def load_status_effect():
 
 
 def load_functions():
-    # with open('files/_textfunction_all_2.json') as file:
-    with open('files/_textfunction_testing.json') as file:
+    if test_flag:
+        functions_path = 'files/_textfunction_testing.json'
+    else:
+        functions_path = 'files/_textfunction.json'
+    with open(functions_path) as file:
         # GlobalVariables.functions_data = json.load(file, object_hook=OrderedDict)
         # testing
         data = json.load(file, object_hook=OrderedDict)

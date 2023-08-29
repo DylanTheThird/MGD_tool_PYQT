@@ -24,9 +24,9 @@ import TemplatesPreparation
 # global Mod_Var
 
 # TODO 1. in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
-# TODO 2. scroll bars disappeare when loading different element type
+# TODO 2. scroll bars disappear when loading different element type
 # TODO 3. function menu > choice from event. works only on debug
-# TODO function - stat check
+# TODO 4. for now, if user clicks edit on function in event, load that function template, without data.
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
