@@ -162,7 +162,7 @@ class GlobalVariable:
 
 
 Glob_Var = GlobalVariable()
-
+test_flag = True
 
 # class for holding mod data. Here it will load files data into mod variable as dictionary with filename as keys.
 # each filename must be unique. Folders are just for visibility, so as in other aspects, keep it separate in display var

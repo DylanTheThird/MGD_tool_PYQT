@@ -1,6 +1,59 @@
 {
     "general": {
 				"special functions": [
+{
+				"title": "JumpToEvent",
+				"explanation": "Goes to an event stated in the next string. Remember that it will pick the first scene listed by default.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},{
+				"title": "JumpToNPCEvent",
+				"explanation": "Goes to the event stated in the next string, used for events from the town.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},{
+				"title": "JumpToLossEvent",
+				"explanation": "Goes to the event stated in the next string, used for event loss scenes.",
+				"options":["special"],
+				"steps":"2",
+									"structure":{
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]}
+												}
+			},
+			{
+				"title": "JumpToEventThenScene",
+				"explanation": "Goes to an event, then a scene via the two following strings. Useful when you want to avoid it going to the first scene in an event. Note that it will leave combat encounters.",
+									"options":["special"],
+									"steps":"3",
+									"structure":{
+												"Events":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Events"]},
+												"Scenes":{"type":"multilist",
+												"options":["single_item", "search"],
+												"choices":["Scenes"]}
+												}
+			},
+
+			{				"title": "Speaks",
+				"explanation": "Puts the character's name from the Speakers key in the next box for the next string.",
+				"options":["special"],
+				"steps":"2",
+				"structure":{}
+			},
+			
 			{
 				"title": "SetChoice",
 				"explanation": "Will set specified choice number to the following string value. Think of them as progress or variable fields you can manually set for an event.",
@@ -117,7 +170,7 @@
 												"choices":["Stances"]},
 												"Scenes":{"type":"multilist",
 												"options":["single_item", "search"],
-												"choices":["currentmod-Scenes"]}
+												"choices":["Scenes"]}
 												}
 			}
 			
@@ -272,18 +325,7 @@
 				"explanation": "Rolls a d20 with the specified player stat, against the given number. If the roll is higher than the given opposed check number, it jumps the given scene. If it fails, it will go to the scene specified after 'Fail'. Note you can also check for 'Temptation', as a specialized stat check based on Willpower, Allure, and Intelligence. See Stat Reference.",
 				"options":["special", "subfunction"],
 				"steps":"6",
-				"structure":{
-							"Stats":{"type":"singlelist",
-								"choices":["game-core stats-simple"]},
-							"2":{"type":"int"},
-							"Success Scene":{"type":"multilist",
-								"options":["single_item", "search"],
-								"choices":["Scenes-current"]},
-							"4":{"type":"text", "default":"Fail"},
-							"Fail Scene":{"type":"multilist",
-								"options":["single_item", "search"],
-								"choices":["Scenes-current"]}
-								},
+				"structure":{},
 				"subfunction":
 				{"position":1,
 				"type":"ChangeStatCheckDifficulty",
@@ -325,8 +367,10 @@
 							{"choice":{"type":"choiceField"},							
 							"Modifier":{"type":"int"}},
 							"GetEventAndIfChoice":
-							{"choice":{"type":"choiceField"},							
-							"Modifier":{"type":"int"}}
+							{"Events":{"type":"multilist",
+										"options":["single_item", "search"],
+										"choices":["Events"]},
+										"":{"type":"choice"}}
 							}
 				}
 				},
@@ -338,7 +382,7 @@
 												"Effect":{"type":"singlelist",
 													"choices":["Bounce", "Sway", "Pump", "Ride","Vibrate", "blank"]},
 												"Target":{"type":"singlelist",
-													"choices":["Characters", "Character", "Bodypart"]},
+													"choices":["","Characters", "Character", "Bodypart"]},
 												"Speed":{"type":"int", "default":"1"},
 												"Distance":{"type":"int", "default":"1"}
 												}
