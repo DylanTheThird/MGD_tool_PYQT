@@ -556,13 +556,22 @@ class SingleList(QtWidgets.QComboBox):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
-
-    def focusInEvent(self, event):
-        if self.connector_to_outside_complex_class:
-            GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-        else:
-            GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-        super().focusInEvent(event)
+    # it sometimes causes error when opening function designer. I don't remember where it was needed.
+    # if something else does not work, enable it
+    # def focusInEvent(self, event):
+    #     print(self.list)
+    #     print(self.title)
+    #     if self.connector_to_outside_complex_class:
+    #         GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
+    #     else:
+    #         GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
+    #     try:
+    #         super().focusInEvent(event)
+    #     except:
+    #         print(
+    #             'error sometimes when loading event designer wrapped C/C++ object of type SingleList has been deleted')
+    #         print(self.title)
+    #         print(self.list)
 
 # should be obsolete
 class SingleListDisplay(SingleList):
@@ -897,6 +906,9 @@ class ElementsList(QtWidgets.QTreeView):
             # print('pressed delete')
             if self.flag_delete:
                 self.delete_with_backup()
+        elif event.key() == Qt.Key_Escape:
+            # self.selection_cancel()
+            self.selectionModel().clear()
         super().keyPressEvent(event)
 
 
@@ -1350,16 +1362,17 @@ class ElementsList(QtWidgets.QTreeView):
         #     return None
 
     def select_element(self, text=str, inverse_selection=False):
-        if text:
+        if isinstance(text, str):
             element_index = self.find_node(text)
-            if inverse_selection:
-                row_count = self.tree_model.rowCount()
-                for idx in range(row_count):
-                    if self.tree_model.index(idx,0) != element_index:
-                        self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
-            else:
-                self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
-
+        else:
+            element_index = text
+        if inverse_selection:
+            row_count = self.tree_model.rowCount()
+            for idx in range(row_count):
+                if self.tree_model.index(idx,0) != element_index:
+                    self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
+        else:
+            self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
 
     def new_prep_data_to_add(self, data=[], return_val=[]):
         """turn data, list of dictionaries and strings, into list of standard items with nexted items"""
@@ -1731,6 +1744,9 @@ class ElementsList(QtWidgets.QTreeView):
         # for leaves in range(row_count,-1,-1):
         #     self.tree_model.remov
 
+    def clear_val(self):
+        self.clear_tree()
+
     def change_title(self, new_title):
         self.title = new_title
         self.setHeaderHidden(False)
@@ -1817,6 +1833,11 @@ class ElementsList(QtWidgets.QTreeView):
         else:
             return self.tree_model.itemFromIndex(leaf_index).parent()
 
+    def transform_index_to_item(self, element_index_to_item):
+        if self.flag_search:
+            element_index_to_item = self.sorting.mapToSource(element_index_to_item)
+        element_index_to_item = self.tree_model.itemFromIndex(element_index_to_item)
+        return element_index_to_item
     def set_up_widget(self, outside_layout, insert_for_options=False):
         if insert_for_options:
             outside_layout.insertLayout(outside_layout.count() - 1, self.layout)
@@ -1841,6 +1862,8 @@ class ElementsList(QtWidgets.QTreeView):
     # def cancel_selection(self):
     #     self.treeview.selection_remove(self.treeview.selection()[0])
 
+    def set_val(self, data):
+        self.add_data_to_display(data)
 class MultiList_old:
     def __init__(self, master=None, field_name=None, tooltip_text=None,
                  field_options=[], template_name=None):

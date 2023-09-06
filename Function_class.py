@@ -1424,20 +1424,20 @@ class MenuField(QtWidgets.QWidget):
         """first check for main menu options"""
         length_of_list = len(values_to_set_list)
         start_checking = 0
-        if length_of_list[start_checking] in 'MaxMenuSlots ShuffleMenu':
-            value = length_of_list[start_checking]
+        if values_to_set_list[start_checking] in 'MaxMenuSlots ShuffleMenu':
+            value = values_to_set_list[start_checking]
             if value == 'MaxMenuSlots':
                 start_checking = 2
                 self.menu_main_options.set_val('MaxMenuSlots')
-                self.max_menu_slots.set_val(int(length_of_list[1]))
+                self.max_menu_slots.set_val(int(values_to_set_list[1]))
             elif value == 'ShuffleMenu':
                 self.menu_main_options.set_val('ShuffleMenu')
                 start_checking = 1
-        choices_no = 1
+        # choices_no = 1
         temp_list = []
         skip_no = 0
         for index in range(start_checking, length_of_list):
-            if skip_no >= 0:
+            if skip_no > 0:
                 skip_no -= 1
                 continue
             selected_option = values_to_set_list[index]
@@ -1460,9 +1460,11 @@ class MenuField(QtWidgets.QWidget):
                 temp_list.append(values_to_set_list[index + 3])
                 skip_no = 3
             else:
-                self.data_display.add_branch('Choice ' + str(choices_no), temp_list, update_flag=False)
+                parent = self.final_data.add_branch(selected_option)
+                temp_list.pop(-1)
+                self.final_data.add_data_to_display(temp_list, parent)
                 temp_list.clear()
-                choices_no += 1
+                # choices_no += 1
                 # data_to_load.append({str(len(data_to_load)+1): temp_list})
         return
     def get_val(self):
@@ -1476,10 +1478,12 @@ class MenuField(QtWidgets.QWidget):
         displayed_data_list = self.final_data.get_data()
         for choice in displayed_data_list:
             for choice_element in choice:
+                """for MENU, scene title goes last, after conditions"""
                 choice_elements_list = choice[choice_element]
-                return_values.append(choice_element)
                 return_values += choice_elements_list
+                return_values.append(choice_element)
         self.final_data.clear_tree()
+        return_values.append('EndLoop')
         return return_values
     def clear_val(self):
         self.pack_forget()
@@ -3406,13 +3410,15 @@ class Function_Gui:
     #     self.flag_if_window_open = False
     #     self.window_function.destroy()
 #     # TODO check setchoice if choice is deleted when press X on input least. maybe add confirmation window too.
-    def display_explanation(self):
+    def display_explanation(self, *args, function_title=None):
+        """first is index from tree, second is for loading data, should be string"""
+        """function title is for when loading function form scene instead of function list"""
         self.ending_field = ''
         # self.ending_field.clear_val()
         # treevieID is just variable for elementlist, so access treeview in it, gets its name and parent name and search
         # in function_data for explanation to put
         selected_function_item = self.treeview_functions.selected_element()
-        if not selected_function_item.child(0,0):
+        if not selected_function_item.child(0,0) or function_title:
             """clear current list of prepare fields. should work each time user select different function"""
             if self.function_fields_list:
                 for field in self.function_fields_list:
@@ -3423,7 +3429,9 @@ class Function_Gui:
                         field.destroy()
                 self.function_fields_list.clear()
             # function_data = GlobalVariables.Glob_Var.functions_data[selected_function_item.text()]
-            function_data = GlobalVariables.Glob_Var.get_functions(selected_function_item.text())
+            if not function_title:
+                function_title = selected_function_item.text()
+            function_data = GlobalVariables.Glob_Var.get_functions(function_title)
             explanation_text = function_data['explanation']
             self.area_instruction.clear_val()
             self.area_instruction.set_val(explanation_text)
@@ -3452,7 +3460,7 @@ class Function_Gui:
         """function_values - in case user wants to edit function from scene, here should be passed list
         where 0 is function title, rest are attributes"""
         if function_values:
-            function_name = function_values[0]
+            function_name = function_values.pop(0)
         else:
             function_item = self.treeview_functions.selected_element()
             function_name = function_item.text()
@@ -3500,8 +3508,8 @@ class Function_Gui:
             #     self.function_fields_list.append(self.ending_field)
         """previously it was separated, but now i dont see purpose for it"""
         ## self.prepare_function_fields_step2(function_name, function_data)
-        # if function_values:
-        #     self.load_function_attributes(function_values, field_data)
+        if function_values:
+            self.load_function_attributes(function_values, function_data)
             #     # return
             #     #      how to deal with endloop? Fields are probably ready.
             #     """this needs to load values into fields, but problem when endloop is used. So this need another
@@ -3555,10 +3563,8 @@ class Function_Gui:
                     if len(temp) > 1:
                         end_loop_place = temp[1]
                     else:
-                        end_loop_place = len(self.function_fields_list)
+                        end_loop_place = len(self.function_fields_list)-1
                 for function_field in self.function_fields_list:
-                    if self.function_fields_list.index(function_field) == int(end_loop_place):
-                        temp_vals.append(temp[0])
                     value = function_field.get_val()
                     if isinstance(value, list):
                         for val in value:
@@ -3569,6 +3575,8 @@ class Function_Gui:
                         elif not value:
                             continue
                         temp_vals.append(value)
+                    if self.function_fields_list.index(function_field) == int(end_loop_place):
+                        temp_vals.append(temp[0])
                 function_values = {tag: temp_vals}
             """depending on selected element, add without node or with to treeview'"""
             if selected_element:
@@ -3672,7 +3680,7 @@ class Function_Gui:
             #     'w', lambda *args: self.Set_Up_Motion_Effect())
         elif function_name == 'ApplyStance':
             return
-            # TODO
+            # TODO after stances are working
             temp_field = SimpleFields.CheckBox(self.frame_function_fields, 'SetAttack', 'SetAttack')
             temp_field.field.configure(command=lambda: self.set_attack(temp_field.value))
             temp_field.pack()
@@ -4090,10 +4098,45 @@ class Function_Gui:
             print('fuck it')
         return
     def load_function_attributes(self, attributes_list, function_data):
-        """to edit function in text."""
+        """to edit function in text"""
         if len(function_data['steps']) == 1:
-            for field, values in zip(self.function_fields_list, attributes_list[1:]):
+            for field, values in zip(self.function_fields_list, attributes_list):
                 field.set_val(values)
+        else:
+            steps = function_data['steps']
+            structure_fields_no = len(function_data['structure'])
+            """now need if for different endloops variations.
+            if just endloop, then its for last field. check structure, example = 3 fields, first 2 are single values,
+             rest is for last field. unless structure empty, then it's custom and only 1 field
+            if endloop-3, then third field should get most data, also check via stucture.
+            Easiest would probably be to find where additional list should be. for example, for 3 fields second is loop:
+            [val1,[a,b,c,d,e,endloop], val3]"""
+            if structure_fields_no < 2:
+                """only 1 field, not much to think about"""
+                attributes_list.pop(-1)
+                self.function_fields_list[0].set_val(attributes_list)
+                return
+            elif '-' in steps:
+                end = steps.split('-')
+                step_f = end[1]
+                end = end[0]
+            else:
+                end = steps
+                step_f = structure_fields_no-1
+            end_loop_list = []
+            values_list = []
+            for idx in range(len(attributes_list)):
+                if idx == step_f:
+                    while attributes_list[idx] != end:
+                        end_loop_list.append(attributes_list[idx])
+                        idx += 1
+                    values_list.append(end_loop_list)
+                else:
+                    values_list.append(attributes_list[idx])
+            for field, values in zip(self.function_fields_list, values_list):
+                field.set_val(values)
+
+
 
     def on_checkbox_toggled(self, checkbox, checked):
         if self.flag_error_checkbox:

@@ -1391,7 +1391,7 @@ class FunctionField(SimpleFields.ElementsList):
         # if self.button_ModifyData['text'] == 'Cancel':
         #     self.cancel_scene()
 
-    def modify_scene(self, functionFlag):
+    def modify_scene(self, quick_load=None):
         """cant remember what was that for"""
         if not self.flag_prepare_event_logic_data:
             self.flag_prepare_event_logic_data = True
@@ -1440,10 +1440,10 @@ class FunctionField(SimpleFields.ElementsList):
         # SimpleFields.mod_temp_data.current_editing_event = Glob_Var.access_templates['Events'].input_filename.get_val()
         # Window_txt_markup.SceneWindow(source_field=self, scene_data_to_load=scene_text, event_type=root_scene_setup_name,
         #                               master=self, fields_data=self.field_setup[root_scene_setup_name])
-        if not self.markup_win:
-            self.markup_win = MarkUpDialog.MarkUp_Window(target_field=self.treeview_scenes, scenes_flag=True, current_scene_list=self.scene_data_container,
-                                                         scene_data=self.field_setup)
-        self.markup_win.show()
+        # if not self.markup_win:
+        markup_win = MarkUpDialog.MarkUp_Window(target_field=self.treeview_scenes, scenes_flag=True, current_scene_list=self.scene_data_container,
+                                                         scene_data=self.field_setup, quick_load_scene=quick_load)
+        markup_win.show()
     # if i figure out how to use this then ill uncomment it
     # def delete_scene(self):
     #     branchdeleteflag = messagebox.askokcancel("DELETING WHOLE SCENE",

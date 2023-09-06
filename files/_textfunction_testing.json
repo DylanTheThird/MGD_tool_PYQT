@@ -11,26 +11,6 @@
 												"options":["single_item", "search"],
 												"choices":["Events"]}
 												}
-			},{
-				"title": "JumpToNPCEvent",
-				"explanation": "Goes to the event stated in the next string, used for events from the town.",
-				"options":["special"],
-				"steps":"2",
-									"structure":{
-												"Events":{"type":"multilist",
-												"options":["single_item", "search"],
-												"choices":["Events"]}
-												}
-			},{
-				"title": "JumpToLossEvent",
-				"explanation": "Goes to the event stated in the next string, used for event loss scenes.",
-				"options":["special"],
-				"steps":"2",
-									"structure":{
-												"Events":{"type":"multilist",
-												"options":["single_item", "search"],
-												"choices":["Events"]}
-												}
 			},
 			{
 				"title": "JumpToEventThenScene",
