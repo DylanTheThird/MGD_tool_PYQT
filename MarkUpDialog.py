@@ -504,14 +504,8 @@ class area_mark_up(SimpleFields.AreaEntry):
 
 class MarkUp_Window(QtWidgets.QWidget):
     def __init__(self, target_field=None, scenes_flag=None, data_for_functions=None, current_scene_list=None,
-                 scene_data=None):
+                 scene_data=None, quick_load_scene=None):
         super().__init__()
-        self.target_field = target_field
-        if current_scene_list:
-            self.current_scenes = current_scene_list
-            self.functions_list = list(GlobalVariables.Glob_Var.functions_data.keys())
-        else:
-            self.current_scenes = None
         """target field - either treeview for scenes or text field for some fields that allow markups
         scenes_flag - if textfied is target, no need to display treeview for scenes"""
         self.setWindowTitle('Events')
@@ -565,6 +559,13 @@ class MarkUp_Window(QtWidgets.QWidget):
         # h_layout_display_f_gui.addLayout(v_layout_left_side)
 
         v_layout_left_side = QtWidgets.QVBoxLayout()
+
+        self.target_field = target_field
+        if current_scene_list:
+            self.current_scenes = current_scene_list
+            self.functions_list = list(GlobalVariables.Glob_Var.functions_data.keys())
+        else:
+            self.current_scenes = None
         if scenes_flag:
             """first horizontal to put buttons at the top"""
             h_lay_scene_buttons = QtWidgets.QHBoxLayout()
@@ -622,7 +623,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             h_layout_display.addWidget(self.scene_data_widget_background)
             """first, clean it to make it easier"""
             self.data_fields = []
-            temp_fields = {}
+            self.data_fields = {}
             """this temp mainfield is created later as part of function gui field.
              also, needs to show it, as normally is hidden"""
             temp_mainfield_data = None
@@ -632,29 +633,30 @@ class MarkUp_Window(QtWidgets.QWidget):
                 for data_field in scene_data:
                     for field in scene_data[data_field]:
                         if field != 'theScene':
-                            temp_fields[field] = scene_data[data_field][field]
-                for fieldname in temp_fields:
+                            """the scene is created separately in main view, other fields are in hidden view"""
+                            self.data_fields[field] = scene_data[data_field][field]
+                for fieldname in self.data_fields:
                     """now, same as in custome fields, create appropiate fields"""
-                    if temp_fields[fieldname]["type"] == "text":
+                    if self.data_fields[fieldname]["type"] == "text":
                         tempfield = SimpleFields.SimpleEntry(master_widget=self.scene_data_widget_background, field_name=fieldname,
-                                                             field_data=temp_fields[fieldname],
+                                                             field_data=self.data_fields[fieldname],
                                                              main_data_treeview=temp_mainfield_data, label_pos='V')
-                    elif temp_fields[fieldname]["type"] == "int":
+                    elif self.data_fields[fieldname]["type"] == "int":
                         tempfield = SimpleFields.NumericEntry(master=self.scene_data_widget_background, wid=4, field_name=fieldname,
-                                                              field_data=temp_fields[fieldname])
-                    elif temp_fields[fieldname]["type"] == "singlelist":
-                        field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname, temp_fields[fieldname])
+                                                              field_data=self.data_fields[fieldname])
+                    elif self.data_fields[fieldname]["type"] == "singlelist":
+                        field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname, self.data_fields[fieldname])
                         # field_optionbox.configure(takefocus=1)
                         tempfield = field_optionbox
-                    elif temp_fields[fieldname]["type"] == "filePath":
-                        tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname, field_data=temp_fields[fieldname])
-                    elif temp_fields[fieldname]["type"] == 'area':
+                    elif self.data_fields[fieldname]["type"] == "filePath":
+                        tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname, field_data=self.data_fields[fieldname])
+                    elif self.data_fields[fieldname]["type"] == 'area':
                         tempfield = SimpleFields.AreaEntry(self.scene_data_widget_background, fieldname)
-                    elif temp_fields[fieldname]["type"] == 'multilist':
+                    elif self.data_fields[fieldname]["type"] == 'multilist':
                         tempfield = SimpleFields.MultiListDisplay(self.scene_data_widget_background, fieldname, temp_fields[fieldname],
                                                                   main_data_treeview=temp_mainfield_data)
                         self.flag_main_data = True
-                    self.data_fields.append(tempfield)
+                    self.data_fields[fieldname] = tempfield
                     tempfield.set_up_widget(v_layout_display_scene_data)
                     # v_layout_display_scene_data.addWidget(tempfield)
             self.scene_data_widget_background.hide()
@@ -669,6 +671,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.display_data.setMinimumWidth(300)
             self.display_data.set_up_widget(h_layout_display)
             self.display_data.doubleClicked.connect(self.update_row)
+            self.data_fields['theScene'] = self.display_data
             # h_layout_display_f_gui.addLayout(H_layout_display)
             v_layout_left_side.addLayout(h_lay_scene_buttons)
             v_layout_left_side.addLayout(h_layout_display)
@@ -760,6 +763,10 @@ class MarkUp_Window(QtWidgets.QWidget):
         # QtCore.QMetaObject.connectSlotsByName(Dialog)
         if scenes_flag:
             self.area_input.return_target = self.display_data
+            if quick_load_scene:
+                self.load_scene_to_display(quick_load_scene)
+                # print(quick_load_scene.data())
+                self.scene_list.select_element(quick_load_scene)
 
     def done(self):
         if self.display_data:
@@ -773,13 +780,23 @@ class MarkUp_Window(QtWidgets.QWidget):
 
     def load_function(self):
         selected_item = self.display_data.selected_element()
-        if selected_item.parent():
+        if selected_item:
+            if selected_item.parent():
+                parent = selected_item.parent()
+            elif selected_item.child(0,0):
+                parent = selected_item
+            else:
+                return
             data = []
             """for some reason it works. probably its like that for folders"""
-            self.display_data.get_data(parent_index=selected_item.parent(), root_list=data)
-            f_data = data[0]
+            self.display_data.get_data(parent_index=parent, root_list=data)
+            data = data[0]
+            f_data = list(data.keys())
+            f_data += data[f_data[0]]
+
             """now fdata is dictionary with key as function title and list of function values"""
-            self.functions.prepare_function_fields(list(f_data.keys()))
+            self.functions.display_explanation(function_title=f_data[0])
+            self.functions.prepare_function_fields(f_data)
 
     def prepare_markup_buttons(self):
         v_lay_main = QtWidgets.QVBoxLayout()
@@ -788,8 +805,8 @@ class MarkUp_Window(QtWidgets.QWidget):
         v_lay_main.addWidget(label_chara)
 
         h_lay_first = QtWidgets.QHBoxLayout()
-        self.l_player_name = SimpleFields.SingleList(edit=False)
-        self.l_player_name.reload_options(['Player Name', 'normal', 'shout', 'initials'])
+        self.l_player_name = SimpleFields.SingleList(label_text='testerror', edit=False, field_data={'choices':['Player Name', 'normal', 'shout', 'initials']})
+        # self.l_player_name.reload_options(['Player Name', 'normal', 'shout', 'initials'])
         self.l_player_name.currentTextChanged.connect(self.player_name)
         h_lay_first.addWidget(self.l_player_name)
 
@@ -1031,14 +1048,14 @@ class MarkUp_Window(QtWidgets.QWidget):
     #     dialog.setWindowTitle(_translate("Dialog", "Event Text"))
     def update_row(self):
         selected_item = self.display_data.selected_element()
-        if selected_item.whatsThis() != 'function':
-        # if selected_item.parent() is None or (selected_item.parent() and isinstance(selected_item.text(), int)):
-            self.area_input.clear_val()
-            self.area_input.set_val(selected_item.text())
-            self.area_input.flag_update = True
+        # if selected_item.whatsThis() != 'function':
+        self.area_input.clear_val()
+        self.area_input.set_val(selected_item.text())
+        self.area_input.flag_update = True
     def save_data(self):
         """first, check if scene name is defined"""
-        scene_title = self.data_fields[0].get_val()
+        # scene_title = self.data_fields[0].get_val()
+        scene_title = self.data_fields['NameOfScene'].get_val()
         if not scene_title:
             show_message('Missing scene title', 'Please provide scene title', 'MisMandatory')
             return
@@ -1061,28 +1078,37 @@ class MarkUp_Window(QtWidgets.QWidget):
             else:
                 final_text.append(text)
         for fields in self.data_fields:
-            scene_data[fields.title] = fields.get_val()
-        scene_data['theScene'] = final_text
+            # in case of theScene, getdata gathers it into dictionary, but should be a simple list - "finalText"
+            if fields == 'theScene':
+                scene_data[fields] = final_text
+            else:
+                scene_data[fields] = self.data_fields[fields].get_val()
+        # scene_data['theScene'] = final_text
         """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
         so check what is selected and take its parent"""
+        """now, how to save scene in scenelist"""
         insert_row = -1
         if current_selection.parent():
+            """selected scene, not scene type, add above"""
             temp = current_selection.parent()
             scene_type = temp.text()
             insert_row = current_selection.row()
         else:
+            """if no parent, selected scene type, add to it"""
             scene_type = current_selection.text()
-        if insert_row > -1:
-            """user selected scene, insert new scene above selection"""
-            self.scene_list.insert_row([scene_title])
-            # self.current_scenes[scene_type].insert(insert_row, scene_data)
-        else:
-            """user selected parent"""
-            self.scene_list.add_data([scene_title], current_selection)
         self.current_scenes[scene_type][scene_title] = scene_data
-        self.display_data.clear_tree()
+        if scene_title not in list(self.current_scenes[scene_type].keys()):
+            """if title already exists, then user is updating, no need to change, otherwise, insert or add new scene"""
+            if insert_row > -1:
+                """user selected scene, insert new scene above selection"""
+                self.scene_list.insert_row([scene_title])
+                # self.current_scenes[scene_type].insert(insert_row, scene_data)
+            else:
+                """user selected parent"""
+                self.scene_list.add_data([scene_title], current_selection)
+        # self.display_data.clear_tree()
         for field in self.data_fields:
-            field.clear_val()
+            self.data_fields[field].clear_val()
     def switch_to_data(self):
         if self.flag_data:
             """if true, hide data and display scenes"""
@@ -1099,29 +1125,36 @@ class MarkUp_Window(QtWidgets.QWidget):
             if self.flag_main_data:
                 self.functions.treeview_main_game_items.show()
 
-    def load_scene_to_display(self):
+    def load_scene_to_display(self, clicked_index=None):
         """user double cliked on scene in scene lookup. if its parent, clear display, if not, load scene"""
         self.display_data.clear_tree()
-        item_data = self.scene_list.selected_element()
-        scene_data = []
+        # item_data = self.scene_list.selected_element()
+        item_data = self.scene_list.transform_index_to_item(clicked_index)
+        # scene_data = []
         if item_data.parent():
+            selected_scene_to_load = item_data.text()
             for scene_type in self.current_scenes:
-                for scene in self.current_scenes[scene_type]:
-                    if scene == item_data.text():
-                        scene_data = self.current_scenes[scene_type][scene]['theScene']
-                        break
-                if scene_data:
+                if selected_scene_to_load in list(self.current_scenes[scene_type].keys()):
+                    scene_data = self.current_scenes[scene_type][item_data.text()]
+                    for data in scene_data:
+                        if data == 'theScene':
+                            self.display_data.add_data(scene_data[data])
+                        else:
+                            self.data_fields[data].set_val(scene_data[data])
                     break
+                # for scene in self.current_scenes[scene_type]:
+                #     if scene == item_data.text():
+                #         # for scene_data, scene_fields in zip(self.current_scenes[scene_type][scene],self.data_fields):
+                #         #     scene_fields.set_val(scene_data)
+                #         scene_data = self.current_scenes[scene_type][scene]['theScene']
+                #         # return
+                #         break
+                # if scene_data:
+                #     break
         else:
             return
         """now go over scene data, compare each row with functions. """
-        self.display_data.add_data(scene_data)
-        # for scene_row in scene_data:
-        #     temp = scene_row.split(' ')
-        #     if temp[0] in self.functions_list:
-        #         # TODO finish this
-        #         print('found functions')
-        #         print(scene_row)
+        # self.display_data.add_data(scene_data)
     def test(self):
         temp = self.area_input.textCursor()
         print(temp.selectionStart())
