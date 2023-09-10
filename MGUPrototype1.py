@@ -12,24 +12,34 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import QStandardItem
 import random
 import VisualOptions
+import StanceOptions
 import MarkUpDialog
 
 from Function_class import FunctionTests
 
 from LoadMod import start_loading_mod, new_mod
-from otherFunctions import load_recent_mods, write_json_data, confirmation_message
+from otherFunctions import load_recent_mods, write_json_data, confirmation_message, message_yes_no
 from SimpleFields import ElementsList, Main_MultiList, mod_temp_data
 from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
+# TODO monster groups - field to select monster is not centered - need to change to unique view, which will be a list, and add entire list do treeview - FIXED
+# TODO - loaded fetishes saved in mod - error - fixed
+# TODO - clicking new mod displayes confirmation popup, so its not clicked by accidence = Done
+# TODO - saving does not save with provided file name - FIXED
+# TODO - Fetishes saving and loading - main issue is simplefields>mainmultilist>update_with_mod_item - FIXED
+# TODO - overall check > next thing are optional
+# TODO stances - check function that use them
 
-
+# TODO optional fields
+# TODO additions
+# Hard problems
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
-# TODO scroll bars disappear when loading different element type
 # TODO function menu > choice from event. works only on debug
 # check most endloops - left ifplayerhasstance
 # TODO for some reason, when opening function designed, first dropdown(single list l_player_name) gets focus. problem is that probably, it gets it before being created and return error. but sometimes it works.
+# TODO scroll bars keep disappeareng
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -166,6 +176,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.actionLoad_Mod.triggered.connect(self.load_mod)
         self.actionStances = QtWidgets.QAction(MainWindow)
         self.actionStances.setObjectName("actionStances")
+        # self.actionStances.triggered.connect(self.stances_options)
         self.actionAdd_new = QtWidgets.QAction(MainWindow)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("resources/file-new.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -396,6 +407,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
             self.templates[template].prepItemGui()
 
         self.templates['Fetishes'].prep_template()
+        self.scroll_area.hide()
 
         mod_temp_data.templates_access = Glob_Var.access_templates
 
@@ -446,9 +458,15 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def visual_options(self):
         # dialog_visual = Dialog_Visual_Options(self.centralwidget)
         dialog_win = Dialog_Window(parent=self.centralwidget)
-        dialog_visual = VisualOptions.Ui_Dialog()
+        dialog_visual = VisualOptions.Visual_Dialog()
         dialog_visual.setupUi(Dialog=dialog_win)
         dialog_win.show()
+
+    # def stances_options(self):
+    #     dialog_win = Dialog_Window(parent=self.centralwidget)
+    #     dialog_visual = StanceOptions.Stances_Dialog()
+    #     dialog_visual.setupUi(Dialog=dialog_win)
+    #     dialog_win.show()
 
     def load_mod(self, mod_paths=None):
         if not mod_paths:
@@ -459,7 +477,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         else:
             mod_name = mod_paths[0]
             file = mod_paths[1]
-        self.new_mod_prepare()
+        self.new_mod_prepare(confirm=False)
         self.entry_mod_name.setText(mod_name)
         start_loading_mod(file)
         self.update_mod_tree_start(Mod_Var.mod_display)
@@ -513,7 +531,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         """unlock button save and cancel
             check what element is prepared and clear template
             block loading details of element"""
-
+        self.scroll_area.show()
         if self.flag_creating_element:
             self.cancel()
         selected_element = self.tree_mod_elements.selected_element()
@@ -526,23 +544,28 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
             Glob_Var.edit_element = True
 
-    def new_mod_prepare(self):
-        """clean treeview with mod data"""
-        new_mod()
-        self.entry_mod_name.clear()
-        self.tree_mod_elements.clear_tree()
-        """turning of modifable folders so top elements cannot be clicked"""
-        self.tree_mod_elements.flag_folders = False
-        self.tree_mod_elements.add_data(data=Mod_Var.mod_display)
-        # self.tree_mod_elements.flag_folders = Fal
-        # """clean mod items in game data"""
-        # mod_item = self.main_game_elements.main_data.tree_model.item(0, 0)
-        # if mod_item:
-        #     mod_item.removeRows(0, mod_item.rowCount())
-        # selected_element = self.tree_mod_elements.selected_element()
-        # if selected_element:
-        #     element_type = self.tree_mod_elements.find_root_parent(selected_element)
-        #     self.label_welcome.setText('Creating ' + element_type.text())
+    def new_mod_prepare(self, confirm=True):
+        if confirm:
+            if_new = message_yes_no()
+        else:
+            if_new = True
+        if if_new:
+            """clean treeview with mod data"""
+            new_mod()
+            self.entry_mod_name.clear()
+            self.tree_mod_elements.clear_tree()
+            """turning of modifable folders so top elements cannot be clicked"""
+            self.tree_mod_elements.flag_folders = False
+            self.tree_mod_elements.add_data(data=Mod_Var.mod_display)
+            # self.tree_mod_elements.flag_folders = Fal
+            # """clean mod items in game data"""
+            # mod_item = self.main_game_elements.main_data.tree_model.item(0, 0)
+            # if mod_item:
+            #     mod_item.removeRows(0, mod_item.rowCount())
+            # selected_element = self.tree_mod_elements.selected_element()
+            # if selected_element:
+            #     element_type = self.tree_mod_elements.find_root_parent(selected_element)
+            #     self.label_welcome.setText('Creating ' + element_type.text())
 
     def save_new_element(self):
         """change main label to reflect action"""
@@ -639,6 +662,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
     def load_element_data(self, event, just_display=False):
         """load data of item into template. """
+        self.scroll_area.show()
         if self.flag_creating_element:
             return
         if_edited = self.actionSave_New.isEnabled()
@@ -672,7 +696,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     # self.MainWindow.setMaximumSize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
                     self.MainWindow.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
                     # workaround. scroll bars disappear, so its always something. problem with line below!!!!
-                    self.scroll_area.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
+                    # self.scroll_area.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
         # print('double clicked mod tree')
 
     def mark_up_dialog(self):
@@ -689,13 +713,13 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.markup_win.show()
 
     def testing(self):
-        # TODO testing function window
         # self.test_functions = FunctionTests()
         # self.test_functions.show()
         # print(mod_temp_data.current_editing_event)
-        self.layout_templates.setCurrentIndex(random.randint(1,6))
+        # self.layout_templates.setCurrentIndex(random.randint(1,6))
         # file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory"))
         print('testing prorotype')
+        print(Mod_Var.mod_file_names)
         # print(Glob_Var.functions_display)
         # print(str(Glob_Var.perks_and_stats))
         # self.templates['Adventures'].frame_fields['StatReq'].load_main_data()

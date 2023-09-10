@@ -68,7 +68,8 @@ def load_config_data(label_widget, main_window=None):
     LoadMod.load_line_triggers()
     label_widget.setText("Welcome")
     config_setup(label_widget, 0)
-    prototype.new_mod_prepare()
+    prototype.tree_mod_elements.add_data(data=Mod_Var.mod_display)
+    LoadMod.new_mod()
     # prototype.prepare_same_core_elements_in_both_displayes()
     prototype.main_game_elements.add_main_game_items()
 

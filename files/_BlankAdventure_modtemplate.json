@@ -23,7 +23,7 @@
     "RandomEvents": {
 						"type":"multilist",
 						"tooltip":"Set the random events that can be selected by the RandomEvent string for the Deck",
-						"choices":["currentMod-Events", "main-inc-/Events"],
+						"choices":["Events"],
 				"options":["search","addition"]
 						},
     "RandomMonsters": {

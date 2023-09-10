@@ -457,11 +457,10 @@ class AreaEntry(QtWidgets.QTextEdit):
 
 class SingleList(QtWidgets.QComboBox):
     def __init__(self, master_window=None, label_text=None, field_data=None, template_name=None,
-                 list_path=None, class_connector=None, edit=True, label_pos='H'):
+                 class_connector=None, edit=True, label_pos='H'):
         super().__init__(parent=master_window)
         self.template_name = template_name
         self.type = 'singlelist'
-        # self.field_frame = master
         self.title = label_text
         self.row_size = 1
         self.connector_to_outside_complex_class = class_connector
@@ -485,8 +484,8 @@ class SingleList(QtWidgets.QComboBox):
             if 'tooltip' in field_data:
                 self.label_custom.setToolTip(field_data['tooltip'])
             if 'choices' in field_data:
-                self.list = otherFunctions.getListOptions(field_data['choices'], "single")
-                self.set_val(self.list)
+                list = otherFunctions.getListOptions(field_data['choices'], "single")
+                self.set_val(list)
             else:
                 self.list = []
                 self.list.append('placeholder')
@@ -505,8 +504,8 @@ class SingleList(QtWidgets.QComboBox):
 
     def set_val(self, value, sort=True):
         if isinstance(value, list):
-            if sort:
-                value.sort()
+            # if sort:
+            #     value.sort()
             if len(value) >= 1:
                 self.list = value
                 self.addItems(value)
@@ -822,57 +821,6 @@ class ElementsList(QtWidgets.QTreeView):
 
         # self.rootnode = self.tree_model.invisibleRootItem()
         self.rootnode = None
-        # self.treeview.clicked.connect(self.load_display)
-        # self.treeview.doubleClicked.connect(on_tv_select)
-        # self.rootnode.
-
-        # row1 = QStandardItem()
-        # row1.setEditable(False)
-        # row1.setText("row 1")
-        # self.rootnode.appendRow(row1)
-        # row2 = QStandardItem()
-        # row2.setText("row 2")
-        # row1.appendRow(row2)
-        # self.treeview.bind("<<TreeviewSelect>>", self.on_tv_select)  # bind event on selection
-        #
-        # # reszta to nudne i przyziemne podpinanie kontrolki scrollbar oraz pozycjonowanie scrollbara i kontrolki treeview
-        # self.sb_treeview = tk.Scrollbar(masterWun)
-        # self.sb_treeview.grid(row=self.row_placement+1, column=self.col_placement, sticky=tk.NS + tk.E)
-        # # self.sb_treeview.grid(row=self.row_placement+1, column=self.col_placement + colspan, sticky=tk.NS + tk.E)
-        # self.treeview.config(yscrollcommand=self.sb_treeview.set, height=treeview_height)
-        # self.treeview.grid(row=self.row_placement+1, column=self.col_placement, sticky=tk.NSEW)
-        # # self.treeview.grid(row=self.row_placement+1, column=self.col_placement, sticky=tk.NSEW, columnspan=colspan)
-        # self.treeview.bind("<Control_L>" + "<x>", self.cut_elements)
-        # self.treeview.bind("<Control_L>" + "<v>", self.paste_elements)
-        # if delete_flag:
-        #     # self.treeview.bind("<Delete>", lambda event: self.delete_leaf())
-        #     self.treeview.bind("<Delete>", lambda event: self.delete_with_backup())
-        #     self.treeview.bind("<Control_L>" + "<z>", lambda event: self.restore_deleted())
-        # self.treeview.bind('<Prior>', self.move_up)
-        # self.treeview.bind('<Next>', self.move_down)
-        # self.treeview.bind('<Escape>', lambda event: self.cancel_selection())
-        # self.sb_treeview.config(command=self.treeview.yview)
-        # self.treeview.heading("#0", text=listTitle)
-        # # style = Style()
-        # # style.configure("Treeview",
-        # #                 background="#E1E1E1",
-        # #                 foreground="#000000",
-        # #                 rowheight=25,
-        # #                 fieldbackground="#E1E1E1")
-        # # style.map('Treeview', background=[('selected', '#BFBFBF')])
-        #
-        # self.hidden_leafs = []
-        # self.detached_elements = []
-        # self.treeview.tag_configure('oddrow', background='red')
-        # self.back_up_deleted = []
-        # # self.sb_treeview.grid(in_=self.treeview, row=1, column=1)
-        # # self.terminal_scrollbar = tk.Scrollbar(self)
-        # # self.terminal_scrollbar.grid(row=2, column=5, sticky=tk.NS)
-        # # self.sb_treeview.place(in_=self.treeview, relx=1., y=0, relheight=1.)
-        # # self.treeview.place(x=0, y=0, relwidth=1., relheight=1., width=-18)
-        # # self.treeview.pack(expand=True, fill='y')
-        # # rowspan = self.row_spaning
-        # can figure out how to get data from this treeview, so I put data in sepate var and this will be displayed
         self.tree_data = []
         # temp_data = ['val 1',
         #              {'keys_1': [
@@ -912,7 +860,8 @@ class ElementsList(QtWidgets.QTreeView):
         super().keyPressEvent(event)
 
 
-    def focusInEvent1(self, event):
+    def focusInEvent(self, event):
+        # might be problems with it, if something, change name and figure out field custom>monster groups
         # print('event-focus-in:', self.objectName())
         if self.connector_to_outside_complex_class:
             GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
@@ -1990,6 +1939,7 @@ class MultiListDisplay:
         # self.label_custom = custom_button(master, field_name)
         self.addition = False
         self.row_size = 4
+        self.limit = 0
         # field_data = {'options':['unique'], 'choices':['Items']}
         if 'options' in field_data:
             if 'single_item' in field_data['options']:
@@ -2001,6 +1951,8 @@ class MultiListDisplay:
                 self.version = 'multi_item'
             if 'addition' in field_data['options']:
                 self.addition = True
+            if 'limit' in field_data['options']:
+                self.limit = field_data['limit']
         if 'tooltip' in field_data:
             self.label_custom.setToolTip(field_data['tooltip'])
         # self.label_custom.change_position('center')
@@ -2063,6 +2015,10 @@ class MultiListDisplay:
                 if isinstance(values, str):
                     values = [values]
                 current_count = self.final_data.tree_model.rowCount()
+                if self.limit:
+                    if current_count > self.limit:
+                        otherFunctions.show_message('Warning','Reached limit. Please remove some before adding more','Warning')
+                        return
                 current_values = []
                 for idx in range(current_count):
                     item = self.final_data.tree_model.item(idx)
@@ -2090,11 +2046,13 @@ class MultiListDisplay:
         if self.version == 'single':
             return_data = self.final_data.get_val()
         elif self.version == 'unique':
-            return_data = []
-            current_count = self.final_data.count()
-            for idx in range(current_count):
-                item = self.final_data.item(idx)
-                return_data.append(item.text())
+            # since both unique and normal are uniqueView, just get_data should work in both cases
+            return_data = self.final_data.get_data()
+            # return_data = []
+            # current_count = self.final_data.count()
+            # for idx in range(current_count):
+            #     item = self.final_data.item(idx)
+            #     return_data.append(item.text())
         else:
             return_data = self.final_data.get_data()
         if temp_dict_container is not None:
@@ -2400,7 +2358,7 @@ class Main_MultiList:
         for element in main_game_items:
             if main_game_items[element]:  #{Adventures:[stuff]}
                 if element == 'Fetishes':
-                    self.data_for_display['Fetish'] = [{'main game': list(main_game_items[element]['Fetish'].keys())}]
+                    self.data_for_display['Fetishes'] = [{'main game': list(main_game_items[element]['Fetish'].keys())}]
                     self.data_for_display['Addiction'] = [{'main game': list(main_game_items[element]['Addiction'].keys())}]
 
                 else:
@@ -2655,8 +2613,14 @@ class Main_MultiList:
                     continue
                 temp_dict[item] = mod_item[item]
         for mod_item in temp_dict:
+            # current_elements = list(self.data_for_display[mod_item].keys())
+            """temporary solution - pop everything but last item and insert mod items"""
+            for idx in range(len(self.data_for_display[mod_item])-1):
+                self.data_for_display[mod_item].pop(0)
             for i in temp_dict[mod_item]:
-                self.data_for_display[mod_item].insert(-1,i)
+                # FUCK, in data display its FETISH, while normally its FETISHES
+                # if i not in current_elements:
+                    self.data_for_display[mod_item].insert(-1,i)
         # for idx in range(self.main_data.tree_model.rowCount()):
         #     element = self.main_data.tree_model.item(idx)
         #     for items in temp_dict:
@@ -3474,7 +3438,7 @@ class CheckBox(QtWidgets.QCheckBox):
 class ModTempData:
     def __init__(self):
         # self.mod_data = {'choices': {}, 'displaycharacters': {}}
-        self.mod_data = {'events': {}, 'girls': {}}
+        self.mod_data = {'events': {}, 'girls': {}, 'stances': []}
         """since I change how events name are displayes - event title - I neend event filename to access its data"""
         self.current_editing_event = ''
         self.data_filename = ''
@@ -3497,6 +3461,7 @@ class ModTempData:
 
     def prepare_data_load_mod(self, mod_name):
         # return
+        self.current_mod = mod_name
         self.data_filename = 'files/modsTempData/' + mod_name + '_mod_temp_data.json'
         if isfile(self.data_filename):
             self.mod_data = otherFunctions.load_json_data(self.data_filename)
@@ -3551,6 +3516,8 @@ class ModTempData:
         if self.data_filename:
             otherFunctions.write_json_data(self.data_filename, self.mod_data)
 
+    def add_stances(self, stance_list):
+        self.mod_data['stances'] = stance_list
     def add_choice(self, choice_number, choice_text):
         """first get current event name"""
         event_name = self.templates_access['Events'].input_filename.get_val()
