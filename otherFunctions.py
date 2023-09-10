@@ -392,8 +392,8 @@ def getListOptions(field_data, list_type):
             #     temp = values.split('-')
             #     templist['main-'+temp[1]] = []
             elif values == 'Stances':
-                for stance_type in GlobalVariables.stances:
-                    templist[stance_type] = GlobalVariables.stances[stance_type]
+                for stance_type in Glob_Var.stances:
+                    templist[stance_type] = Glob_Var.stances[stance_type]
             elif values == 'Fetishes':
                 templist['Fetishes'] = Glob_Var.main_game_items["Fetishes"]["Fetish"]
                 templist['Addictions'] = Glob_Var.main_game_items["Fetishes"]["Addiction"]
@@ -1111,3 +1111,14 @@ def confirmation_message():
         return 'continue'
     elif selection == QMessageBox.Cancel:
         return 'cancel'
+
+def message_yes_no():
+    msg = QMessageBox()
+    msg.setInformativeText("Do you want to continue?")
+    msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    msg.setDefaultButton(QMessageBox.Yes)
+    selection = msg.exec_()
+    if selection == QMessageBox.Yes:
+        return 1
+    elif selection == QMessageBox.No:
+        return 0

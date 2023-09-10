@@ -277,7 +277,8 @@ class Templates:
             messagebox.showerror("Nothing", "No details to display", parent=self)
         else:
                 # self.input_filename.set_val(element_name)
-                self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
+                if self.element_type != 'Fetishes':
+                    self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
                 element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
             # elementType == 'Items':
             # try:
@@ -384,8 +385,9 @@ class Templates:
         # with open(elementPath + itemTemp['name'] + '.json', 'w') as objectF:
         #     objectF.write(json.dumps(itemTemp, indent='\t'))
 
-    def save_element_in_file(self, file_name, file_path):
-        file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][file_name]
+    def save_element_in_file(self, element_name, file_path):
+        file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
+        file_name = GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name]
         elementPath = file_path + '/'
         if not access(elementPath, F_OK):
             makedirs(elementPath)

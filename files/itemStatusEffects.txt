@@ -9,10 +9,8 @@ Stun
 Paralysis
 Drowsy
 Hypnotized
-Paralysis
 Paralyzed
 Sleep
-Stun
 Trance
 Crit
 Damage

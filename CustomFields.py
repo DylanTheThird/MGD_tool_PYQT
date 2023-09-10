@@ -1863,23 +1863,36 @@ class FetishApply:
 
 
 class MonsterGroups:
-    def __init__(self, master=None, view_title='', field_data=None):
+    def __init__(self, master=None, view_title=''):
+        """now its not working. add multilist display with single element and button to add.
+        when nothing selected, adds new group
+        when selected root group, add to that group
+        when selected row in group, insert above"""
         self.addition = True
-        self.add_button = SimpleFields.CustomButton(master, 'Add Monster Group', self)
+        # self.input_monster = SimpleFields.MultiListDisplay(None, '', {'choices': ['Monsters'],
+        #                                                                             'options': ['unique']}
+        #                                                    ,main_data_treeview=Glob_Var.main_game_field)
+        # self.input_monster.label_custom.hide()
+        self.add_button = SimpleFields.CustomButton(master, 'Add Monster or Group', self)
+        # self.add_button.setToolTip('Click on field below, then double click on in main view field.\n'
+        #                            'this will add text below, then click this button. If nothing selected: add new group\n'
+        #                            'if group selected, add at the end, if monster selected, add above')
         self.add_button.clicked.connect(self.create_new_group)
+        self.add_button.setToolTip('Button to add new group.\n'
+                                   'Select group then double click on monster in main view to add')
         self.custom_layout = QtWidgets.QVBoxLayout()
         self.fields_list = []
         self.title = view_title
         self.type = 'multilist'
-        self.template_name = 'Locations'
+        self.template_name = 'Adventures'
         self.treeview_MonsterFinalList = SimpleFields.ElementsList(master, 'Double click to Edit', class_connector=self)
         self.treeview_MonsterFinalList.setFixedWidth(160)
         self.treeview_MonsterFinalList.setFixedHeight(70)
         self.fields_list.append(self.treeview_MonsterFinalList)
         self.selection_type = 'Monsters'
         self.row_size = 3
-
         self.custom_layout.addWidget(self.add_button)
+        # self.input_monster.set_up_widget(self.custom_layout)
         self.treeview_MonsterFinalList.set_up_widget(self.custom_layout)
 
     def set_val(self, values):
@@ -1919,6 +1932,17 @@ class MonsterGroups:
     def clear_val(self):
         self.treeview_MonsterFinalList.clear_tree()
     def create_new_group(self):
+        """        when nothing selected, adds new group
+        when selected root group, add to that group
+        when selected row in group, insert above"""
+        # new = self.input_monster.get_val()
+        # selected = self.treeview_MonsterFinalList.selected_element()
+        # if selected:
+        #     if selected.text() == 'Group':
+        #         self.treeview_MonsterFinalList.add_data(new, selected)
+        #     else:
+        #         self.treeview_MonsterFinalList.insert_row([new])
+        # else:
         self.treeview_MonsterFinalList.add_data(data=['Group'])
     def set_up_widget(self, outside_layout):
         outside_layout.addLayout(self.custom_layout)
@@ -2262,9 +2286,7 @@ def createField(parent_widget, fieldname, fieldData, mode=1, template_name=None)
                 # field_ready = tempfield
                 # tempfield.grid(row=rowposition, column=colposition+1)
             elif fieldData["type"] == "singlelist":
-                field_optionbox = SimpleFields.SingleList(parent_widget, fieldname, fieldData)
-                # field_optionbox.configure(takefocus=1)
-                tempfield = field_optionbox
+                tempfield = SimpleFields.SingleList(parent_widget, fieldname, fieldData)
             elif fieldData["type"] == "filePath":
                 tempfield = SimpleFields.FileField(parent_widget, fieldname, field_data=fieldData)
             elif fieldData['type'] == 'scenesinglelist':
@@ -2313,7 +2335,7 @@ def createField(parent_widget, fieldname, fieldData, mode=1, template_name=None)
             elif fieldData["type"] in 'deck':
                 tempfield = DeckField(parent_widget, fieldData)
             elif fieldData["type"] in 'monstergroups':
-                tempfield = MonsterGroups(parent_widget, fieldname, fieldData)
+                tempfield = MonsterGroups(parent_widget, fieldname)
             # elif fieldData["type"] in 'speaker':
             #     tempfield = Speaker(parent_widget, fieldData)
             elif fieldData["type"] in 'FetishApply':
