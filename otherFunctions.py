@@ -8,7 +8,6 @@ from os.path import join, isfile, isdir
 from os import makedirs
 from os import access, F_OK
 # from functools import partial
-import tkinter as tk
 from tkinter import filedialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
@@ -716,16 +715,6 @@ def save_element(elements, item, mod_path):
 #             LoadMod(elements, my_path, localdict[elements])
 #     return localdict
 #
-
-
-def add_value_to_area(area_f, value, end_val=''):
-    if end_val:
-        if area_f.field.tag_ranges(tk.SEL):
-            area_f.field.insert(tk.SEL_FIRST, value)
-            area_f.field.insert(tk.SEL_LAST, end_val)
-    else:
-        place = area_f.field.index(tk.INSERT)
-        area_f.field.insert(place, value)
 
 
 # def browse_files(button_to_display_filename, variable_for_file_path, media_path):
