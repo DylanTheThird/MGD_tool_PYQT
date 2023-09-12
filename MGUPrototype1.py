@@ -17,18 +17,17 @@ import MarkUpDialog
 
 from Function_class import FunctionTests
 
-from LoadMod import start_loading_mod, new_mod
+from LoadMod import start_loading_mod, new_mod, remove_files
 from otherFunctions import load_recent_mods, write_json_data, confirmation_message, message_yes_no
 from SimpleFields import ElementsList, Main_MultiList, mod_temp_data
 from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO monster groups - field to select monster is not centered - need to change to unique view, which will be a list, and add entire list do treeview - FIXED
-# TODO - loaded fetishes saved in mod - error - fixed
-# TODO - clicking new mod displayes confirmation popup, so its not clicked by accidence = Done
-# TODO - saving does not save with provided file name - FIXED
-# TODO - Fetishes saving and loading - main issue is simplefields>mainmultilist>update_with_mod_item - FIXED
+# TODO skills
+# TODO if removed item from mod, it should also remove file when saving mod - fixed(moves files to temp folder)
+# TODO editing element should not add in mod treeview - fixed
+# todo editing element list should also unlock saving - fixed
 # TODO - overall check > next thing are optional
 # TODO stances - check function that use them
 
@@ -40,6 +39,30 @@ import TemplatesPreparation
 # check most endloops - left ifplayerhasstance
 # TODO for some reason, when opening function designed, first dropdown(single list l_player_name) gets focus. problem is that probably, it gets it before being created and return error. but sometimes it works.
 # TODO scroll bars keep disappeareng
+
+class ModTreeField(ElementsList):
+    def __init__(self, a, b=None, c=False, d=False, e=False, f=5, g=True, h=None):
+        super().__init__(masterWun=a, listTitle=b, search_field=c, folders=d, all_edit=e, treeview_height=f,
+                 delete_flag=g, class_connector=h)
+        self.files_to_remove = {}
+    def delete_with_backup(self):
+        """for mod items, it should later delete files, so need to get filename and path"""
+        selected = self.selected_element()
+        type = self.find_root_parent(selected).text()
+        filepath = self.get_file_path(selected)
+        selected = selected.text()
+        filename = Mod_Var.mod_file_names[type][selected]
+        self.files_to_remove[filename] = filepath
+        super().delete_with_backup()
+
+    def get_file_path(self, file, path=''):
+        if file.parent():
+            path = self.get_file_path(file.parent(), path)
+            path = path + file.parent().text() + '/'
+            return path
+        else:
+            return ''
+
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -103,7 +126,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.layout_main.addWidget(self.entry_mod_name)
         # self.gridLayout.addWidget(self.entry_mod_name, 1, 0, 1, 1)
         # self.treeWidget = QtWidgets.QTreeWidget(self.layoutWidget)
-        self.tree_mod_elements = ElementsList(self.centralwidget, folders=True, delete_flag=True)
+        # self.tree_mod_elements = ElementsList(self.centralwidget, folders=True, delete_flag=True)
+        self.tree_mod_elements = ModTreeField(self.centralwidget, d=True, g=True)
         self.tree_mod_elements.flag_edit = False
         self.tree_mod_elements.parent_tag = 'folder'
         self.tree_mod_elements.doubleClicked.connect(self.load_element_data)
@@ -410,6 +434,9 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.scroll_area.hide()
 
         mod_temp_data.templates_access = Glob_Var.access_templates
+        temp = self.templates['Monsters'].frame_fields['pictures'].label.font()
+        temp.setStrikeOut(True)
+        self.templates['Monsters'].frame_fields['pictures'].label.setFont(temp)
 
     # might be changed to checking focus on each widget instead of here
     @QtCore.pyqtSlot("QWidget*", "QWidget*")
@@ -583,11 +610,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
             self.tree_mod_elements.add_folder(new_element)
         else:
             """add or update element name to main display"""
-            check_if_adding_or_update = self.actionCancel_New.isEnabled()
             if_folder = selected_element.whatsThis()
             if not if_folder:
                 selected_element = selected_element.parent()
-            if check_if_adding_or_update:
+            if new_element != self.current_selected_item.text():
                 self.tree_mod_elements.add_data(data=new_element, node=selected_element)
 
         """copy treeview to game treeview"""
@@ -633,6 +659,9 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     continue
                 template_name = list(elements_type.keys())[0]
                 self.create_folder_while_saving_mod(template_name, mod_path + '/' + template_name + '/', elements_type)
+            if self.tree_mod_elements.files_to_remove:
+                remove_files(self.tree_mod_elements.files_to_remove, mod_path, self.entry_mod_name.text())
+                self.tree_mod_elements.files_to_remove.clear()
             # save_Mod_withfolders(self.entry_mod_name.text())
 
     def create_folder_while_saving_mod(self, template_name, el_path_start, el_items):
@@ -719,7 +748,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # self.layout_templates.setCurrentIndex(random.randint(1,6))
         # file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory"))
         print('testing prorotype')
-        print(Mod_Var.mod_file_names)
+        print(self.tree_mod_elements.files_to_remove)
+        # print(Mod_Var.mod_file_names)
         # print(Glob_Var.functions_display)
         # print(str(Glob_Var.perks_and_stats))
         # self.templates['Adventures'].frame_fields['StatReq'].load_main_data()

@@ -700,6 +700,8 @@ class UniqueView(QtWidgets.QListView):
             self.tree_model.removeRow(item.row(), item.parent())
             if self.height() > 20:
                 self.setFixedHeight(self.height() - 20)
+        if self.flag_edit:
+            GlobalVariables.Glob_Var.edited_field()
     def destroy(self):
         for idx in range(self.custom_layout.count()):
             temp = self.custom_layout.takeAt(0)
@@ -879,7 +881,7 @@ class ElementsList(QtWidgets.QTreeView):
         super().show()
 
 
-    def add_data(self, data=[], node=None, update_flag=False, insert_row=False):
+    def add_data(self, data=[], node=None, update_flag=False, insert_row=False, data_info = ''):
         if update_flag:
             if isinstance(node, str):
                 selected_branch = self.find_node(node)
@@ -892,7 +894,7 @@ class ElementsList(QtWidgets.QTreeView):
             #     self.tree_model.removeRow(i, selected_branch)
 
         # else:
-        self.add_data_to_display(data, node, insert_row)
+        self.add_data_to_display(data, node, insert_row, data_info)
     #     self.add_data_to_var()
     # def add_data_to_var(self, node=None, data=[], update_flag=False):
     #     if not node:
@@ -968,7 +970,7 @@ class ElementsList(QtWidgets.QTreeView):
         if self.flag_edit:
             GlobalVariables.Glob_Var.edited_field()
 
-    def add_data_to_display(self, data=[], node=None, insert_row=False):
+    def add_data_to_display(self, data=[], node=None, insert_row=False, data_info=''):
         # top level,  gather data into list. this way, if need to insert, just provide row number
         final_items_to_add = []
         if not node:
@@ -1012,6 +1014,8 @@ class ElementsList(QtWidgets.QTreeView):
             """if data is just string"""
             bottom_row = QStandardItem()
             bottom_row.setText(data)
+            if data_info:
+                bottom_row.setWhatsThis(data_info)
             if not self.flag_child_editable:
                 bottom_row.setEditable(False)
             final_items_to_add.append(bottom_row)

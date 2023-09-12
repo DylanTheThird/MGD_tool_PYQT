@@ -1,6 +1,6 @@
 # from tkinter import messagebox
 from os import listdir
-from os import access, F_OK
+from os import access, F_OK, mkdir, rename
 from os.path import isdir, join, isfile, getmtime
 import json
 from collections import OrderedDict
@@ -518,5 +518,11 @@ def load_main_game_addition_files(file_path=''):
 
     return
 
-
-
+def remove_files(files_dict, mod_path, mod_name):
+    for file in files_dict:
+        """instead of removing, move files to temp data to mod folder"""
+        file_path = files_dict[file]
+        if not access('files/modsTempData/' + mod_name, F_OK):
+            mkdir('files/modsTempData/' + mod_name)
+        rename(mod_path + '/' + file_path + file + '.json', 'files/modsTempData/' + mod_name + '/' + file
+               + '_copy.json')

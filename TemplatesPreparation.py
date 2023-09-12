@@ -77,12 +77,9 @@ class Templates:
             with open(self.file_template, encoding='utf-8-sig') as Blank:
                 self.json_templates = json.load(Blank, object_hook=OrderedDict)
                 # self.frame_fields = {}
-        #         TODO change warnings
         except Exception as e:
-            show_message("template loading error", 'A issue has occured loading template ' + self.file_template + '.\n'
-                                                                                                  'Traceback:\n'
-                                                                                                  '{0}'.format(str(e)),
-                         "")
+            show_message("template loading error", 'A issue has occured loading template ' +
+                         self.file_template + '.\nTraceback:\n{0}'.format(str(e)),"")
             exit()
         # for field in self.json_templates:
         #     if 'options' in self.json_templates[field]:
@@ -1345,7 +1342,6 @@ class FetishesTemplate(Templates):
 
     def save_element_in_file(self, file_name, file_path):
         """filename for fetishes is a list of all fetishes"""
-        # TODO whole fetishes.  save and read from 1 file properly and stuff
         # file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][file_name]
         """fetish list is a one item dictionary of  list of dictionaries of fetishes
             create a template for fetish and saving in list, but as mod saving all to one file
