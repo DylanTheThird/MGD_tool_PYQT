@@ -24,11 +24,11 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
+# TODO - mod temp data, saving loading, with stances: - FIXED
+# TODO - event - scene save - broken- works updating scenes. need to add actually saving and making new scenes - FIXED
+# TODO - monster event - scene data - fixed(had to reorder code in markupwindow)
 # TODO skills
-# TODO if removed item from mod, it should also remove file when saving mod - fixed(moves files to temp folder)
-# TODO editing element should not add in mod treeview - fixed
-# todo editing element list should also unlock saving - fixed
-# TODO - overall check > next thing are optional
+# TODO - overall check > next thing are 'optional'
 # TODO stances - check function that use them
 
 # TODO optional fields
@@ -48,12 +48,13 @@ class ModTreeField(ElementsList):
     def delete_with_backup(self):
         """for mod items, it should later delete files, so need to get filename and path"""
         selected = self.selected_element()
-        type = self.find_root_parent(selected).text()
-        filepath = self.get_file_path(selected)
-        selected = selected.text()
-        filename = Mod_Var.mod_file_names[type][selected]
-        self.files_to_remove[filename] = filepath
-        super().delete_with_backup()
+        if selected.parent():
+            type = self.find_root_parent(selected).text()
+            filepath = self.get_file_path(selected)
+            selected = selected.text()
+            filename = Mod_Var.mod_file_names[type][selected]
+            self.files_to_remove[filename] = filepath
+            super().delete_with_backup()
 
     def get_file_path(self, file, path=''):
         if file.parent():
@@ -123,6 +124,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.entry_mod_name.setObjectName("mod_name")
         self.entry_mod_name.setMinimumWidth(200)
         self.entry_mod_name.setMaximumWidth(200)
+        self.entry_mod_name.textChanged.connect(mod_temp_data.start_new_mod)
         self.layout_main.addWidget(self.entry_mod_name)
         # self.gridLayout.addWidget(self.entry_mod_name, 1, 0, 1, 1)
         # self.treeWidget = QtWidgets.QTreeWidget(self.layoutWidget)
@@ -553,6 +555,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # print('save recent mods list')
         temp = {'recentmods': self.recent_mods}
         write_json_data('recent_mods.json', temp)
+        mod_temp_data.save_file()
 
     def new_element_prepare(self):
         """unlock button save and cancel
@@ -662,7 +665,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
             if self.tree_mod_elements.files_to_remove:
                 remove_files(self.tree_mod_elements.files_to_remove, mod_path, self.entry_mod_name.text())
                 self.tree_mod_elements.files_to_remove.clear()
-            # save_Mod_withfolders(self.entry_mod_name.text())
+            mod_temp_data.save_file()
 
     def create_folder_while_saving_mod(self, template_name, el_path_start, el_items):
         """this is dictionary {'Items': [{'Consumables': ['ElvenHerb']}, {'KeyItems': ['JorasLetter']}]}"""

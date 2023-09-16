@@ -2625,88 +2625,88 @@ class SwapLine_Field:
         self.data_tree.clear_tree()
         return
         # self.treeview_main_game_items.disconnect_multilist()
-        for field in self.fields_list:
-            field.destroy()
-        self.fields_list = []
-        for field in self.list_fields_not_going_to_treeview:
-            field.destroy()
-        self.list_fields_not_going_to_treeview = []
-        self.data_tree.clear_tree()
-        if prepare_options == 'Stat':
-            field_atr1 = SimpleFields.SingleList(label_text='Core Attribute',
-                                                 field_data={'choices': ["Power", "Technique", "Willpower", "Allure",
-                                                                         "Intelligence", "Luck"]}, label_pos='V')
-            field_atr1.set_up_widget(self.created_fields_layout)
-            self.fields_list.append(field_atr1)
-            field_atr2 = SimpleFields.NumericEntry(None)
-            self.fields_list.append(field_atr2)
-            field_atr2.set_up_widget(self.created_fields_layout)
-        elif prepare_options in "Arousal MaxArousal Energy MaxEnergy Virility EncounterSize Eros Progress":
-            field_atr1 = SimpleFields.NumericEntry(None)
-            field_atr1.set_up_widget(self.created_fields_layout)
-            self.fields_list.append(field_atr1)
-            self.changed_selection = "Arousal MaxArousal Energy MaxEnergy Virility EncounterSize Eros Progress"
-        elif prepare_options == 'HasFetish':
-            field_atr1 = SimpleFields.SingleList(label_text='Fetishes', label_pos='V',
-                                                 field_data={'choices': ["Fetishes"]})
-            field_atr1.set_up_widget(self.created_fields_layout)
-            self.fields_list.append(field_atr1)
-        elif prepare_options == 'HasFetishLevelEqualOrGreater':
-            field_atr1 = SimpleFields.SingleList(label_text='Fetishes', label_pos='V',
-                                                 field_data={'choices': ["Fetishes"]})
-            field_atr1.set_up_widget(self.created_fields_layout)
-            self.list_fields_not_going_to_treeview.append(field_atr1)
-            # self.fields_list.append(field_atr1)
-            field_atr2 = SimpleFields.NumericEntry(None)
-            self.fields_list.append(field_atr2)
-            field_atr2.set_up_widget(self.created_fields_layout)
-        elif prepare_options == 'Perk':
-            field_atr1 = SimpleFields.MultiListDisplay(None, 'Perks',
-                                                       field_data={'choices': ["Perks"], 'options': ["single_item", "search"]},
-                                                       main_data_treeview=self.treeview_main_game_items)
-            self.fields_list.append(field_atr1)
-            field_atr1.set_up_widget(self.created_fields_layout)
-        elif prepare_options == 'Item':
-            field_atr1 = SimpleFields.MultiListDisplay(None, 'Items',
-                                                       field_data={'choices': ["Items"], 'options': ["single_item", "search"]},
-                                                       main_data_treeview=self.treeview_main_game_items)
-            self.fields_list.append(field_atr1)
-            field_atr1.set_up_widget(self.created_fields_layout)
-        elif prepare_options == 'IfTimeIs':
-            field_atr1 = SimpleFields.SingleList(label_text='Time of day', label_pos='V',
-                                                 field_data={'choices': ["Day", "Night"]})
-            self.fields_list.append(field_atr1)
-            field_atr1.set_up_widget(self.created_fields_layout)
-        elif prepare_options == 'OtherEventsProgress':
-
-            field_atr1 = SimpleFields.MultiListDisplay(None, 'Events',
-                                                       field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
-                                                       main_data_treeview=self.treeview_main_game_items)
-            # field_atr1 = SceneMultiList(self.fields_master, list_path=["currentmod-Events"], field_options=["single_item", "search"])
-            # field_atr1.update_label('Events')
-            # field_atr1 = SimpleFields.MultiList(self.fields_master, field_name='Events', label_position='U',
-            #                                     list_path=["currentmod-Events"], field_options=["single_item", "search"])
-            self.list_fields_not_going_to_treeview.append(field_atr1)
-            field_atr1.set_up_widget(self.created_fields_layout)
-            field_atr2 = SimpleFields.NumericEntry(None)
-            self.fields_list.append(field_atr2)
-            field_atr2.set_up_widget(self.created_fields_layout)
-        elif prepare_options == 'Choice':
-            field_list = Choices()
-            field_list.set_up_widget(self.created_fields_layout)
-            self.fields_list.append(field_list.field_choice_no)
-            self.fields_list.append(field_list.field_choice_text)
-        #     TODO this is not working for some reason. when event is selected, choice fields are not updated.
-        elif prepare_options == 'OtherEventsChoice':
-            field_atr1 = SimpleFields.MultiListDisplay(None, 'Event',
-                                                       field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
-                                                       main_data_treeview=self.treeview_main_game_items)
-            self.list_fields_not_going_to_treeview.append(field_atr1)
-            field_atr1.set_up_widget(self.created_fields_layout)
-            field_list = Choices(field_atr1)
-            field_list.set_up_widget(self.created_fields_layout)
-            self.fields_list.append(field_list.field_choice_no)
-            self.fields_list.append(field_list.field_choice_text)
+        # for field in self.fields_list:
+        #     field.destroy()
+        # self.fields_list = []
+        # for field in self.list_fields_not_going_to_treeview:
+        #     field.destroy()
+        # self.list_fields_not_going_to_treeview = []
+        # self.data_tree.clear_tree()
+        # if prepare_options == 'Stat':
+        #     field_atr1 = SimpleFields.SingleList(label_text='Core Attribute',
+        #                                          field_data={'choices': ["Power", "Technique", "Willpower", "Allure",
+        #                                                                  "Intelligence", "Luck"]}, label_pos='V')
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     self.fields_list.append(field_atr1)
+        #     field_atr2 = SimpleFields.NumericEntry(None)
+        #     self.fields_list.append(field_atr2)
+        #     field_atr2.set_up_widget(self.created_fields_layout)
+        # elif prepare_options in "Arousal MaxArousal Energy MaxEnergy Virility EncounterSize Eros Progress":
+        #     field_atr1 = SimpleFields.NumericEntry(None)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     self.fields_list.append(field_atr1)
+        #     self.changed_selection = "Arousal MaxArousal Energy MaxEnergy Virility EncounterSize Eros Progress"
+        # elif prepare_options == 'HasFetish':
+        #     field_atr1 = SimpleFields.SingleList(label_text='Fetishes', label_pos='V',
+        #                                          field_data={'choices': ["Fetishes"]})
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     self.fields_list.append(field_atr1)
+        # elif prepare_options == 'HasFetishLevelEqualOrGreater':
+        #     field_atr1 = SimpleFields.SingleList(label_text='Fetishes', label_pos='V',
+        #                                          field_data={'choices': ["Fetishes"]})
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     self.list_fields_not_going_to_treeview.append(field_atr1)
+        #     # self.fields_list.append(field_atr1)
+        #     field_atr2 = SimpleFields.NumericEntry(None)
+        #     self.fields_list.append(field_atr2)
+        #     field_atr2.set_up_widget(self.created_fields_layout)
+        # elif prepare_options == 'Perk':
+        #     field_atr1 = SimpleFields.MultiListDisplay(None, 'Perks',
+        #                                                field_data={'choices': ["Perks"], 'options': ["single_item", "search"]},
+        #                                                main_data_treeview=self.treeview_main_game_items)
+        #     self.fields_list.append(field_atr1)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        # elif prepare_options == 'Item':
+        #     field_atr1 = SimpleFields.MultiListDisplay(None, 'Items',
+        #                                                field_data={'choices': ["Items"], 'options': ["single_item", "search"]},
+        #                                                main_data_treeview=self.treeview_main_game_items)
+        #     self.fields_list.append(field_atr1)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        # elif prepare_options == 'IfTimeIs':
+        #     field_atr1 = SimpleFields.SingleList(label_text='Time of day', label_pos='V',
+        #                                          field_data={'choices': ["Day", "Night"]})
+        #     self.fields_list.append(field_atr1)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        # elif prepare_options == 'OtherEventsProgress':
+        #
+        #     field_atr1 = SimpleFields.MultiListDisplay(None, 'Events',
+        #                                                field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
+        #                                                main_data_treeview=self.treeview_main_game_items)
+        #     # field_atr1 = SceneMultiList(self.fields_master, list_path=["currentmod-Events"], field_options=["single_item", "search"])
+        #     # field_atr1.update_label('Events')
+        #     # field_atr1 = SimpleFields.MultiList(self.fields_master, field_name='Events', label_position='U',
+        #     #                                     list_path=["currentmod-Events"], field_options=["single_item", "search"])
+        #     self.list_fields_not_going_to_treeview.append(field_atr1)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     field_atr2 = SimpleFields.NumericEntry(None)
+        #     self.fields_list.append(field_atr2)
+        #     field_atr2.set_up_widget(self.created_fields_layout)
+        # elif prepare_options == 'Choice':
+        #     field_list = Choices()
+        #     field_list.set_up_widget(self.created_fields_layout)
+        #     self.fields_list.append(field_list.field_choice_no)
+        #     self.fields_list.append(field_list.field_choice_text)
+        # #     TODO this is not working for some reason. when event is selected, choice fields are not updated.
+        # elif prepare_options == 'OtherEventsChoice':
+        #     field_atr1 = SimpleFields.MultiListDisplay(None, 'Event',
+        #                                                field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
+        #                                                main_data_treeview=self.treeview_main_game_items)
+        #     self.list_fields_not_going_to_treeview.append(field_atr1)
+        #     field_atr1.set_up_widget(self.created_fields_layout)
+        #     field_list = Choices(field_atr1)
+        #     field_list.set_up_widget(self.created_fields_layout)
+        #     self.fields_list.append(field_list.field_choice_no)
+        #     self.fields_list.append(field_list.field_choice_text)
 
     def get_val(self):
         templist = [self.option]
@@ -2789,13 +2789,6 @@ class SubFunction(QtWidgets.QWidget):
                     tempfield.change_f(self.custom_function)
                 elif 'choice' in structure[field]['type']:
                     if 'Events' in structure.keys():
-                        # need to change below. field for event is already created.
-                        # either remove it from structure from file or here just make connection
-                        # field_atr1 = SimpleFields.MultiListDisplay(None, 'Event',
-                        #                                            field_data={'choices': ["Events"], 'options': ["single_item", "search"]},
-                        #                                            main_data_treeview=self.treeview_main_game_items)
-                        # self.fields_list.append(self.fields_list[0])
-                        # field_atr1.set_up_widget(self.created_fields_layout)
                         tempfield = Choices(self.fields_list[0])
                     else:
                         tempfield = Choices()
@@ -3336,6 +3329,7 @@ class Function_Gui:
         """here add main_game_treeview with items from main game and mod. Not all functions need them,
         so hide and show when needed and make it work same as in main window"""
         self.treeview_main_game_items = SimpleFields.Main_MultiList(None, "Game items", main_label_flag=False)
+        self.treeview_main_game_items.main_data.flag_focus = False
         self.treeview_main_game_items.current_scene_list = scene_list
         # self.treeview_main_game_items = main_game_for_functions_treeview(None, "Game items")
         # self.treeview_main_game_items.main_data.setMaximumHeight(200)

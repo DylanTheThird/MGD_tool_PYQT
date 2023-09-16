@@ -145,18 +145,18 @@
 								  "move": {"type":"multilist",
 								  "options":["single_value"],
 											"tooltip":"skill that concluded the encounter.",
-											"choices":["currentMod-Skills","main-inc-/Skills"]
+											"choices":["Skills"]
 											},
 								  "stance": {"type":"multilist",
 								  "options":["single_value"],
 						"tooltip":"the stance that the monster is currently in. \nIt currently can only cover one stance.",
-											"choices":["currentMod-Skills","exampleOption"]},
+											"choices":["Stances"]},
 								  "includes": {
 												"type":"multilist",
 												"options":["multi_value"],
 												"multi_value":"True",
 												"tooltip":"monsters that are needed for the scene.",
-												"choices":["currentMod-Items/itemType_Key", "main-inc/Monsters"]},
+												"choices":["main-inc/Monsters"]},
 								  "theScene": {"type":"scenesinglelist",
 												"functional":"true",
 												"choices":[]},

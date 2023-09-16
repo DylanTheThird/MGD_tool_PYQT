@@ -4,7 +4,7 @@ import json
 import re
 from time import time, ctime
 from os import listdir
-from os.path import join, isfile, isdir
+from os.path import join, isfile, isdir, getmtime
 from os import makedirs
 from os import access, F_OK
 # from functools import partial
@@ -1111,3 +1111,6 @@ def message_yes_no():
         return 1
     elif selection == QMessageBox.No:
         return 0
+
+def get_file_time_modification(file):
+    return getmtime(file)

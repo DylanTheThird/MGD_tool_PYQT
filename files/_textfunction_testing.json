@@ -45,15 +45,18 @@
 												}
 			},
 			{
-				"title": "IfChoice",
-				"explanation": "Will check for a choice. If it is a match, it then goes to the specified scene. If it is not a match, it will ignore the scene jump and continue the scene.",
+				"title": "GetEventAndSetChoice",
+				"explanation": "Gets an event, and sets the specified choice to the given string.",
 				"options":["special"],
 				"steps": "4",
 									"structure":{
+												"Events":{"type":"multilist",
+													"options":["single_item", "search"],
+													"choices":["Events"]},
 												"choice no":{"type":"combobox"},
 												"choice text":{"type":"combobox"}
 												}
-			},			
+			},
 			{
 				"title": "Menu",
 				"explanation": "Gives the player an option menu of choices. Each choice is a scene in the same event file. Make sure the scene names exactly match the choice. Will always end current scene and jump to a new one, thus it is recommended to only have them at the end of a scene.By default, if there are more than 6 choices, page arrows will automatically be added.",
@@ -116,10 +119,7 @@
 							"Choice":
 								{"":{"type":"choice"}},
 							"ChoiceFromEvent":
-								{"Events":{"type":"multilist",
-										"options":["single_item", "search"],
-										"choices":["Events"]},
-										"":{"type":"choice"}},
+								{"":{"type":"choice"}},
 							 "FinalOption":{},
 							 "EventJump":
 										{"Events":{"type":"multilist",

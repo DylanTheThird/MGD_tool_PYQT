@@ -130,6 +130,13 @@ class GlobalVariable:
             self.save_element_action.setEnabled(True)
             self.cancel_element_action.setEnabled(True)
             self.edit_status_icon.setEnabled(False)
+
+    def check_stances(self, custom_stance_list=list):
+        for stance_type in self.stances:
+            for stance in self.stances[stance_type]:
+                if stance in custom_stance_list:
+                    custom_stance_list.remove(stance)
+
     # def load_functions(self):
     #     file_data = load_json_data('files/_textfunction_all_2.json')
     #     if self.flag_skip_functions:
