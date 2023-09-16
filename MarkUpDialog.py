@@ -626,44 +626,43 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.data_fields = {}
             """this temp mainfield is created later as part of function gui field.
              also, needs to show it, as normally is hidden"""
-            temp_mainfield_data = None
             self.flag_main_data = False
+            """creating fields for scene data moved later, after function gui is created. to save space
+            for monster, some fields are connected to fields created in functions gui"""
             # TODO problem is with multilist, they should connect to main treeview, but only main treeview here is created later as part of functions gui
-            if scene_data:
-                for data_field in scene_data:
-                    for field in scene_data[data_field]:
-                        if field != 'theScene':
-                            """the scene is created separately in main view, other fields are in hidden view"""
-                            self.data_fields[field] = scene_data[data_field][field]
-                for fieldname in self.data_fields:
-                    """now, same as in custome fields, create appropiate fields"""
-                    if self.data_fields[fieldname]["type"] == "text":
-                        tempfield = SimpleFields.SimpleEntry(master_widget=self.scene_data_widget_background, field_name=fieldname,
-                                                             field_data=self.data_fields[fieldname],
-                                                             main_data_treeview=temp_mainfield_data, label_pos='V')
-                    elif self.data_fields[fieldname]["type"] == "int":
-                        tempfield = SimpleFields.NumericEntry(master=self.scene_data_widget_background, wid=4, field_name=fieldname,
-                                                              field_data=self.data_fields[fieldname])
-                    elif self.data_fields[fieldname]["type"] == "singlelist":
-                        field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname, self.data_fields[fieldname])
-                        # field_optionbox.configure(takefocus=1)
-                        tempfield = field_optionbox
-                    elif self.data_fields[fieldname]["type"] == "filePath":
-                        tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname, field_data=self.data_fields[fieldname])
-                    elif self.data_fields[fieldname]["type"] == 'area':
-                        tempfield = SimpleFields.AreaEntry(self.scene_data_widget_background, fieldname)
-                    elif self.data_fields[fieldname]["type"] == 'multilist':
-                        tempfield = SimpleFields.MultiListDisplay(self.scene_data_widget_background, fieldname, temp_fields[fieldname],
-                                                                  main_data_treeview=temp_mainfield_data)
-                        self.flag_main_data = True
-                    self.data_fields[fieldname] = tempfield
-                    tempfield.set_up_widget(v_layout_display_scene_data)
-                    # v_layout_display_scene_data.addWidget(tempfield)
+            # if scene_data:
+            #     for data_field in scene_data:
+            #         for field in scene_data[data_field]:
+            #             if field != 'theScene':
+            #                 """the scene is created separately in main view, other fields are in hidden view"""
+            #                 self.data_fields[field] = scene_data[data_field][field]
+            #     for fieldname in self.data_fields:
+            #         """now, same as in custome fields, create appropiate fields"""
+            #         if self.data_fields[fieldname]["type"] == "text":
+            #             tempfield = SimpleFields.SimpleEntry(master_widget=self.scene_data_widget_background, field_name=fieldname,
+            #                                                  field_data=self.data_fields[fieldname],
+            #                                                  main_data_treeview=temp_mainfield_data, label_pos='V')
+            #         elif self.data_fields[fieldname]["type"] == "int":
+            #             tempfield = SimpleFields.NumericEntry(master=self.scene_data_widget_background, wid=4, field_name=fieldname,
+            #                                                   field_data=self.data_fields[fieldname])
+            #         elif self.data_fields[fieldname]["type"] == "singlelist":
+            #             field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname, self.data_fields[fieldname])
+            #             # field_optionbox.configure(takefocus=1)
+            #             tempfield = field_optionbox
+            #         elif self.data_fields[fieldname]["type"] == "filePath":
+            #             tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname, field_data=self.data_fields[fieldname])
+            #         elif self.data_fields[fieldname]["type"] == 'area':
+            #             tempfield = SimpleFields.AreaEntry(self.scene_data_widget_background, fieldname)
+            #         elif self.data_fields[fieldname]["type"] == 'multilist':
+            #             tempfield = SimpleFields.MultiListDisplay(self.scene_data_widget_background, fieldname, self.data_fields[fieldname],
+            #                                                       main_data_treeview=temp_mainfield_data)
+            #             self.flag_main_data = True
+            #         self.data_fields[fieldname] = tempfield
+            #         tempfield.set_up_widget(v_layout_display_scene_data)
+            #         # v_layout_display_scene_data.addWidget(tempfield)
             self.scene_data_widget_background.hide()
-            v_layout_display_scene_data.addStretch(1)
-            h_layout_display.addWidget(self.scene_data_widget_background)
+            # h_layout_display.addWidget(self.scene_data_widget_background)
             """here is display data. is where iines and functions for scene are displayed and can be modified"""
-            # TODO for some reason, this display data is not streched out as it should be
             self.display_data = SimpleFields.ElementsList(self, "Event text")
             # self.display_data.setMaximumSize(600, 350)
             self.display_data.parent_tag = 'function'
@@ -671,7 +670,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.display_data.setMinimumWidth(300)
             self.display_data.set_up_widget(h_layout_display)
             self.display_data.doubleClicked.connect(self.update_row)
-            self.data_fields['theScene'] = self.display_data
+            # self.data_fields['theScene'] = self.display_data
             # h_layout_display_f_gui.addLayout(H_layout_display)
             v_layout_left_side.addLayout(h_lay_scene_buttons)
             v_layout_left_side.addLayout(h_layout_display)
@@ -707,8 +706,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         # h_lay_checkboxes.setAlignment(QtCore.Qt.AlignCenter)
         # v_layout_right_side.addLayout(h_lay_checkboxes)
         """functions gui"""
-        # TODO function gui for now
-
         if scenes_flag:
             config_list = [1, self.area_input, self.display_data]
         else:
@@ -716,7 +713,48 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.functions = Function_Gui(None, None, self, fields_lay=self.v_layout_function_fields,
                                       adding_config=config_list, scene_list=current_scene_list)
         self.functions.set_up_widget(v_layout_right_side)
-        temp_mainfield_data = self.functions.treeview_main_game_items
+
+        """now create fields for scene data, so it has access to functions gui main data tree
+        moved from above"""
+        if scene_data:
+            for data_field in scene_data:
+                for field in scene_data[data_field]:
+                    if field != 'theScene':
+                        """the scene is created separately in main view, other fields are in hidden view"""
+                        self.data_fields[field] = scene_data[data_field][field]
+            for fieldname in self.data_fields:
+                """now, same as in custome fields, create appropiate fields"""
+                if self.data_fields[fieldname]["type"] == "text":
+                    tempfield = SimpleFields.SimpleEntry(master_widget=self.scene_data_widget_background,
+                                                         field_name=fieldname,
+                                                         field_data=self.data_fields[fieldname],
+                                                         main_data_treeview=self.functions.treeview_main_game_items, label_pos='V')
+                    tempfield.label_custom.change_position('C')
+                elif self.data_fields[fieldname]["type"] == "int":
+                    tempfield = SimpleFields.NumericEntry(master=self.scene_data_widget_background, wid=4,
+                                                          field_name=fieldname,
+                                                          field_data=self.data_fields[fieldname])
+                elif self.data_fields[fieldname]["type"] == "singlelist":
+                    field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname,
+                                                              self.data_fields[fieldname])
+                    # field_optionbox.configure(takefocus=1)
+                    tempfield = field_optionbox
+                elif self.data_fields[fieldname]["type"] == "filePath":
+                    tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname,
+                                                       field_data=self.data_fields[fieldname])
+                elif self.data_fields[fieldname]["type"] == 'area':
+                    tempfield = SimpleFields.AreaEntry(self.scene_data_widget_background, fieldname)
+                elif self.data_fields[fieldname]["type"] == 'multilist':
+                    tempfield = SimpleFields.MultiListDisplay(self.scene_data_widget_background, fieldname,
+                                                              self.data_fields[fieldname],
+                                                              main_data_treeview=self.functions.treeview_main_game_items)
+                    self.flag_main_data = True
+                self.data_fields[fieldname] = tempfield
+                tempfield.set_up_widget(v_layout_display_scene_data)
+                # v_layout_display_scene_data.addWidget(tempfield)
+            v_layout_display_scene_data.addStretch(1)
+            self.data_fields['theScene'] = self.display_data
+        """here ends cut in of fields creation"""
 
         self.v_layout_function_fields.addStretch(1)
         # """second, 2 checkboxes for adding function to text of event and now the hard part, whole functionality"""
@@ -732,13 +770,16 @@ class MarkUp_Window(QtWidgets.QWidget):
         # self.flag_function_target_type = None
         # v_layout_function_window.addLayout(h_lay_checkboxes)
         self.v_main_layout.addLayout(h_layout_display_f_gui)
-        # TODO save data into scene list
         h_final_buttons_layout = QtWidgets.QHBoxLayout()
         but_save = SimpleFields.CustomButton(None, 'SAVE')
         but_save.setMaximumWidth(100)
         but_save.clicked.connect(self.save_data)
         h_final_buttons_layout.addWidget(but_save)
-        but_done = SimpleFields.CustomButton(None, 'DONE')
+        but_cancel = SimpleFields.CustomButton(None, 'CANCEL/NEW')
+        but_cancel.setMaximumWidth(100)
+        but_cancel.clicked.connect(self.cancel_scene)
+        h_final_buttons_layout.addWidget(but_cancel, alignment=QtCore.Qt.AlignCenter)
+        but_done = SimpleFields.CustomButton(None, '!!DONE!!')
         but_done.setMaximumWidth(100)
         but_done.clicked.connect(self.done)
         h_final_buttons_layout.addWidget(but_done, alignment=QtCore.Qt.AlignCenter)
@@ -1000,6 +1041,11 @@ class MarkUp_Window(QtWidgets.QWidget):
         if color.isValid():
             # Update the button's background color
             field_to_colour.setStyleSheet("background-color: " + color.name() + ";")
+
+    def cancel_scene(self):
+        self.area_input.clear_val()
+        for field in self.data_fields:
+            self.data_fields[field].clear_val()
     def colour_text(self, field_with_colour):
         return
     #     TODO
@@ -1057,11 +1103,11 @@ class MarkUp_Window(QtWidgets.QWidget):
         # scene_title = self.data_fields[0].get_val()
         scene_title = self.data_fields['NameOfScene'].get_val()
         if not scene_title:
-            show_message('Missing scene title', 'Please provide scene title', 'MisMandatory')
+            show_message('Missing scene title', 'Please provide scene title', 'MissMandatory')
             return
         current_selection = self.scene_list.selected_element()
         if not current_selection:
-            """if nothing selected"""
+            """if nothing selected. events scenes are 'EventText' while for monsters its 'loss or vistory scene'"""
             show_message('Missing scene type', 'Please select scene type from scene list(top item)', 'MisMandatory')
             return
         scene_data = {}
@@ -1096,7 +1142,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         else:
             """if no parent, selected scene type, add to it"""
             scene_type = current_selection.text()
-        self.current_scenes[scene_type][scene_title] = scene_data
         if scene_title not in list(self.current_scenes[scene_type].keys()):
             """if title already exists, then user is updating, no need to change, otherwise, insert or add new scene"""
             if insert_row > -1:
@@ -1106,6 +1151,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             else:
                 """user selected parent"""
                 self.scene_list.add_data([scene_title], current_selection)
+        self.current_scenes[scene_type][scene_title] = scene_data
         # self.display_data.clear_tree()
         for field in self.data_fields:
             self.data_fields[field].clear_val()

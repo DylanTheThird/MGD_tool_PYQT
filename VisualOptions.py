@@ -182,7 +182,9 @@ class Visual_Dialog(object):
         QtWidgets.QApplication.setFont(currect_label, "QLabel")
         QtWidgets.QApplication.setFont(currect_label, "QTextEdit") # TODO check if this works
         """get stances from custom branch and save in temp mod data."""
-        stances_list = self.tree_stances.get_data()
+        custom_index = self.tree_stances.tree_model.index(0, 0)
+        stances_list = []
+        self.tree_stances.get_data(parent_index=custom_index, root_list=stances_list)
         stances_list = stances_list[0]['Custom']
         mod_temp_data.add_stances(stances_list)
 
@@ -203,16 +205,16 @@ class Visual_Dialog(object):
 class StanceElement(ElementsList):
     def __init__(self, title='Stances'):
         super().__init__(None, listTitle=title, search_field=True)
+        temp = GlobalVariables.Glob_Var.stances
+        temp['Custom'] = mod_temp_data.mod_data['stances']
         self.add_data(GlobalVariables.Glob_Var.stances)
+
     def delete_with_backup(self):
         selected_stance_item = self.selected_element()
         item_parent = self.find_root_parent(selected_stance_item)
-        if item_parent:
-            if item_parent.text() != 'Custom':
-                return
-        else:
-            return
-        super().delete_with_backup()
+        if item_parent and selected_stance_item.text() != 'Custom':
+            if item_parent.text() == 'Custom':
+                self.tree_model.removeRow(selected_stance_item.row(), self.tree_model.indexFromItem(item_parent))
 
 
 # class Stances_Dialog(object):

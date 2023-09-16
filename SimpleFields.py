@@ -756,7 +756,6 @@ class UniqueView(QtWidgets.QListView):
 
 """complicated fields contains more widgers, display fields should only have 1 to display,
  so here create inherits from display"""
-# TODO check delete on element lists
 class ElementsList(QtWidgets.QTreeView):
     def __init__(self, masterWun, listTitle=None, search_field=False, folders=False, all_edit=False, treeview_height=5,
                  delete_flag=True, class_connector=None):
@@ -770,6 +769,7 @@ class ElementsList(QtWidgets.QTreeView):
         self.title = listTitle
         self.type = 'element_list'
         self.flag_folders = folders
+        self.flag_focus = True
         self.parent_tag = 'folder'
         self.flag_child_editable = all_edit
         self.flag_edit = True
@@ -852,9 +852,11 @@ class ElementsList(QtWidgets.QTreeView):
         # escapePressed = pyqtSignal(str)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
+        # print('clicked')
         if event.key() == Qt.Key_Delete:
             # print('pressed delete')
             if self.flag_delete:
+                # print('pressed delete')
                 self.delete_with_backup()
         elif event.key() == Qt.Key_Escape:
             # self.selection_cancel()
@@ -865,10 +867,11 @@ class ElementsList(QtWidgets.QTreeView):
     def focusInEvent(self, event):
         # might be problems with it, if something, change name and figure out field custom>monster groups
         # print('event-focus-in:', self.objectName())
-        if self.connector_to_outside_complex_class:
-            GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-        else:
-            GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
+        if self.flag_focus:
+            if self.connector_to_outside_complex_class:
+                GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
+            else:
+                GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
         super().focusInEvent(event)
 
     def hide(self):
@@ -1992,11 +1995,11 @@ class MultiListDisplay:
         elif self.version == 'unique':
             # self.final_data = QtWidgets.QListWidget(parent=master)
             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
-            self.label_custom.change_position('center')
+            self.label_custom.change_position('C')
         else:
             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
             # self.final_data = ElementsList(master, field_name, class_connector=self)
-            self.label_custom.change_position('center')
+            self.label_custom.change_position('C')
         self.custom_layout.addWidget(self.label_custom)
         self.custom_layout.addWidget(self.final_data)
         self.custom_layout.addStretch(1)
@@ -3441,10 +3444,13 @@ class CheckBox(QtWidgets.QCheckBox):
 
 class ModTempData:
     def __init__(self):
-        # self.mod_data = {'choices': {}, 'displaycharacters': {}}
-        self.mod_data = {'events': {}, 'girls': {}, 'stances': []}
-        """since I change how events name are displayes - event title - I neend event filename to access its data"""
+        self.mod_data = {'events': {}, 'girls': {}, 'stances': [], "last_update": ""}
+        """events: contains information about choices
+        girls - probably was something, now its empty
+        stances - custom mod stance
+        last update - when mod folder was modified with outside source, go over updating all"""
         self.current_editing_event = ''
+        self.current_mod = ''
         self.data_filename = ''
         self.templates_access = None
         self.temp_chara_list = []
@@ -3454,6 +3460,9 @@ class ModTempData:
         from os import access, F_OK, mkdir
         if not access('files/modsTempData', F_OK):
             mkdir('files/modsTempData')
+
+    def start_new_mod(self, text):
+        self.current_mod = text
 
     def prepare_data_new_event(self, event_name):
         """prepare dictionary for this event."""
@@ -3466,12 +3475,21 @@ class ModTempData:
     def prepare_data_load_mod(self, mod_name):
         # return
         self.current_mod = mod_name
-        self.data_filename = 'files/modsTempData/' + mod_name + '_mod_temp_data.json'
-        if isfile(self.data_filename):
-            self.mod_data = otherFunctions.load_json_data(self.data_filename)
+        rewrite_flag = False
+        data_filename = 'files/modsTempData/' + mod_name + '_mod_temp_data.json'
+        if isfile(data_filename):
+            """first check if mod folder was updated. this is in case user load same mod from 2 different places"""
+            self.mod_data = otherFunctions.load_json_data(data_filename)
+            mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
+            if self.mod_data['last_update'] != mod_folder_time_date:
+                rewrite_flag = True
         else:
+            rewrite_flag = True
+        if rewrite_flag:
             """need to go over all events and write up all choices and displayed chara
             this should be used after all is loaded, so everything is in globabl in current mode"""
+            self.mod_data['stances'].clear()
+            self.mod_data['girls'].clear()
             for event in GlobalVariables.Mod_Var.mod_data['Events']:  # this is all data
                 self.prepare_data_new_event(event)
                 temp_dict_list_dischara = {}
@@ -3482,27 +3500,39 @@ class ModTempData:
                     text_no = 0
                     current_chara = []
                     prev_chara = []
+                    # stance_temp_list = []
                     """go over all rows in the text"""
                     while text_no < scene_len:
                     # for texts in scene['theScene']:
                         # self.mod_data['events'][event]['DisplayCharacters'] = {scene['NameOfScene']: []}
-                        if event_text['theScene'][text_no] == 'SetChoice':
+                        scene = event_text['theScene']
+                        if scene[text_no] == 'SetChoice':
                             # index function get first match, so the text "setchoice" index will always return first val
                             text_no += 1
-                            if event_text['theScene'][text_no] not in self.mod_data['events'][event]['choices']:
+                            if scene[text_no] not in self.mod_data['events'][event]['choices']:
                                 self.mod_data['events'][event]['choices'][event_text['theScene'][text_no]] = []
-                            if event_text['theScene'][text_no+1] not in self.mod_data['events'][event]['choices'][event_text['theScene'][text_no]]:
+                            if scene[text_no+1] not in self.mod_data['events'][event]['choices'][event_text['theScene'][text_no]]:
                                 self.mod_data['events'][event]['choices'][event_text['theScene'][text_no]].append(event_text['theScene'][text_no+1])
                             text_no += 1
                             """need explanation how change layers works"""
-                        elif event_text['theScene'][text_no] == 'DisplayCharacters':
+                        elif scene[text_no] == 'DisplayCharacters':
                             for idx in range(1, 12):
                                 text_no += 1
-                                if event_text['theScene'][text_no] == 'EndLoop':
+                                if scene[text_no] == 'EndLoop':
                                     break
-                                if event_text['theScene'][text_no] not in current_chara:
-                                    current_chara.append(event_text['theScene'][text_no])
+                                if scene[text_no] not in current_chara:
+                                    current_chara.append(scene[text_no])
                             temp_dict_list_dischara[event_text['NameOfScene']] = current_chara
+                        elif scene[text_no] == 'ApplyStance':
+                            """custom stances to add. this might repeat many times, so check if already exists"""
+                            text_no += 1
+                            temp = [scene[text_no]]
+                            """check with main game stances"""
+                            GlobalVariables.Glob_Var.check_stances(temp)
+                            if temp:
+                                """check if already in mod stances"""
+                                if scene[text_no] not in self.mod_data['stances']:
+                                    self.mod_data['stances'].append(scene[text_no])
                         text_no += 1
                         """now check if there was no displaychara, copy data from previous listdischara"""
                     if prev_chara:
@@ -3512,13 +3542,18 @@ class ModTempData:
                             temp_dict_list_dischara[event_text['NameOfScene']] = current_chara
                             prev_chara = current_chara
                     # this not working still
+                print(self.mod_data['stances'])
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
+                mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
+                self.mod_data['last_update'] = mod_folder_time_date
+
                 # self.mod_data['events'][event]['name'] = event
-        self.save_file()
-    # TODO when closing program, this should run
+        # self.save_file()
+
     def save_file(self):
-        if self.data_filename:
-            otherFunctions.write_json_data(self.data_filename, self.mod_data)
+        if self.current_mod:
+            data_filename = 'files/modsTempData/' + self.current_mod + '_mod_temp_data.json'
+            otherFunctions.write_json_data(data_filename, self.mod_data)
 
     def add_stances(self, stance_list):
         self.mod_data['stances'] = stance_list
@@ -3597,10 +3632,12 @@ class ModTempData:
 
     """Below def are specific for fields that should display choices data"""
     def prepare_fields_for_choice_set_up(self, field_choice_no, field_choice_text, event_field_source=None):
+        # TODO choices from event - this is with choice fields are simple imput file, not custom class
         if event_field_source:
-            event_field_source.var.trace_id = event_field_source.var.trace("w", lambda *args, arg1=field_choice_no,
-                                                                                       arg2=field_choice_text,
-                                                                                       arg3=event_field_source: self.set_up_event_source(field_choice_no=arg1, field_choice_text=arg2, event_field_source=arg3))
+            event_field_source.final_data.function_on_modify(self.set_up_event_source)
+            # event_field_source.var.trace_id = event_field_source.var.trace("w", lambda *args, arg1=field_choice_no,
+            #                                                                            arg2=field_choice_text,
+            #                                                                            arg3=event_field_source: self.set_up_event_source(field_choice_no=arg1, field_choice_text=arg2, event_field_source=arg3))
         else:
             """what if creating event? then inputfilename might be empty"""
             """dont know what this is for"""

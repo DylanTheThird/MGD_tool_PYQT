@@ -101,8 +101,8 @@ class Window(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
-    # window = Window()
-    window = QtWidgets.QMainWindow()
+    window = Window()
+    # window = QtWidgets.QMainWindow()
     prototype = MGUPrototype1.Ui_MainWindow(window)
     prototype.setupUi()
     # prototype.tree_mod_elements.add_data(data=Mod_Var.mod_display)
