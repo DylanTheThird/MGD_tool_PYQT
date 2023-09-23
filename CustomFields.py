@@ -1950,7 +1950,7 @@ class MonsterGroups:
 
 class OptionalFields(SimpleFields.ElementsList):
     def __init__(self, master=None, fields_data=None, main_layout=None):
-        super().__init__(master, folders=True)
+        super().__init__(master, folders=False)
         """idea is, there will be 1 object for all templates, and when getting, it will get data from this, and when
          setting, if field is not mandatory(not found in template list) it is passed to this object.
          This object will take care of all optional fields, retrieve and set data in them, hide and show.
@@ -1959,6 +1959,7 @@ class OptionalFields(SimpleFields.ElementsList):
          """
         self.title = 'optional'
         self.change_title('Optional fields')
+        self.label_custom = SimpleFields.CustomLabel(None, '')
         self.row_size = 6
         self.main_widget = master
         """just in case, lets put it all in seperate frame. Main frame is horizontal, and fields will be put vertivally
@@ -1967,13 +1968,14 @@ class OptionalFields(SimpleFields.ElementsList):
         distinguish them"""
         self.template_main_laout = main_layout
         self.optional_field_frame = QtWidgets.QVBoxLayout()
+        self.optional_field_frame.setAlignment(QtCore.Qt.AlignCenter)
         """this will be dictionary of created fields, for which will set and get vals"""
         self.optional_fields_dict = {}
 
         self.selected_values_display_row = QStandardItem('SELECTED VALUES')
         self.selected_values_display_row.setEditable(False)
         self.tree_model.appendRow(self.selected_values_display_row)
-        self.doubleClicked.connect(self.select_data)
+        self.doubleClicked.connect(self.adds_selected)
         self.selected_values = {}
         self.loaded_data = False
         self.optional_options = fields_data
@@ -1993,24 +1995,37 @@ class OptionalFields(SimpleFields.ElementsList):
         # temp = SimpleFields.SimpleEntry(None, 'test')
         # self.optional_field_frame.insertWidget(self.optional_field_frame.count()-1, temp)
         #TODO
-    def get_val(self, dictionary):
+    def get_val(self, temp_dict_container):
         for field in self.optional_fields_dict:
-            dictionary[field] = self.optional_fields_dict[field].get_val()
-    def set_val(self):
+            temp_dict_container[field] = self.optional_fields_dict[field].get_val()
+    def set_val(self, field, value):
+        """field - name of field to activate
+        value - value provided for field"""
+        if field in self.all_fields_to_compare:
+            self.select_element(field)
+            self.adds_selected()
+            self.optional_fields_dict[field].set_val(value)
         return
 
     def clear_val(self):
         current_row_count = self.selected_values_display_row.rowCount()
-        self.selected_values_display_row.removeRows(0, current_row_count)
+        for selected_idx in range(current_row_count):
+            selected = self.selected_values_display_row.child(0)
+            selected = self.tree_model.indexFromItem(selected)
+            self.select_element(selected)
+            self.restore_selected()
+        # self.selected_values_display_row.removeRows(0, current_row_count)
 
     def load_main_data(self):
+        self.all_fields_to_compare = []
         data_to_load = copy.copy(Glob_Var.optional_fields)
         for group_title in data_to_load:
             display_list = list(data_to_load[group_title].keys())
+            self.all_fields_to_compare += display_list
             data_to_load[group_title] = display_list
         self.add_data(data=data_to_load)
 
-    def select_data(self):
+    def adds_selected(self):
         """just adds selected value from available to SELECTED VALUES then remove selected value"""
         selected_value = self.selected_element()
         if selected_value:
@@ -2055,7 +2070,7 @@ class OptionalFields(SimpleFields.ElementsList):
         parent = selected_item.parent()
         field = createField(self.main_widget, selected_item.text(), Glob_Var.optional_fields[parent.text()][selected_item.text()])
         self.optional_fields_dict[selected_item.text()] = field
-        field.set_up_widget(self.optional_field_frame, insert_for_options=True)
+        field.set_up_widget(self.optional_field_frame, True)
         # self.optional_field_frame.insertWidget(self.optional_field_frame.count()-1, temp)
 
         return

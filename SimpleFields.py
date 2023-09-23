@@ -256,6 +256,7 @@ class NumericEntry(SimpleEntry):
         self.setMaximumWidth(30)
         self.setMaxLength(3)
         self.default_value = "0"
+        self.setPlaceholderText('0')
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         # check if key is digit or functional like tab or enter
@@ -2379,6 +2380,8 @@ class Main_MultiList:
                       "Seduction","displaySeduction","Magic","displayMagic","Pain","displayPain","Holy","displayHoly",
                       "Unholy","displayUnholy"]
         self.data_for_display['Sesitivity'] = skill_tags
+        """stances"""
+        self.data_for_display['Stances'] = GlobalVariables.Glob_Var.stances
         """old approach below"""
         # self.main_data.add_data(data='MOD')
         # # self.main_data.add_data(data={'MOD':[{'Events':[]},{'Items':[]},{'Fetishes':[]},{'Monsters':[]},{'Perks':[]},{'Skills':[]}]})
@@ -2429,19 +2432,15 @@ class Main_MultiList:
             return temp
 
     def clear_val(self):
-        # self.selected_items.clear()
-        self.var.set('Click to select values')
-        # self.clear_all_tags()
-        # if self.single_item != 0:
-        #     self.single_item = 1
-        for item in self.tree_options_choose.treeview.selection():
-            self.tree_options_choose.treeview.selection_remove(item)
-        if self.version != 'single':
-            for item in self.data_tree.treeview.get_children():
-                self.data_tree.treeview.delete(item)
-        if self.data_tree_display:
-            self.data_tree.hide_tree()
-            self.data_tree_display = False
+        """when creating new mod, this should be called to remove stuff from previous mod"""
+        """temporary solution - manually clear stuff. take out last item which are main game stuff from 
+        basic mod element, clear variable and put it back"""
+        items = ['Events', 'Skills', 'Fetishes', 'Addiction', 'Items', 'Monsters', 'Perks']
+        for item in items:
+            temp = self.data_for_display[item][-1]
+            self.data_for_display[item] = []
+            self.data_for_display[item].append(temp)
+        self.data_for_display['Stances']['Custom'] = []
 
     def open_tree(self):
         # print('open tree')
@@ -3471,6 +3470,7 @@ class ModTempData:
         self.mod_data['events'][event_name]['choices'] = {}
         """and displayed characters, divided by scenes"""
         self.mod_data['events'][event_name]['DisplayCharacters'] = {}
+        self.mod_data['events'][event_name]['Functionized'] = {}
 
     def prepare_data_load_mod(self, mod_name):
         # return
@@ -3481,7 +3481,11 @@ class ModTempData:
             """first check if mod folder was updated. this is in case user load same mod from 2 different places"""
             self.mod_data = otherFunctions.load_json_data(data_filename)
             mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
-            if self.mod_data['last_update'] != mod_folder_time_date:
+            if 'last_update' in list(self.mod_data.keys()):
+                if self.mod_data['last_update'] != mod_folder_time_date:
+                    rewrite_flag = True
+            else:
+                self.mod_data['last_update'] = mod_folder_time_date
                 rewrite_flag = True
         else:
             rewrite_flag = True
@@ -3542,7 +3546,6 @@ class ModTempData:
                             temp_dict_list_dischara[event_text['NameOfScene']] = current_chara
                             prev_chara = current_chara
                     # this not working still
-                print(self.mod_data['stances'])
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
                 mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
                 self.mod_data['last_update'] = mod_folder_time_date

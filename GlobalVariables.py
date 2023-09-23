@@ -3,6 +3,12 @@ import copy
 from PyQt5.QtCore import QSortFilterProxyModel
 from PyQt5.Qt import QStandardItemModel
 
+# TODO there will be problem with functions loading for:
+# ChangeImageLayer
+# 'AddMonsterToEncounter'
+#
+#
+
 elements = {
     "Adventures": {},
     "Events": {},
@@ -32,6 +38,7 @@ class GlobalVariable:
         self.save_element_action = None
         self.cancel_element_action = None
         self.file_log = False
+        self.test_flag = False
         self.functions_display = {}
         self.functions_data = {}
         self.game_hard_data = {'statusEffects':{},
@@ -137,6 +144,21 @@ class GlobalVariable:
                 if stance in custom_stance_list:
                     custom_stance_list.remove(stance)
 
+    def function_steps_no(self, function_name):
+        if function_name in self.functions_data:
+            if len(self.functions_data[function_name]['steps']) > 2:
+                temp = self.functions_data[function_name]['steps'].split('-')
+                if len(temp) > 1:
+                    """there is number which should mean which field from the ending should have endloop
+                    i need this as minus number, and counting from last, last element
+                     start at -1 so need to increase by 1"""
+                    return (int(temp[1]) + 1) * -1
+                else:
+                    return temp[0]
+            else:
+                return int(self.functions_data[function_name]['steps']) - 1
+        """if function not found, return 0"""
+        return 0
     # def load_functions(self):
     #     file_data = load_json_data('files/_textfunction_all_2.json')
     #     if self.flag_skip_functions:
@@ -169,7 +191,6 @@ class GlobalVariable:
 
 
 Glob_Var = GlobalVariable()
-test_flag = True
 
 # class for holding mod data. Here it will load files data into mod variable as dictionary with filename as keys.
 # each filename must be unique. Folders are just for visibility, so as in other aspects, keep it separate in display var

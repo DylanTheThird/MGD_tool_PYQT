@@ -1173,34 +1173,128 @@ class MarkUp_Window(QtWidgets.QWidget):
 
     def load_scene_to_display(self, clicked_index=None):
         """user double cliked on scene in scene lookup. if its parent, clear display, if not, load scene"""
+        """clear display"""
         self.display_data.clear_tree()
         # item_data = self.scene_list.selected_element()
         item_data = self.scene_list.transform_index_to_item(clicked_index)
         # scene_data = []
         if item_data.parent():
+            """if it has parent, user clicked on specific scene. otherwise, there is nothing to load"""
             selected_scene_to_load = item_data.text()
             for scene_type in self.current_scenes:
+                """scene type - eventScene, lossScene, VictoryScene"""
                 if selected_scene_to_load in list(self.current_scenes[scene_type].keys()):
+                    """In theory, I should be able to get scene type for item_data.parent() But this works too"""
                     scene_data = self.current_scenes[scene_type][item_data.text()]
                     for data in scene_data:
                         if data == 'theScene':
+                            """now here it should go over all the text and combine functions
+                            flag functionazied in temp data is in case user changes scenes several times.
+                            instead of going over it again and again, transform it one, and check flag.
+                            Although, now that i think about it, MODVAR also keeps it as a simple list.....
+                            so probably need to change how it is saved in MODVAR and later when saving to file"""
+                            if selected_scene_to_load in SimpleFields.mod_temp_data.mod_data['events'][SimpleFields.mod_temp_data.current_editing_event]['Functionized']:
+                                if not SimpleFields.mod_temp_data.mod_data['events'][SimpleFields.mod_temp_data.current_editing_event]['Functionized'][selected_scene_to_load]:
+                                    self.functionize(scene_data[data])
+                                    SimpleFields.mod_temp_data.mod_data['events'][SimpleFields.mod_temp_data.current_editing_event]['Functionized'][selected_scene_to_load] = 1
+                            else:
+                                SimpleFields.mod_temp_data.mod_data['events'][
+                                    SimpleFields.mod_temp_data.current_editing_event]['Functionized'][
+                                    selected_scene_to_load] = 1
+                                self.functionize(scene_data[data])
                             self.display_data.add_data(scene_data[data])
                         else:
                             self.data_fields[data].set_val(scene_data[data])
                     break
-                # for scene in self.current_scenes[scene_type]:
-                #     if scene == item_data.text():
-                #         # for scene_data, scene_fields in zip(self.current_scenes[scene_type][scene],self.data_fields):
-                #         #     scene_fields.set_val(scene_data)
-                #         scene_data = self.current_scenes[scene_type][scene]['theScene']
-                #         # return
-                #         break
-                # if scene_data:
-                #     break
         else:
             return
-        """now go over scene data, compare each row with functions. """
-        # self.display_data.add_data(scene_data)
+
+    def functionize(self, scene_data=[]):
+        """here, go over list of string of scene data, compare each to functions
+        if found function, check amount/type of steps and turn it into a dictionary"""
+        tagging_no = 0
+        verse_idx = 0
+        f_end = 'EndLoop'
+        while verse_idx < len(scene_data):
+            temp = {}
+            if tagging_no == 0:
+                """first add verse to scene display. Then check if its a functions or not"""
+                if scene_data[verse_idx].find(' ') < 0:
+                    """if there is no space, it might be a functions. Or it's just a 1 word sentence"""
+                    tagging_no = GlobalVariables.Glob_Var.function_steps_no(function_name=scene_data[verse_idx])
+                    """if tagging no was returned, then its functions, add tag"""
+                    if tagging_no:
+                        if isinstance(tagging_no, str):
+                            """if its string, then its either endloop or endmusic, so write in off and change to -1
+                            there will be issues with some unique functions like AddMonsterToEncounter,
+                            which has optional fields and no endloop"""
+                            f_end = tagging_no
+                            if tagging_no == 'check':
+                                tagging_no = 1
+                            else:
+                                tagging_no = -1
+                        f_title = scene_data.pop(verse_idx)  #poping skips laters
+                    else:
+                        verse_idx += 1
+                else:
+                    verse_idx += 1
+            else:
+                temp[f_title] = []
+                """if tagging no is greater then 0, then now its attributes to add"""
+                if tagging_no > 0:
+                    if f_end == 'check':
+                        """also, there are some function with optional fields which are not empty, so number of attributes
+                        is changing, here will be specialized"""
+                        if f_title == 'AddMonsterToEncounter':
+                            next_attribute = scene_data[verse_idx]
+                            if next_attribute == 'ChangeForm':
+                                tagging_no = 2
+                            else:
+                                tagging_no = 1
+                        elif f_title == 'PlayMotionEffectCustom':
+                            """ first check if effect is empty
+                                "", "Character", "Aiko", "0", "0"
+                                "", "Bodypart", "Aiko", "Expression", "0", "0"
+                                first check 3 value, if there is a 0, its 4 fields, if not, its 5"""
+                            if not scene_data[verse_idx]:
+                                next_attribute = scene_data[verse_idx+3]
+                                if next_attribute == '0':
+                                    tagging_no = 4
+                                else:
+                                    tagging_no = 5
+                            else:
+                                """ "Bounce", "Characters", "1.0", "15"
+                                    "Ride", "Bodypart", "Aiko", "Expression", "0.5", "10"
+                                    first check third value, if there is a dot, there is 1 more, if not
+                                    check if value earlier got dot, if not, its 2 more, if yes, its just 4 fields"""
+                                next_attribute = scene_data[verse_idx+3]
+                                if '.' in next_attribute:
+                                    tagging_no = 5
+                                else:
+                                    prev_attribute = scene_data[verse_idx+2]
+                                    if '.' in prev_attribute:
+                                        tagging_no = 4
+                                    else:
+                                        tagging_no = 6
+                    while tagging_no > 0:
+                        temp[f_title].append(scene_data.pop(verse_idx))
+                        tagging_no -= 1
+                elif tagging_no < 0:
+                    """here is when there is endloop among attributes
+                    if tagging is -1 it means endloop is last. is less, then it need to count values after"""
+                    tags_verse = f_end
+                    while tags_verse:
+                        attribute = scene_data.pop(verse_idx)
+                        temp[f_title].append(attribute)
+                        if attribute == f_end:
+                            tags_verse = 'End'
+                        if tags_verse == 'End':
+                            tagging_no += 1
+                        if tagging_no == 0:
+                            tags_verse = ''
+                scene_data.insert(verse_idx, temp)
+                verse_idx += 1
+
     def test(self):
         temp = self.area_input.textCursor()
         print(temp.selectionStart())
