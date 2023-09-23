@@ -2324,7 +2324,7 @@ class CombatEncounter(QtWidgets.QWidget):
 
     def add_condition(self, flag=None):
         """little gimmick - change button title to stances"""
-        print(flag)
+        # print(flag)
         if flag or flag == '':
             """button was clicked"""
             if flag != '':

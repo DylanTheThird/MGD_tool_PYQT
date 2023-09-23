@@ -9,9 +9,6 @@ import LoadMod
 from GlobalVariables import Glob_Var, Mod_Var
 
 
-
-
-
 def config_setup(label_widget, on_off, main_window=None):
     if on_off:
         label_widget.mousePressEvent = lambda event, arg1=label_widget, arg2=main_window: load_config_data(arg1, arg2)
@@ -55,24 +52,25 @@ def load_config_data(label_widget, main_window=None):
                 "label_font_type": Glob_Var.current_label_font_type,
                 "label_font_size": Glob_Var.current_label_font_size,
                 "text_font_type": Glob_Var.current_text_font_type,
-                "text_font_size": Glob_Var.current_text_font_size
+                "text_font_size": Glob_Var.current_text_font_size,
+                "testing": False
             }
             json.dump(temp_dict, file2)
-    LoadMod.load_perks_and_stats()
-    LoadMod.load_main_skill_types()
+    if not Glob_Var.test_flag:
+        LoadMod.load_perks_and_stats()
+        LoadMod.load_main_skill_types()
+        LoadMod.load_fetishes()
+        LoadMod.load_functions()
+        LoadMod.load_stances()
+        LoadMod.load_status_effect()
+        LoadMod.load_line_triggers()
     LoadMod.load_main_optional_fields()
-    LoadMod.load_fetishes()
-    LoadMod.load_functions()
-    LoadMod.load_stances()
-    LoadMod.load_status_effect()
-    LoadMod.load_line_triggers()
     label_widget.setText("Welcome")
     config_setup(label_widget, 0)
     prototype.tree_mod_elements.add_data(data=Mod_Var.mod_display)
     LoadMod.new_mod()
     # prototype.prepare_same_core_elements_in_both_displayes()
     prototype.main_game_elements.add_main_game_items()
-
 
 
 def testing():
@@ -88,6 +86,7 @@ def testing():
     #     prototype.actionMain_Status.setEnabled(True)
     #     tmp=1
 
+
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__(parent=None)
@@ -95,7 +94,7 @@ class Window(QtWidgets.QMainWindow):
         # self.setCentralWidget(QtWidgets.QLabel("I'm the Central Widget"))
 
     def closeEvent(self, event):
-        print('closing')
+        # print('closing')
         prototype.recent_save()
 
 
@@ -120,13 +119,19 @@ if __name__ == "__main__":
         with open('config.ini', 'r') as configuration:
             basic_configuration = json.load(configuration)
             Glob_Var.start_path = basic_configuration['path']
-            Glob_Var.file_log = basic_configuration['log']
-            Glob_Var.main_modification_date = basic_configuration['main_modification']
-            Glob_Var.current_label_font_type = basic_configuration['label_font_type']
-            Glob_Var.current_label_font_size = basic_configuration['label_font_size']
-            Glob_Var.current_text_font_type = basic_configuration['text_font_type']
-            Glob_Var.current_text_font_size = basic_configuration['text_font_size']
-            load_config_data(prototype.label_welcome, prototype.centralwidget)
+            if not access(Glob_Var.start_path, F_OK):
+                """when i test it and forget to delete config"""
+                prototype.actionMain_Status.setEnabled(False)
+                config_setup(prototype.label_welcome, 1, prototype.centralwidget)
+            else:
+                Glob_Var.file_log = basic_configuration['log']
+                Glob_Var.main_modification_date = basic_configuration['main_modification']
+                Glob_Var.current_label_font_type = basic_configuration['label_font_type']
+                Glob_Var.current_label_font_size = basic_configuration['label_font_size']
+                Glob_Var.current_text_font_type = basic_configuration['text_font_type']
+                Glob_Var.current_text_font_size = basic_configuration['text_font_size']
+                Glob_Var.test_flag = basic_configuration['testing']
+                load_config_data(prototype.label_welcome, prototype.centralwidget)
     prototype.prepare_templates_space()
     window.show()
     sys.exit(app.exec())

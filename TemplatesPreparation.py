@@ -18,8 +18,9 @@ from otherFunctions import error_log, show_message
 import GlobalVariables
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+# from tkinter import messagebox
 from PyQt5 import QtWidgets
+from PyQt5.QtGui import QPalette
 from PyQt5.QtCore import Qt
 def test_out_file(test):
     print(test)
@@ -111,7 +112,6 @@ class Templates:
             #         element_frame = temp_frame
                 # field_value = createField(element_frame, field, self.json_templates[field])
                 field_value = createField(None, field, self.json_templates[field], template_name=self.element_type)
-                # TODO now get function field working.
                 # if field_value == '':
                 #     continue
                 # field_value.update_label('gird r-' + str(row_place) + ',col-'+str(col_place) + 'span-'+str(field_value.row_size))
@@ -138,7 +138,7 @@ class Templates:
                     field_value = functional_field_repeat
                 if field_value == '':
                     # print(field)
-                    continue
+                    # continue
                     # continue
                 #     if self.json_templates[field]["type"] in 'skilltype':
                 #         continue
@@ -205,6 +205,8 @@ class Templates:
                 self.frame_fields[field] = field_value
         layout_template.addStretch(1)
         self.main_template_layout.addStretch(1)
+
+        self.custom_fields_functionality()
             # except:
             #     error_log('error in TemplatesPreparation starting in line 82')
             #     error_log('something wrong with ' + field + ' in file of ' + self.element_type)
@@ -289,9 +291,9 @@ class Templates:
                  but are controlled by 1 element. so if first time it puts data, it will delete it afterwards"""
                 for field in self.frame_fields:
                     self.frame_fields[field].clear_val()
-                for field in self.frame_fields:
+                for field in element_data:
                     # try:
-                    if field in element_data:
+                    if field in self.frame_fields:
                         self.frame_fields[field].set_val(element_data[field])
                         # TODO change labels colour back, but also include if displayed addition or not.
                         # self.frame_fields[field].label_change_colour('reset')
@@ -299,10 +301,20 @@ class Templates:
                         #     error_log('error in TemplatesPreparation in line 554')
                         #     error_log('problem with template data load for - ' + self.element_type)
                         #     error_log('failed to load element data - ' + str(value) + ' to field = ' + str(field))
-
-                    """optional off, as optional fields not fixed"""
-                    # else:
-                    #     GlobalVariables.optional_field.set_val(field, value)
+                    else:
+                        self.optional_class_worker.set_val(field, element_data[field])
+                # for field in self.frame_fields:
+                #     # try:
+                #     if field in element_data:
+                #         self.frame_fields[field].set_val(element_data[field])
+                #         # TODO change labels colour back, but also include if displayed addition or not.
+                #         # self.frame_fields[field].label_change_colour('reset')
+                #         # except:
+                #         #     error_log('error in TemplatesPreparation in line 554')
+                #         #     error_log('problem with template data load for - ' + self.element_type)
+                #         #     error_log('failed to load element data - ' + str(value) + ' to field = ' + str(field))
+                #     else:
+                #         self.optional_class_worker.set_val(field, element_data[field])
 
         # if (GlobalVariables.flag_addition or 'Addition' in element_data) and not self.flag_fields_marked_for_addition:
         #     for field in self.addition_field_list:
@@ -394,6 +406,8 @@ class Templates:
         with open(elementPath + file_name + '.json', 'w') as objectF:
             objectF.write(json.dumps(file_data, indent='\t'))
 
+    def custom_fields_functionality(self):
+        return
 
 class AdventureTemplate(Templates):
     def __init__(self, master=None):
@@ -1302,30 +1316,6 @@ class Templates_old:
                     print("unknown type")
 """
 
-
-# below, not yet convinced to use
-# well, it  should be easier later and to make addition changing
-class AdventureTemplate_old(Templates):
-    def __init__(self, master=None):
-        super().__init__('files/_BlankAdventure_modtemplate.json', 'Adventures', master=master)
-
-    def save_element_details_in_current_mod(self, current_mod):
-        # save element data into the current mod dictionary and add it into the lists.
-        return_flag = self.save_data_in_current_mod(current_mod)
-        return return_flag
-
-
-class EventsTemplate_old(Templates):
-    def __init__(self, master=None):
-        super().__init__('files/_BlankEvent_modtemplate.json', 'Events', master=master)
-        self.scenes_map = {}
-
-    def save_element_details_in_current_mod(self, current_mod):
-        # save element data into the current mod dictionary and add it into the lists.
-        self.save_data_in_current_mod(current_mod)
-        return True
-
-
 class FetishesTemplate(Templates):
     def __init__(self, master=None):
         super().__init__('files/_BlankFetish_modtemplate.json', 'Fetishes', master=master)
@@ -1549,7 +1539,6 @@ class MonsterTemplate(Templates):
                         self.frame_fields[field] = field_value
                         # label_field.destroy()
                     else:
-                        # TODO remake functionfield to include own frame
                         functional_field_repeat = FunctionField(functionflag, master=element_frame, view_title=field)
                         # advance_field.add_new_field(self.json_templates[element_type][field]['fields'], field)
                         # self.frame_fields[field] = functional_field_repeat
@@ -1794,6 +1783,7 @@ class MonsterTemplate(Templates):
 class PerkTemplate(Templates):
     def __init__(self, master=None):
         super().__init__('files/_BlankPerk_modtemplate.json', 'Perks', master=master)
+        self.size = [800, 620]
 
     def save_element_details_in_current_mod(self, current_mod):
         # save element data into the current mod dictionary and add it into the lists.
@@ -1875,6 +1865,7 @@ class PerkTemplate(Templates):
 class SkillsTemplate(Templates):
     def __init__(self, master=None):
         super().__init__('files/_BlankSkill_modtemplate.json', 'Skills', master=master)
+        self.size = [800, 620]
         self.frame_list = []
         # self.mandatory_marked = '0'
         # self.mandatory_marked_prev = '0'
@@ -1889,18 +1880,19 @@ class SkillsTemplate(Templates):
         self.attack_heal_mand = ['power', 'minRange', 'maxRange', 'recoil', 'outcome', 'miss']
         self.status_afflict_mand = ['statusEffect', 'statusChance', 'statusDuration', 'statusPotency', 'statusResistedBy', 'statusText', 'statusOutcome', 'statusMiss']
         self.status_restrain_mand = ['restraintStruggle', 'restraintStruggleCharmed', 'retraintEscaped', 'retraintEscapedFail']
-    def save_element_details_in_current_mod(self, current_mod):
+    def save_data_in_current_mod(self, current_mod, flag_addition=False):
         # save element data into the current mod dictionary and add it into the lists.
         missing_data = ''
         for field in self.frame_fields:
-            if self.frame_fields[field].field_label.configure('background')[4] == 'tomato':
+            if self.frame_fields[field].label_custom.palette().color(QPalette.Background).name() == '#ff0000':
                 if not self.frame_fields[field].get_val():
                     missing_data += '\n' + 'missing ' + field
         if missing_data:
-            messagebox.showerror('Missing mandatory',"You missed a few spots, didn't you?" + missing_data, parent=self)
+            show_message('Missing mandatory',"You missed a few spots, didn't you?" + missing_data,'Mandatory error')
             return
-        self.save_data_in_current_mod(current_mod)
-        return True
+        # self.save_data_in_current_mod(current_mod, flag_addition)
+        return super().save_data_in_current_mod(current_mod, flag_addition)
+        # return True
 
     def prepItemGui_old_separated_for_frames(self, mode=0):
         # if mode:
@@ -2010,6 +2002,20 @@ class SkillsTemplate(Templates):
                 element_frame = tk.Frame(master=frame_fields_stance_control_keys)
                 element_frame.grid(row=0, column=col_place)
 
+    def custom_fields_functionality(self):
+        # return
+        for field in self.frame_fields:
+            # GuiFieldName = element_name + field
+            # try:
+            #     if self.json_templates[field]["type"] in "text singlelist int filePath multilist area requirement":
+            #         element_frame = temp_frame
+            #     else:
+            #         element_frame = temp_frame
+                # field_value = createField(element_frame, field, self.json_templates[field])
+                if field in 'skillType statusEffect':
+                    self.frame_fields[field].currentTextChanged.connect(lambda *args, arg1=field, arg2=self.frame_fields[field]: self.mark_mandatories(field_name=arg1, field_data=arg2))
+                    self.frame_fields[field].set_val('Healing')
+                    # field_value.var.trace('w', lambda *args, arg1=field, arg2=field_value: self.mark_mandatories(field_name=arg1, field_data=arg2))
 
     def switch_frames(self, frame_no):
         for frame in self.frame_list:
@@ -2029,46 +2035,46 @@ class SkillsTemplate(Templates):
                         for field in self.attack_heal_mand:
                             # self.frame_fields[field].field_label['text'] += '*'
                             # self.frame_fields[field].field_label.configure(bg='tomato')
-                            self.frame_fields[field].field_label.configure(background='tomato')
+                            self.frame_fields[field].label_custom.change_background_color()
                         if not self.status_flag:
                             for field in self.status_afflict_mand:
                                 # self.frame_fields[field].field_label.configure(bg='snow')
-                                self.frame_fields[field].field_label.configure(background='snow')
+                                self.frame_fields[field].label_custom.clear_color()
 
                     elif 'ff' in field_value:
                         self.attack_status_flag = 2
                         for field in self.attack_heal_mand:
                             # self.frame_fields[field].field_label.configure(bg='snow')
-                            self.frame_fields[field].field_label.configure(background='snow')
+                            self.frame_fields[field].label_custom.clear_color()
                         for field in self.status_afflict_mand:
-                            if '*' not in self.frame_fields[field].field_label['text']:
+                            if '*' not in self.frame_fields[field].label_custom.text():
                                 # self.frame_fields[field].field_label.configure(bg='tomato')
-                                self.frame_fields[field].field_label.configure(background='tomato')
+                                self.frame_fields[field].label_custom.change_background_color()
         if field_name == 'statusEffect':
             value = field_data.get_val()
             if value and value != 'None':
                 self.status_flag = 1
                 if self.attack_status_flag != 2:
                     for field in self.status_afflict_mand:
-                        if '*' not in self.frame_fields[field].field_label['text']:
+                        if '*' not in self.frame_fields[field].label_custom.text():
                                 # self.frame_fields[field].field_label.configure(bg='tomato')
-                                self.frame_fields[field].field_label.configure(background='tomato')
+                                self.frame_fields[field].label_custom.change_background_color()
                     if 'Restrain' in value:
                         for field in self.status_restrain_mand:
-                            if '*' not in self.frame_fields[field].field_label['text']:
+                            if '*' not in self.frame_fields[field].label_custom.text():
                                 # self.frame_fields[field].field_label.configure(bg='tomato')
-                                self.frame_fields[field].field_label.configure(background='tomato')
+                                self.frame_fields[field].label_custom.change_background_color()
                     else:
                         for field in self.status_restrain_mand:
                             # self.frame_fields[field].field_label.configure(bg='snow')
-                            self.frame_fields[field].field_label.configure(background='snow')
+                            self.frame_fields[field].label_custom.clear_color()
             elif value == '' or value == 'None':
                 self.status_flag = 0
                 if self.attack_status_flag != 2:
                     for field in self.status_afflict_mand:
                         print('not all fields are fields: ' + str(field))
                         # self.frame_fields[field].field_label.configure(bg='snow')
-                        self.frame_fields[field].field_label.configure(background='snow')
+                        self.frame_fields[field].label_custom.clear_color()
 
 
 

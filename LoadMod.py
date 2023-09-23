@@ -5,12 +5,19 @@ from os.path import isdir, join, isfile, getmtime
 import json
 from collections import OrderedDict
 # import GlobalVariables
-from GlobalVariables import Glob_Var, Mod_Var, test_flag
+from GlobalVariables import Glob_Var, Mod_Var
 # from GlobalVariables import Glob_Var
 from otherFunctions import wrap
 
 # global Mod_Var
 
+
+def check_if_mod_exists(mod_path):
+    """check if mod exists"""
+    if access(mod_path, F_OK):
+        return True
+    else:
+        return False
 
 def start_loading_mod(mod_path):
     for element in Mod_Var.mod_data:
@@ -36,6 +43,7 @@ def start_loading_mod(mod_path):
                 temp = []
                 load_item(mod_path + '/' + element, element, list_parent=temp)
                 Mod_Var.mod_display[element] = temp
+
 
 
 def load_item(mod_path, element_type='', depth=0, list_parent=None):
@@ -355,7 +363,7 @@ def load_status_effect():
 
 
 def load_functions():
-    if test_flag:
+    if Glob_Var.test_flag:
         functions_path = 'files/_textfunction_testing.json'
     else:
         functions_path = 'files/_textfunction.json'
