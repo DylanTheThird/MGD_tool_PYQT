@@ -98,7 +98,7 @@ def load_item(mod_path, element_type='', depth=0, list_parent=None):
 def new_mod():
     for element in Mod_Var.mod_data:
         Mod_Var.mod_data[element] = {}
-        Mod_Var.mod_display[element] = {}
+        Mod_Var.mod_display[element] = []
         Mod_Var.mod_file_names[element] = {}
 
 # def load_item(mod_path, element_type='', current_mod='', list_number=0, depth=0, list_parent=''):

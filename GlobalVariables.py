@@ -209,8 +209,16 @@ class ModVariable(object):
             }
         # self.mod_data.copy = mod
         self.mod_data = copy.copy(self.clear_mod)
-        self.mod_display = copy.copy(self.clear_mod)
         self.mod_file_names = copy.copy(self.clear_mod)
+        self.mod_display = {
+                "Adventures": [],
+                "Events": [],
+                "Fetishes": [],
+                "Items": [],
+                "Locations": [],
+                "Monsters": [],
+                "Perks": [],
+                "Skills": []}
         # self.mod_display = {
         #         "Adventures": {},
         #         "Events": {},
@@ -226,7 +234,36 @@ class ModVariable(object):
     def clear_mod(self):
         # for element in self.mod_data:
         self.mod_data = copy.copy(self.clear_mod)
-        self.mod_display = copy.copy(self.clear_mod)
+        self.mod_display = {
+                "Adventures": [],
+                "Events": [],
+                "Fetishes": [],
+                "Items": [],
+                "Locations": [],
+                "Monsters": [],
+                "Perks": [],
+                "Skills": []}
+        self.mod_file_names = copy.copy(self.clear_mod)
+
+    def update_mod_display(self, parent, item, searching=None, if_folder=False):
+        found = False
+        if searching is None:
+            searching = [self.mod_display]
+        for aa in searching:
+            if found:
+                return True
+            if isinstance(aa, dict):
+                for bb in aa:
+                    if found:
+                        return True
+                    if bb == parent:
+                        if if_folder:
+                            aa[bb].append({item: []})
+                        else:
+                            aa[bb].append(item)
+                        return True
+                    found = self.update_mod_display(parent, item, aa[bb], if_folder)
+
     # def load_mod_data_part1(self):
         # for element in self.mod_data:
         #     if element == 'Fetishes':

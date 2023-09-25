@@ -1367,6 +1367,8 @@ class MenuField(QtWidgets.QWidget):
         self.choices_text = SimpleFields.MultiListDisplay(None, 'choices-scenes',
                                       field_data={'choices': ["Scenes-current"], 'options': ["single_item", "search"]},
                                       main_data_treeview=self.treeview_main_game_items)
+        self.choices_text.final_data.setToolTip('Click here, then double click on scene from list above.\n'
+                                                'Then press enter here to add scene to list below.')
         self.choices_text.final_data.returnPressed.connect(self.new_choice)
         self.choices_text.set_up_widget(self.main_layout)
 
@@ -1493,7 +1495,8 @@ class MenuField(QtWidgets.QWidget):
 
     def new_choice(self):
         new_choice = self.choices_text.get_val()
-        self.final_data.add_data(new_choice)
+        if new_choice:
+            self.final_data.add_data(new_choice)
 
     def add_condition(self):
         """add condition to choice. Choice is branch name in final data."""
@@ -2176,7 +2179,7 @@ class Choices:
     def set_up_event_source(self):
         if self.event_source_field:
             self.event_source = self.event_source_field.get_val()
-            print("updating event source. seems like event source field is not connecting to this function")
+            # print("updating event source. seems like event source field is not connecting to this function")
         """first field should be choice number, second field should be choice text"""
         choice_list = SimpleFields.mod_temp_data.get_choices(get_val='gate', event_name=self.event_source)
         self.field_choice_no.reload_options(choice_list)
@@ -3482,10 +3485,10 @@ class Function_Gui:
             self.create_function_field(function_data['structure'])
             if "special" in function_data['options']:
                 self.prepare_special(function_name)
-            print('making fields for function')
+            # print('making fields for function')
         # for field in self.function_fields_list:
         #     field.show_field()
-        print('stuff to do after fields are prepared')
+        # print('stuff to do after fields are prepared')
         """add separate EndLoop field to the list of fields. if steps is just EndLoop, add at the end, if there is a
          number, it is number of steps before end"""
         if 'EndLoop' in function_data['steps'] or 'EndMusicList' in function_data['steps']:
@@ -4078,7 +4081,7 @@ class Function_Gui:
     def set_attack(self, check_val):
         """probably fro apply stance, which is not ready"""
         if check_val.get() == 1:
-            print('it might work')
+            # print('it might work')
             # TODO here create multilist with ...something
             temp_field = SimpleFields.MultiList(self.frame_function_fields, 'Skills', '', 'U',
                                                 ['currentmod-Skills', 'main-inc-/Skills'], ['single_item', 'search'])
