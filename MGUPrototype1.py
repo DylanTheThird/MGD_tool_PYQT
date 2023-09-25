@@ -24,17 +24,12 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO saving mod with only folder somewhere
-# TODO if loading previous mods and nothing happend cuase mod was deleted, remove it from previous list - fixed
-# TODO along with above, optimized load recent mod function - fixed
-# TODO skills - saving not working - should be, check again - FIXED
-# TODO if cannot find path from config ini, remake config - FIXED
-# TODO lets work on optional fields(it should be disabled somewhere, i think i worked at one point) - FIXED
-# TODO clicking new mod should also remove any traces of previous mod, from main game treeview for example - fixed
-# TODO stances - check function that use them
+# TODO scene edit - buttons at the bottom move to the left, so DONE is not below functions
+# TODO saving mod with only folder - fixed
+# TODO variable for displaying mod was not updated when creating new items - fixed
 
 # TODO additions
-# TODO loading scenes with functions - FIXED
+# TODO function to gather custom stances from fresh loaded mod - done
 # Hard problems
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO function menu > choice from event. works only on debug
@@ -66,7 +61,7 @@ class ModTreeField(ElementsList):
         else:
             return ''
 
-    def get_data(self, parent_index=None, root_list=None, remove_title=False):
+    def get_data1(self, parent_index=None, root_list=None, remove_title=False):
         """temporary solution - overwrite get data"""
         if parent_index:
             if isinstance(parent_index, QStandardItem):
@@ -113,6 +108,9 @@ class ModTreeField(ElementsList):
                                 rows_list[i] = rows_list[i][title]
                 return rows_list
 
+    def add_folder(self, folder_name):
+        super().add_folder(folder_name)
+        Mod_Var.update_mod_display(self.selected_element().text(), folder_name, if_folder=True)
 
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
@@ -333,10 +331,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
         self.test_idx = 0
         self.actionStances.setEnabled(False)
-        self.actionAdd_Addition.setEnabled(False)
+        # self.actionAdd_Addition.setEnabled(False)
         # self.actionAdd_new.setEnabled(False)
         self.actionRemove.setEnabled(False)
-        self.actionDisplay_Details.setEnabled(False)
+        # self.actionDisplay_Details.setEnabled(False)
         self.actionCancel_New.setEnabled(False)
         self.actionSave_New.setEnabled(False)
 
@@ -358,6 +356,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.actionAdd_new.triggered.connect(self.new_element_prepare)
         self.actionSave_New.triggered.connect(self.save_new_element)
         self.actionCancel_New.triggered.connect(self.cancel)
+        self.actionAdd_Addition.triggered.connect(self.switch_to_addition_data)
         self.flag_creating_element = False
 
     def retranslateUi(self, MainWindow):
@@ -600,7 +599,10 @@ class Ui_MainWindow(QtWidgets.QWidget):
         if check_if_mod_exists(recent_mod[1]):
             self.recent_mods.insert(0, recent_mod)
             self.recent_mods_actions.insert(0, recent_mod_action)
-            self.menuRecentMods.insertAction(self.recent_mods_actions[1], recent_mod_action)
+            if len(self.recent_mods) > 1:
+                self.menuRecentMods.insertAction(self.recent_mods_actions[1], recent_mod_action)
+            else:
+                self.menuRecentMods.addAction(recent_mod_action)
             self.load_mod(recent_mod)
     def recent_load2(self, action_widget=QtWidgets.QAction):
         # when clicking mod in recent list instead of "load mod" option
@@ -686,6 +688,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 selected_element = selected_element.parent()
             if new_element != self.current_selected_item.text():
                 self.tree_mod_elements.add_data(data=new_element, node=selected_element)
+                """update mod var display mod"""
+                Mod_Var.update_mod_display(selected_element.text(), new_element)
         """change main label to reflect action"""
         self.label_welcome.setText('Displaying ')
 
@@ -726,7 +730,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
             mod_path = Glob_Var.start_path + Glob_Var.mod_main_switch + self.entry_mod_name.text()
             """elements type will be "adventures", "items", element_items should be [{"adventures":{"folder":...},Events}"""
             # TODO here is problem. it gather all data in a list of dictionaries of string. I need to check items in treeview with whatisthis to know if its a folder
-            mod_files = self.tree_mod_elements.get_data()
+            # mod_files = self.tree_mod_elements.get_data()
+            mod_files = Mod_Var.mod_display
             for elements_type in mod_files:
                 """if its just string, its empty"""
                 if isinstance(elements_type, str):
@@ -738,6 +743,9 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 self.tree_mod_elements.files_to_remove.clear()
             mod_temp_data.save_file()
 
+    def switch_to_addition_data(self):
+        """load additiona data in mod element tree"""
+        print('testing')
     def create_folder_while_saving_mod(self, template_name, el_path_start, el_items):
         """this is dictionary {'Items': [{'Consumables': ['ElvenHerb']}, {'KeyItems': ['JorasLetter']}]}"""
         for item in el_items:
@@ -825,8 +833,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
         print('testing prorotype')
         # print(self.tree_mod_elements.files_to_remove)
         # print(Mod_Var.mod_file_names)
-        print(Glob_Var.test_flag)
-        # print(Mod_Var.mod_data)
+        # print(Glob_Var.test_flag)
+        print(Mod_Var.mod_display)
         # print(Glob_Var.functions_display)
         # print(str(Glob_Var.perks_and_stats))
         # self.templates['Adventures'].frame_fields['StatReq'].load_main_data()

@@ -1114,3 +1114,6 @@ def message_yes_no():
 
 def get_file_time_modification(file):
     return getmtime(file)
+
+def nice_print_dict(dictA):
+    print('test')
