@@ -76,6 +76,10 @@ class CustomButton(QtWidgets.QPushButton):
     def update_label(self, new_label):
         self.setText(new_label)
 
+    def change_background_color(self):
+        self.setStyleSheet("background-color: red")
+    def clear_color(self):
+        self.setStyleSheet("")
 
 
 class SimpleEntry(QtWidgets.QLineEdit):
@@ -691,6 +695,7 @@ class UniqueView(QtWidgets.QListView):
         if event.key() == Qt.Key_Delete:
             # self.delete_leaf()
             self.delete()
+        super().keyPressEvent(event)
     def delete(self):
         selected_items_idx = self.selectedIndexes()
         selected_items = []
@@ -1298,7 +1303,10 @@ class ElementsList(QtWidgets.QTreeView):
             for idx in range(len(selected_index)):
                 if self.flag_search:
                     selected_index[idx] = self.sorting.mapToSource(selected_index[idx])
-                selected_index[idx] = self.tree_model.itemFromIndex(selected_index[idx])
+                    selected_index[idx] = self.tree_model.itemFromIndex(selected_index[idx])
+                else:
+                    temp = self.model()
+                    selected_index[idx] = temp.itemFromIndex(selected_index[idx])
             if len(selected_index) == 1:
                 return selected_index[0]
             else:
@@ -1323,13 +1331,14 @@ class ElementsList(QtWidgets.QTreeView):
             element_index = self.find_node(text)
         else:
             element_index = text
-        if inverse_selection:
-            row_count = self.tree_model.rowCount()
-            for idx in range(row_count):
-                if self.tree_model.index(idx,0) != element_index:
-                    self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
-        else:
-            self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
+        if element_index:
+            if inverse_selection:
+                row_count = self.tree_model.rowCount()
+                for idx in range(row_count):
+                    if self.tree_model.index(idx,0) != element_index:
+                        self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
+            else:
+                self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
 
     def new_prep_data_to_add(self, data=[], return_val=[]):
         """turn data, list of dictionaries and strings, into list of standard items with nexted items"""
@@ -1418,11 +1427,14 @@ class ElementsList(QtWidgets.QTreeView):
                 self.tree_model.appendRow(new_branch)
         return new_branch
 
-    def add_folder(self, folder_name):
+    def add_folder(self, folder_name, node=None):
         """add 1 item, which suppose to contains more items"""
-        node = self.selected_element()
         if node is None:
-            node = self.tree_model
+            """for adding element, need to add folder to existing items"""
+            node = self.selected_element()
+        if node is None:
+            # node = self.tree_model
+            node = self.model()
         else:
             if isinstance(node, str):
                 node = self.find_node(node)
@@ -1434,12 +1446,19 @@ class ElementsList(QtWidgets.QTreeView):
         new_folder.setEditable(True)
         new_folder.setWhatsThis('folder')
         node.appendRow(new_folder)
+        return new_folder
 
-    def add_leaf(self, list_of_strings_to_insert_in_row=[], row=None, parent=None, row_height=0):
+    def add_leaf(self, list_of_strings_to_insert_in_row=[], row=None, parent=None, row_height=0, additional_data=''
+                 , editable=False):
         new_leaves = []
         for text in list_of_strings_to_insert_in_row:
             new_leaf = QStandardItem(text)
-            new_leaf.setEditable(True)
+            if editable:
+                new_leaf.setEditable(True)
+            else:
+                new_leaf.setEditable(False)
+            if additional_data:
+                new_leaf.setWhatsThis(additional_data)
             if row_height > 0:
                 new_leaf.setSizeHint(QSize(0, row_height))
             new_leaves.append(new_leaf)
@@ -1454,7 +1473,6 @@ class ElementsList(QtWidgets.QTreeView):
             else:
                 self.tree_model.appendRow(new_leaves)
         """used to add single leaves with specific id, to be able to delete later without searching"""
-        # return self.treeview.insert(parent_id, 'end', code, text=txt)
 
     def change_row_height(self, new_height, child=None):
         if child is None:
@@ -3472,7 +3490,7 @@ class ModTempData:
         self.mod_data['events'][event_name]['DisplayCharacters'] = {}
         self.mod_data['events'][event_name]['Functionized'] = {}
 
-    def prepare_data_load_mod(self, mod_name):
+    def prepare_data_load_mod(self, mod_name, mod_path):
         # return
         self.current_mod = mod_name
         rewrite_flag = False
@@ -3547,7 +3565,7 @@ class ModTempData:
                             prev_chara = current_chara
                     # this not working still
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
-                mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
+                mod_folder_time_date = otherFunctions.get_file_time_modification(mod_path)
                 self.mod_data['last_update'] = mod_folder_time_date
 
                 # self.mod_data['events'][event]['name'] = event

@@ -25,7 +25,8 @@
 	"optional":{
 				"type":"optional",
 				"choices":[],
-				"tooltip":""
+				"tooltip":"",
+				"options":[]
 					}
 	
 }
