@@ -24,20 +24,15 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO additions:
-# 1. add another treemodel to existing element tree, to easy switch between them - done
-# 2. adjust load additional items to use additional model - done
-# 3. when loading(double click) additional item, it should load data from file based on info in whatisthis - done
-# 4. when loading additional item, it should mark fields that are allowed to modify - done
-# 5. when saving element on addition selection, it should save in main tree model, not additional model - done
-# 6. saving addition - add field "Addition":True, and to mod items - done
-# 7. saving addition - should not add it to main game items tree. it already contains main game items - done
+
 
 # TODO for scene function there are some used mainly for additions
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
 # requiresStance is missing....
-# TODO broken - loaded mod folders are not editable. - FIXED
-# TODO scene edit - buttons at the bottom move to the left, so DONE is not below functions
+# TODO scene edit - buttons at the bottom move to the left, so DONE is not below functions - fixed
+# TODO colours in markup window
+# TODO when closing main window, scene edit would not close - fixed
+# TODO check when last time mod was edited was checking before temp file for mod was created - fixed
 
 # Hard problems
 # TODO multilists in addition does not react to delete key, with few exception
@@ -580,7 +575,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.entry_mod_name.setText(mod_name)
         start_loading_mod(file)
         self.update_mod_tree_start(Mod_Var.mod_display)
-        mod_temp_data.prepare_data_load_mod(mod_name)
+        mod_temp_data.prepare_data_load_mod(mod_name, file)
 
     def recent_update(self, new_recent_name, new_recent_path):
         # update variable with list
@@ -624,23 +619,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
             else:
                 self.menuRecentMods.addAction(recent_mod_action)
             self.load_mod(recent_mod)
-    def recent_load2(self, action_widget=QtWidgets.QAction):
-        # when clicking mod in recent list instead of "load mod" option
-        """first, check if mod exists. if not, remove from the list, no point in doing other stuff"""
-        recent_mod_selected_name_no = self.recent_mods_actions.index(action_widget)
-        # if selecting last mod, its value is 0, so there is no points in moving stuff
-        if recent_mod_selected_name_no > 0:
-            # now it need to move stuff around in recent display and in variable, and use data from var in load mod
-            recent_mod = self.recent_mods_actions.pop(recent_mod_selected_name_no)
-            self.recent_mods_actions.insert(0, recent_mod)
-            self.menuRecentMods.removeAction(recent_mod)
-            self.menuRecentMods.insertAction(self.recent_mods_actions[1], recent_mod)
-            recent_mod = self.recent_mods.pop(recent_mod_selected_name_no)
-            self.recent_mods.insert(0, recent_mod)
-        else:
-            recent_mod = self.recent_mods[recent_mod_selected_name_no]
-        self.load_mod(recent_mod)
-
 
     def recent_save(self):
         # print('save recent mods list')

@@ -100,6 +100,8 @@ class Window(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         # print('closing')
         prototype.recent_save()
+        app.closeAllWindows()
+        # super().closeEvent(event)
 
 
 if __name__ == "__main__":

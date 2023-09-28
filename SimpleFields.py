@@ -3490,7 +3490,7 @@ class ModTempData:
         self.mod_data['events'][event_name]['DisplayCharacters'] = {}
         self.mod_data['events'][event_name]['Functionized'] = {}
 
-    def prepare_data_load_mod(self, mod_name):
+    def prepare_data_load_mod(self, mod_name, mod_path):
         # return
         self.current_mod = mod_name
         rewrite_flag = False
@@ -3565,7 +3565,7 @@ class ModTempData:
                             prev_chara = current_chara
                     # this not working still
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
-                mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
+                mod_folder_time_date = otherFunctions.get_file_time_modification(mod_path)
                 self.mod_data['last_update'] = mod_folder_time_date
 
                 # self.mod_data['events'][event]['name'] = event
