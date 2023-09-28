@@ -69,7 +69,8 @@ class Templates:
         self.element_type = element_name
         self.input_filename = None
         self.addition_field = addition_field
-        self.addition_field_list = []
+        self.field_used_in_additions = []
+        self.flag_additional_marking = False
         self.optional_class_worker = ''
         self.size = []
         self.flag_fields_marked_for_addition = False
@@ -195,6 +196,10 @@ class Templates:
                 # print(field_value.title + ' ' + str(field_value.row_size))
                 # print(field)
                 field_value.set_up_widget(layout_template)
+                """set aside info if field is in addition"""
+                if 'options' in self.json_templates[field]:
+                    if 'addition' in self.json_templates[field]['options']:
+                        self.field_used_in_additions.append(field)
                 currect_size += field_value.row_size
                 if currect_size >= 15:
                     currect_size = 0
@@ -267,18 +272,22 @@ class Templates:
             self.frame_fields[field].clear_val()
 
     def load_element_data(self, element_name, element_data=None):
-        """below is in case element data is just file name, but i dont see reason for this anymore"""
-        # if isinstance(element_data, str):
-        #     with open(GlobalVariables.startPath + '/' + element_data, encoding='utf-8-sig') as file:
-        #         element_data = json.load(file, object_hook=OrderedDict)
-        #         # element_data = {self.element_type: {element_name: file_data}}
+        """below is in case element data is just file name, but i dont see reason for this anymore
+           ....oooo, its for addition loading"""
+        if isinstance(element_data, str):
+            temp = element_data.split('/')
+            element_file_name = temp[-1][:-5]
+            with open(GlobalVariables.Glob_Var.start_path + '/' + element_data, encoding='utf-8-sig') as file:
+                element_data = json.load(file, object_hook=OrderedDict)
         if element_name == '':
-            messagebox.showerror("Nothing", "No details to display", parent=self)
+            show_message("Nothing", "No details to display", "Warning")
         else:
                 # self.input_filename.set_val(element_name)
+                if element_data is None:
+                    element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
+                    element_file_name = GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name]
                 if self.element_type != 'Fetishes':
-                    self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
-                element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
+                    self.input_filename.set_val(element_file_name)
             # elementType == 'Items':
             # try:
                 # elementName = re.sub('[^A-Za-z0-9]+', '', elementName)
@@ -327,7 +336,18 @@ class Templates:
         #         self.flag_fields_marked_for_addition = False
         #         GlobalVariables.flag_modify_addition = False
 
-    def save_data_in_current_mod(self, current_mod, flag_addition=False):
+    def mark_additional_fields(self):
+        """go over field in field for additionsl and mark labels in different colour.
+        maybe even lock others?"""
+        for field in self.field_used_in_additions:
+            self.frame_fields[field].label_custom.change_background_color()
+
+    def clear_markings(self):
+        for field in self.field_used_in_additions:
+            self.frame_fields[field].label_custom.clear_color()
+
+
+    def save_data_in_current_mod(self, current_mod, flag_addition='1/2'):
         # save element data into the current mod dictionary and add it into the lists.
         item_temp = OrderedDict()
         error_flag = False
@@ -337,13 +357,10 @@ class Templates:
             unique_field = 'IDname'
         else:
             unique_field = 'Name'
-
-        # element_name = item_temp['name']
         file_name = self.input_filename.get_val()
         if not file_name and self.element_type != 'Fetishes':
             show_message('File name', 'Please provide', 'Error 1')
             return
-        # if self.element_type == 'Fetishes':
         element_name = self.frame_fields[unique_field].get_val()
         """if provided only filename, it should return with prefix and add only 1 row, as folder"""
         if element_name == '':
@@ -351,17 +368,15 @@ class Templates:
         # current_mod[elementType] = elementname
         GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name] = file_name
         # if 'Addition' in current_mod[self.element_type][element_name]:
-        if element_name in current_mod[self.element_type]:
-            if 'Addition' in current_mod[self.element_type][element_name]:
-            # if flag_addition:
-                item_temp['Addition'] = 'Yes'
-                # for field, value in self.frame_fields.items():
-                #     if field in self.addition_field_list:
-                for field in self.addition_field_list:
-                    self.frame_fields[field].get_val(temp_dict_container=item_temp)
-            else:
-                for field, value in self.frame_fields.items():
-                    value.get_val(temp_dict_container=item_temp)
+        """if object already exists in mod, wait, this does not make sense, i dont remember its previous workings"""
+        # if element_name in current_mod[self.element_type]:
+        if flag_addition == 2:
+            """yeah, insteaf of true false, i gave it numbers"""
+            item_temp['Addition'] = 'Yes'
+            # for field, value in self.frame_fields.items():
+            #     if field in self.addition_field_list:
+            for field in self.field_used_in_additions:
+                self.frame_fields[field].get_val(temp_dict_container=item_temp)
         else:
             for field, value in self.frame_fields.items():
                 # print(self.templates[elementType][field].get())
@@ -372,27 +387,8 @@ class Templates:
                 """IMPORTAN CHANGE!!!"""
                 # itemTemp[field] = value.get_val()
                 value.get_val(temp_dict_container=item_temp)
-        # optional_fields_dictionary_values = self.optional_class_worker.get_val()
-        # for field in optional_fields_dictionary_values:
-        #     item_temp[field] = optional_fields_dictionary_values[field]
-            # print(field + ' = ' + value.get())
-        # if self.dict_optional_fields:
-        #     for field, value in self.dict_optional_fields.items():
-        #         value.get_val(temp_dict_container=item_temp)
-        # print(itemTemp)
         current_mod[self.element_type][element_name] = item_temp
-        # if self.element_type in 'Item Perks Skills Monsters':
-        #     update_multilists('add', element_name, self.element_type)
         return element_name
-        # elementPath = app.getEntry('ModName') + '/' + elementType + '/'
-        # if "itemType" in itemTemp:
-        #     elementPath = elementPath + 'Consumable' + '/'
-        #     if itemTemp['itemType'] == 'Healing':
-        #         elementPath = elementPath + 'Healing' + '/'
-        # if not access(elementPath, F_OK):
-        #     makedirs(elementPath)
-        # with open(elementPath + itemTemp['name'] + '.json', 'w') as objectF:
-        #     objectF.write(json.dumps(itemTemp, indent='\t'))
 
     def save_element_in_file(self, element_name, file_path):
         file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
@@ -424,9 +420,9 @@ class EventsTemplate(Templates):
         #TODO check size after adding other stuff
         self.size = [800, 620]
 
-    def load_element_data(self, element_name):
+    def load_element_data(self, element_name, element_data=None):
         mod_temp_data.current_editing_event = element_name
-        super().load_element_data(element_name)
+        super().load_element_data(element_name, element_data)
         # print('check if this apepares after super is done')
         # mod_temp_data.current_editing_event = self.input_filename.get_val()
     def save_element_details_in_current_mod(self, current_mod):
@@ -1790,15 +1786,20 @@ class PerkTemplate(Templates):
         self.save_data_in_current_mod(current_mod)
         return True
 
-    def load_element_data(self, element_name):
+    def load_element_data(self, element_name, element_data=None):
         # print("function display element")
         # print('elementtype-  '+ elementType + ', element name - ' + elementName)
+        if isinstance(element_data, str):
+            temp = element_data.split('/')
+            element_file_name = temp[-1][:-5]
+            with open(GlobalVariables.Glob_Var.start_path + '/' + element_data, encoding='utf-8-sig') as file:
+                element_data = json.load(file, object_hook=OrderedDict)
         if element_name == '':
-            messagebox.showerror("Nothing", "No details to display", parent=self)
+            show_message("Nothing", "No details to display", 'Warning')
         else:
-                # self.input_filename.set_val(element_name)
-                self.input_filename.set_val(GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name])
-                element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
+                if element_data is None:
+                    element_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
+                    element_file_name = GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name]
                 for field in self.frame_fields:
                         # try:
                     self.frame_fields[field].clear_val()

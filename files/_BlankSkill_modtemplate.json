@@ -181,6 +181,7 @@
 	"optional":{
 				"type":"optional",
 				"choices":["skills","global"],
-				"tooltip":""
+				"tooltip":"",
+				"options":[]
 					}
 }

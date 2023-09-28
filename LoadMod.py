@@ -444,21 +444,23 @@ def nest_folders_in_dictionary(folder_list, dictionary_to_nest, list_of_files_to
             dictionary_to_nest[folder_list[0]]['files'] = list_of_files_to_add
 
 
-def load_main_game_addition(main_path='game/json', folder='', main_tree=None):
+def load_main_game_addition(main_path='game/json', folder=None, main_tree=None):
     """ this should load main game data into global variable, to use later in other fields where you choose items """
     main_game_directories = [f for f in listdir(Glob_Var.start_path + main_path) if isdir(join(Glob_Var.start_path + main_path, f))]
-    # print(mod_files)
-    # print(mod_directories)
     # recursive go into folders until no more folder available
     for element in main_game_directories:
+        if element in ['Fetishes','Items','Perks']:
+            continue
         """add folder element to treeview"""
-        new_folder = main_tree.add_leaf(folder, folder + '-' + element, element)
-        main_tree.treeview.item(new_folder, tags='folder')
+        new_folder = main_tree.add_folder(element, folder, True)
+        new_folder.setEditable(False)
+        # new_folder = main_tree.add_leaf(folder, folder + '-' + element, element)
+        # main_tree.treeview.item(new_folder, tags='folder')
         load_main_game_addition(main_path + '/' + element, new_folder, main_tree)
     mod_files = [f for f in listdir(Glob_Var.start_path + main_path) if isfile(join(Glob_Var.start_path + main_path, f))]
     for file in mod_files:
         if file[0] != '_':
-            main_tree.add_leaf(folder, main_path + '/' + file, file[:-5])
+            main_tree.add_leaf([file[:-5]], None, folder, additional_data=main_path + '/' + file, editable=False)
     #         main_var.append(file[:-5])
     # load_main_game_files_data(main_path)
 

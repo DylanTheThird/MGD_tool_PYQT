@@ -53,6 +53,7 @@
 	"optional":{
 				"type":"optional",
 				"choices":["global"],
-				"tooltip":""
+				"tooltip":"",
+				"options":[]
 					}
 }
