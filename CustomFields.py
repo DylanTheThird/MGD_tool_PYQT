@@ -486,7 +486,7 @@ class DeckField:
         self.options_selection = SimpleFields.SingleList(master, 'Deck', edit=False)
         self.options_selection.set_val(self.option_list)
         self.options_selection.currentTextChanged.connect(self.options_prepare)
-
+        self.label_custom = self.options_selection.label_custom
         # self.add_button = SimpleFields.SimpleEntry(master, 'test field', class_connector=self)
         self.add_button = SimpleFields.CustomButton(master, '', class_connector=self)
         self.add_button.clicked.connect(self.add_data)
@@ -669,9 +669,9 @@ class ExpandDictionaryField(QWidget):
 
         self.custom_layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.custom_layout)
-        self.label = SimpleFields.CustomLabel(master, field_name)
-        self.label.change_position('C')
-        self.custom_layout.addWidget(self.label)
+        self.label_custom = SimpleFields.CustomLabel(master, field_name)
+        self.label_custom.change_position('C')
+        self.custom_layout.addWidget(self.label_custom)
 
         self.fieldsNames = fields_data['fields'].keys()
         # print(str(fields_data['options']))
@@ -689,7 +689,7 @@ class ExpandDictionaryField(QWidget):
                 if 'addition' in fields_data['options']:
                     self.addition = True
                 if 'tooltip' in fields_data:
-                    self.label.setToolTip(fields_data['tooltip'])
+                    self.label_custom.setToolTip(fields_data['tooltip'])
         # else:
         #     print('expand dictionary in customer fields - missing options tags in field ' + field_name)
         # print(self.fieldsNames)
@@ -1180,7 +1180,7 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
         super().__init__(master, field_name, fields_data)
         # connect first field - line triggers - to custom trigger here
         # self.fields_list[0]
-        self.label.change_position('center')
+        self.label_custom.change_position('center')
         self.fields_list[0].final_data.textChanged.connect(self.trigger_custom)
         self.tree_final_data.doubleClicked.connect(self.edit_data)
         self.edit_flag = False
@@ -1324,8 +1324,8 @@ class FunctionField(SimpleFields.ElementsList):
             Then I just hide or show specific frame instead of all fields"""
         self.field_frame = {}
         self.markup_win = None
-        self.label = SimpleFields.CustomLabel(None, 'Scenes')
-        self.layout.insertWidget(0, self.label, alignment=QtCore.Qt.AlignCenter)
+        self.label_custom = SimpleFields.CustomLabel(None, 'Scenes')
+        self.layout.insertWidget(0, self.label_custom, alignment=QtCore.Qt.AlignCenter)
         # self.button_AddData = SimpleFields.CustomButton(None, 'Add Scene')
         # self.custom_layout.addWidget(self.button_AddData)
         # self.button_AddData.clicked.connect(lambda: self.modify_scene(flag_for_list_of_functions, add_flag=True))
@@ -1874,6 +1874,7 @@ class MonsterGroups:
         #                                                    ,main_data_treeview=Glob_Var.main_game_field)
         # self.input_monster.label_custom.hide()
         self.add_button = SimpleFields.CustomButton(master, 'Add Monster or Group', self)
+        self.label_custom = self.add_button
         # self.add_button.setToolTip('Click on field below, then double click on in main view field.\n'
         #                            'this will add text below, then click this button. If nothing selected: add new group\n'
         #                            'if group selected, add at the end, if monster selected, add above')

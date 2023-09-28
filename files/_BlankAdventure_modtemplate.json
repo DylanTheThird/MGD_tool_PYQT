@@ -7,7 +7,7 @@
      "Description": {
 				"type":"area",
 				"tooltip":"Adventure description",
-				"options":["addition"]
+				"options":[]
 			},
     "requires": {
 						"type":"multilist",
@@ -75,6 +75,7 @@
 	"optional":{
 				"type":"optional",
 				"choices":["global"],
-				"tooltip":""
+				"tooltip":"",
+				"options":[]
 					}
 }

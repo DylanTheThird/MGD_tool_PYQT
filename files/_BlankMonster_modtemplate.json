@@ -126,7 +126,7 @@
 						"type":"dictionary",
 						"tooltip":"Specify the name of the Item and provide the percent chance the item drops in dropChance. \nRepeating items will increase the potential quantity of times they drop the item.",
 						"optional":"false",
-						"options":["optional","expand","multi_item,addition"],
+						"options":["optional","expand","multi_item", "addition"],
 						"fields":{
 								    "name": {
 													"type":"multilist",
@@ -251,6 +251,7 @@
 	"optional":{
 				"type":"optional",
 				"choices":["global"],
-				"tooltip":""
+				"tooltip":"",
+				"options":[]
 					}
     }
