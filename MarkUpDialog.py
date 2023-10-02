@@ -14,6 +14,7 @@ import GlobalVariables
 from Function_class import Function_Gui
 from otherFunctions import wrap, show_message
 
+
 class area_mark_up(SimpleFields.AreaEntry):
     def __init__(self):
         super().__init__(edit=False)
@@ -45,461 +46,18 @@ class area_mark_up(SimpleFields.AreaEntry):
             else:
                 self.return_target.add_data(data=text)
             self.clear_val()
+
     def insert_text(self, text):
         """insert value where cursor is."""
         self.insertPlainText(text)
+        self.setFocus()
+
     def mark_text(self, beg, end):
         cursor = self.textCursor()
-        new_text = beg + cursor.selectedText() + end
-        self.insertPlainText(new_text)
-        # print("Selection start: %d end: %d" %
-        #       (cursor.selectionStart(), cursor.selectionEnd()))
-# class CustomLabel(QtWidgets.QLabel):
-#     # doubleClicked = pyqtSignal()
-#     def __init__(self, master, label_text):
-#         super().__init__(parent=master, text=label_text)
-#         self.setAlignment(QtCore.Qt.AlignRight)
-#
-#     def update_label(self, new_label):
-#         self.setText(new_label)
-#
-#     def change_position(self, position='C/L/R'):
-#         if position == 'C':
-#             self.setAlignment(QtCore.Qt.AlignCenter)
-#         elif position == 'L':
-#             self.setAlignment(QtCore.Qt.AlignLeft)
-#         elif position == 'R':
-#             self.setAlignment(QtCore.Qt.AlignRight)
-#
-#     def change_background_color(self):
-#         self.setStyleSheet("background-color: red")
-#     def clear_color(self):
-#         self.setStyleSheet("")
-#
-# class UniqueView_scene(QtWidgets.QListView):
-#     def __init__(self, master, field_title=None, class_connector=None, data_treeview=None):
-#         super().__init__(parent=master)
-#         self.connector_to_outside_complex_class = class_connector
-#         self.type = 'multilist'
-#         self.tree_model = QStandardItemModel()
-#         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-#         self.model_index = QtCore.QModelIndex()
-#         self.setModel(self.tree_model)
-#         self.setMaximumSize(160, 100)
-#         self.setMinimumHeight(50)
-#         self.setFixedHeight(20)
-#         self.flag_edit = True
-#         self.treeview_with_main_and_mod_data = data_treeview
-#
-#     def set_val(self, node=None, data=[]):
-#         # example data ['file',{'folder ':['file']}]
-#         if not node:
-#             # node = self.rootnode
-#             node = self.tree_model
-#         else:
-#             if isinstance(node, str):
-#                 node = self.find_node(node)
-#                 node = self.tree_model.itemFromIndex(node)
-#         for values in data:
-#             if isinstance(values, dict):
-#                 for keys in values:
-#                     parent_row = QStandardItem()
-#                     parent_row.setText(keys)
-#                     if self.flag_folders:
-#                         parent_row.setEditable(False)
-#                     node.appendRow(parent_row)
-#                     self.add_data(parent_row, values[keys])
-#             else:
-#                 bottom_row = QStandardItem()
-#                 bottom_row.setText(values)
-#                 if not self.flag_child_editable:
-#                     bottom_row.setEditable(False)
-#                 node.appendRow(bottom_row)
-#
-#     def clear_val(self):
-#         self.tree_model.clear()
-#         self.setFixedHeight(20)
-#     def add_data(self, node=None, data=[]):
-#         # example data ['file',{'folder ':['file']}]
-#         if not node:
-#             # node = self.rootnode
-#             node = self.tree_model
-#         else:
-#             if isinstance(node, str):
-#                 node = self.find_node(node)
-#                 node = self.tree_model.itemFromIndex(node)
-#         if isinstance(data, list):
-#             for values in data:
-#                 self.add_data(node, values)
-#         elif isinstance(data, dict):
-#             for key in data:
-#                 parent_row = QStandardItem()
-#                 parent_row.setText(key)
-#                 parent_row.setEditable(False)
-#                 node.appendRow(parent_row)
-#                 self.add_data_to_display(parent_row, data[key])
-#         else:
-#             """if data is just string"""
-#             bottom_row = QStandardItem()
-#             bottom_row.setText(data)
-#             bottom_row.setEditable(False)
-#             node.appendRow(bottom_row)
-#             if self.height() < 100:
-#                 self.setFixedHeight(self.height() + 20)
-#         # if not node:
-#         #     # node = self.rootnode
-#         #     node = self.tree_model
-#         # else:
-#         #     if isinstance(node, str):
-#         #         node = self.find_node(node)
-#         #         node = self.tree_model.itemFromIndex(node)
-#         # for values in data:
-#         #     if isinstance(values, dict):
-#         #         for keys in values:
-#         #             parent_row = QStandardItem()
-#         #             parent_row.setText(keys)
-#         #             if self.flag_folders:
-#         #                 parent_row.setEditable(False)
-#         #             node.appendRow(parent_row)
-#         #             self.add_data(parent_row, values[keys])
-#         #     else:
-#         #         bottom_row = QStandardItem()
-#         #         bottom_row.setText(values)
-#         #         bottom_row.setEditable(False)
-#         #         node.appendRow(bottom_row)
-#         if self.flag_edit:
-#             GlobalVariables.Glob_Var.edited_field()
-#     def keyPressEvent(self, event: QtGui.QKeyEvent):
-#         if event.key() == Qt.Key_Delete:
-#             # self.delete_leaf()
-#             self.delete()
-#     def delete(self):
-#         selected_items_idx = self.selectedIndexes()
-#         selected_items = []
-#         for idx in selected_items_idx:
-#             selected_items.append(self.tree_model.itemFromIndex(idx))
-#         for items in selected_items:
-#             item = self.tree_model.indexFromItem(items)
-#             self.tree_model.removeRow(item.row(), item.parent())
-#             if self.height() > 20:
-#                 self.setFixedHeight(self.height() - 20)
-#     def destroy(self):
-#         for idx in range(self.custom_layout.count()):
-#             temp = self.custom_layout.takeAt(0)
-#             self.custom_layout.removeWidget(temp.widget())
-#             temp.widget().deleteLater()
-#     def get_data(self, parent_index=None, root_list=None):
-#         """stuff are in a list, where file should be strings, while folders should be dict
-#         should return something like [row0, row1, {row2:[row20, row21]},[row3column0, row3column1]}"""
-#         if parent_index:
-#             row_range = self.tree_model.rowCount(parent_index)
-#             col_range = self.tree_model.columnCount(parent_index)
-#         else:
-#             row_range = self.tree_model.rowCount()
-#             col_range = self.tree_model.columnCount()
-#         current_row_folder = {}
-#         rows_list = []
-#         ix = None
-#         for i in range(row_range):
-#             cols_list = []
-#             for ii in range(col_range):
-#                 if parent_index:
-#                     row_index = self.tree_model.index(i, ii, parent_index)
-#                 else:
-#                     row_index = self.tree_model.index(i, ii)
-#                 self.get_data(row_index, cols_list)
-#             # here i would have to check if other columns are empty, if yes, turn cols_list into a string
-#             for vals in cols_list:
-#                 if not vals:
-#                     cols_list.remove(vals)
-#             if len(cols_list) == 1:
-#                 rows_list.append(cols_list[0])
-#             else:
-#                 rows_list.append(cols_list)
-#             if parent_index:
-#                 current_row_folder[parent_index.data()] = rows_list
-#         if current_row_folder:
-#             root_list.append(current_row_folder)
-#         else:
-#             if parent_index:
-#                 root_list.append(parent_index.data())
-#             else:
-#                 return rows_list
-#     def focusInEvent(self, event):
-#         """when clicked on widget, connect it to main multilist, where it filters appropiate items to select and add"""
-#         if self.connector_to_outside_complex_class:
-#             # GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-#             self.treeview_with_main_and_mod_data.connect_multilist(self.connector_to_outside_complex_class)
-#         else:
-#             # GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-#             self.treeview_with_main_and_mod_data.disconnect_multilist()
-#         super().focusInEvent(event)
-# class SimpleEntry_scene(QtWidgets.QLineEdit):
-#     def __init__(self, master_widget, field_name=None, field_data=None, template_name=None, class_connector=None
-#                  , edit=True, main_data_treeview=None, label_pos='H'):
-#         super().__init__(parent=master_widget)
-#         if label_pos == 'H':
-#             self.custom_layout = QtWidgets.QHBoxLayout()
-#             self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
-#         else:
-#             self.custom_layout = QtWidgets.QVBoxLayout()
-#             self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
-#         if field_name:
-#             # if len(field_name) < 2:
-#             if isinstance(field_name, int):
-#                 field_name = 'Amount'
-#             self.label_custom = CustomLabel(master_widget, field_name)
-#             self.custom_layout.addWidget(self.label_custom)
-#         self.custom_layout.addWidget(self)
-#         self.template_name = template_name
-#         self.title = field_name
-#         self.type = 'text'
-#         self.old_value = ''
-#         self.default_value = ''
-#         self.addition = False
-#         self.setMinimumWidth(70)
-#         self.setMaximumWidth(220)
-#         self.row_size = 1
-#         """this is for multilist display. in case multilist class accepts only 1 value, no points in making entire tree.
-#         so intead, just make simple text field, which is created in another class"""
-#         self.connector_to_outside_complex_class = class_connector
-#         self.treeview_with_main_and_mod_data = main_data_treeview
-#         if field_data:
-#             if 'tooltip' in field_data:
-#                 self.setToolTip(field_data['tooltip'])
-#             if 'default' in field_data:
-#                 self.default_value = field_data['default']
-#             if 'options' in field_data:
-#                 if 'addition' in field_data['options']:
-#                     self.addition = True
-#
-#         # self.temp_master = master
-#         self.shortcuts = []
-#         self.setObjectName('entry')
-#         if edit:
-#             self.field_modified_check()
-#
-#     def clear_val(self):
-#         self.clear()
-#
-#     def cancel(self):
-#         self.setReadOnly(True)
-#         return
-#
-#     def get_val(self, temp_dict_container=None):
-#         return_val = self.text()
-#         if return_val == "":
-#             return_val = self.default_value
-#         if temp_dict_container is not None:
-#             temp_dict_container[self.title] = return_val
-#         else:
-#             return return_val
-#
-#     def set_val(self, new_value):
-#         self.setText(new_value)
-#
-#     def set_up_widget(self, outside_layout, insert_for_optional=False):
-#         """insert for optional is mostly for optional fields to insert widget before last stretch"""
-#         if insert_for_optional:
-#             outside_layout.insertLayout(outside_layout.count()-1, self.custom_layout)
-#             # outside_layout.insertWidget(outside_layout.count()-1, self.custom_layout)
-#         else:
-#             outside_layout.addLayout(self.custom_layout)
-#
-#     # def set_up_shortcut(self, sequence, function):
-#     #     shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(sequence), self)
-#     #     shortcut.activated.connect(function)
-#     #     self.shortcuts.append(shortcut)
-#
-#     # if field is in complex class and should allow access to main items, connector will be created. it should
-#     #  be passed to main game field. If fields does not have access, connector is NONE, so should disconnect main field
-#     def focusInEvent(self, event):
-#         if self.connector_to_outside_complex_class and self.treeview_with_main_and_mod_data:
-#             # GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-#             self.treeview_with_main_and_mod_data.connect_multilist(self.connector_to_outside_complex_class)
-#         else:
-#             # GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-#             if self.treeview_with_main_and_mod_data:
-#                 self.treeview_with_main_and_mod_data.disconnect_multilist()
-#         super().focusInEvent(event)
-#
-#     def field_modified_check(self):
-#         self.textChanged.connect(GlobalVariables.Glob_Var.edited_field)
-#
-#     def function_on_modify(self, function=None):
-#         self.textChanged.connect(function)
-#
-#     def destroy(self):
-#         for idx in range(self.custom_layout.count()):
-#             temp = self.custom_layout.takeAt(0)
-#             self.custom_layout.removeWidget(temp.widget())
-#             temp.widget().deleteLater()
-#     def center(self):
-#         self.setAlignment(QtCore.Qt.AlignCenter)
-#     # def focusOutEvent(self, event):
-#     #     print('event-focus-out:', self.objectName())
-#     #     super().focusOutEvent(event)
-# class MultiListDisplay_scene:
-#     """there are 3 types of data here.
-#     single item - only 1 item allowed, so it could be an input field, where you can type text to autosearch for
-#      available values from main multilist, also limited to type of items to seachs
-#     several items - this allows several items with no duplication. will be a treeview and maybe add something like above
-#     multiple items - several with duplicates."""
-#     def __init__(self, master=None, field_name=None,
-#                  field_data=None, template_name=None, main_data_treeview=None):
-#         self.title = field_name
-#         self.type = 'multilist'
-#         self.template_name = template_name
-#         self.label_custom = CustomLabel(master, field_name)
-#         # self.label_custom = custom_button(master, field_name)
-#         self.addition = False
-#         self.row_size = 4
-#         # field_data = {'options':['unique'], 'choices':['Items']}
-#         if 'options' in field_data:
-#             if 'single_item' in field_data['options']:
-#                 self.version = 'single'
-#                 self.row_size = 1
-#             elif 'unique' in field_data['options']:
-#                 self.version = 'unique'
-#             else:
-#                 self.version = 'multi_item'
-#             if 'addition' in field_data['options']:
-#                 self.addition = True
-#         if 'tooltip' in field_data:
-#             self.label_custom.setToolTip(field_data['tooltip'])
-#         # self.label_custom.change_position('center')
-#         # self.label_custom.button_transform()
-#         self.field_frame = master
-#         self.selection_type = ''
-#         if 'choices' in field_data:
-#             for choice in field_data['choices']:
-#                 if 'Items' in choice:
-#                     self.selection_type += 'Items'
-#                 elif 'Skills' in choice:
-#                     self.selection_type += 'Skills'
-#                 elif 'Perks' in choice:
-#                     self.selection_type += 'Perks'
-#                 elif 'Monsters' in choice:
-#                     self.selection_type += 'Monsters'
-#                 elif 'Fetishes' in choice:
-#                     self.selection_type += 'Fetishes Addictions'
-#                 else:
-#                     self.selection_type += choice
-#                     # self.selection_type += field_data['choices'][0]
-#         """
-#         unique - can add multiple items, cannot duplicate
-#         multi_item - items can be duplicated
-#         single_item - can only select 1 item
-#         """
-#         self.custom_layout = QtWidgets.QVBoxLayout()
-#         if self.version == 'single':
-#             self.final_data = SimpleEntry(master, None, class_connector=self, main_data_treeview=main_data_treeview)
-#             self.label_custom.change_position('R')
-#             self.custom_layout = QtWidgets.QHBoxLayout()
-#             self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
-#         elif self.version == 'unique':
-#             # self.final_data = QtWidgets.QListWidget(parent=master)
-#             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
-#             self.label_custom.change_position('center')
-#         else:
-#             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
-#             # self.final_data = ElementsList(master, field_name, class_connector=self)
-#             self.label_custom.change_position('center')
-#         self.custom_layout.addWidget(self.label_custom)
-#         self.custom_layout.addWidget(self.final_data)
-#         self.custom_layout.addStretch(1)
-#
-#             # self.set_row_size(6)
-#             # self.data_tree = ElementsList(self, 3, 0, 'Double Click to Edit', colspan=3, treeview_height=3)
-#             # self.data_tree.treeview.configure(selectmode='extended')
-#             # self.data_tree.treeview.bind("<Double-Button-1>", self.on_double_click_edit_field)
-#             # self.data_tree.treeview.unbind("<Delete>")
-#             # self.data_tree.treeview.unbind("<Control_L>")
-#         # self.label_custom.doubleClicked.connect(self.edit_value)
-#         # self.label_custom.doubleClicked.connect(self.edit_value)
-#         # self.label_custom.clicked.connect(self.edit_value)
-#
-#     def set_val(self, values):
-#         if self.version == 'single':
-#             self.final_data.set_val(values)
-#         else:
-#             if self.version == 'unique':
-#                 if isinstance(values, str):
-#                     values = [values]
-#                 current_count = self.final_data.tree_model.rowCount()
-#                 current_values = []
-#                 for idx in range(current_count):
-#                     item = self.final_data.tree_model.item(idx)
-#                     current_values.append(item.text())
-#                 for value in values:
-#                     if value not in current_values:
-#                         # self.final_data.addItem(value)
-#                         self.final_data.add_data('',[value])
-#             #             TODO maybe add warning?
-#             else:
-#                 self.final_data.add_data(data=[values])
-#     def get_val(self, temp_dict_container=None):
-#         # if self.version == 'single':
-#         #     temp = self.var.get()
-#         #     if 'CLICK' in temp:
-#         #         temp = ''
-#         # else:
-#         #     temp = []
-#         #     all_vals = self.data_tree.treeview.get_children()
-#         #     for value in all_vals:
-#         #         temp.append(self.data_tree.treeview.item(value)['text'])
-#         #     # this might be important if there is a problem with values returned somewhere
-#         #     # if len(temp) == 0:
-#         #     #     temp.append('')
-#         if self.version == 'single':
-#             return_data = self.final_data.get_val()
-#         elif self.version == 'unique':
-#             return_data = []
-#             current_count = self.final_data.count()
-#             for idx in range(current_count):
-#                 item = self.final_data.item(idx)
-#                 return_data.append(item.text())
-#         else:
-#             return_data = self.final_data.get_data()
-#         if temp_dict_container is not None:
-#             temp_dict_container[self.title] = return_data
-#         else:
-#             return return_data
-#
-#     def clear_val(self):
-#         if self.version == 'unique':
-#             self.final_data.clear()
-#         else:
-#             self.final_data.clear_val()
-#     def hide(self):
-#         self.label_custom.hide()
-#         self.final_data.hide()
-#     def show(self):
-#         self.final_data.show()
-#         if self.label_custom.text():
-#             self.label_custom.show()
-#     def edit_value(self):
-#         # this is for editing in new window
-#         print('test edit value miltilist)')
-#         item_win = QtWidgets.QDialog(parent=self.field_frame)
-#         item_visual = MainGameItemsInNewWindow()
-#         item_visual.setupUi(Dialog=item_win)
-#         item_win.show()
-#     def destroy(self):
-#         # self.custom_layout.deleteLater()
-#         for idx in range(self.custom_layout.count()):
-#             temp = self.custom_layout.takeAt(0)
-#             self.custom_layout.removeWidget(temp.widget())
-#             if temp:
-#                 if not isinstance(temp, QtWidgets.QSpacerItem):
-#                     temp.widget().deleteLater()
-#         self.custom_layout.deleteLater()
-#     def set_up_widget(self, outside_layout, insert_for_options=False):
-#         if insert_for_options:
-#             outside_layout.insertLayout(outside_layout.count() - 1, self.custom_layout)
-#         else:
-#             outside_layout.addLayout(self.custom_layout)
-#         outside_layout.setAlignment(self.custom_layout,QtCore.Qt.AlignCenter)
+        if cursor.selectedText():
+            new_text = beg + cursor.selectedText() + end
+            self.insertPlainText(new_text)
+            self.setFocus()
 
 
 class MarkUp_Window(QtWidgets.QWidget):
@@ -507,7 +65,8 @@ class MarkUp_Window(QtWidgets.QWidget):
                  scene_data=None, quick_load_scene=None):
         super().__init__()
         """target field - either treeview for scenes or text field for some fields that allow markups
-        scenes_flag - if textfied is target, no need to display treeview for scenes"""
+        scenes_flag - if textfied is target, no need to display treeview for scenes
+        data for functions - ...hmm..probably it should pass info whenever it should display all function or only txt"""
         self.setWindowTitle('Events')
         # Dialog.resize(310, 299)
         # self.widget.setGeometry(QtCore.QRect(0, 10, 301, 281))
@@ -519,15 +78,13 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.v_main_layout.setObjectName("mainLayout")
         self.setLayout(self.v_main_layout)
 
-
         v_layout_buttons = QtWidgets.QHBoxLayout()
         v_layout_buttons.setObjectName("button_layout")
         self.mark_up_buttons_background_player = QtWidgets.QWidget()
         self.mark_up_buttons_background_text = QtWidgets.QWidget()
-        # v_layout_buttons.addWidget(self.mark_up_buttons_background_player)
-        # v_layout_buttons.addWidget(self.mark_up_buttons_background_text)
-        self.prepare_markup_buttons()
         """all the buttons for markups here"""
+        self.prepare_markup_buttons()
+        """below are placeholder to test sizes"""
         # placeholder_buttons = SimpleFields.CustomButton(self, 'placeholder width')
         # # placeholder_buttons.clicked.connect(lambda: self.change_size(1))
         # placeholder_buttons.clicked.connect(self.test)
@@ -538,28 +95,19 @@ class MarkUp_Window(QtWidgets.QWidget):
         # self.v_main_layout.addLayout(v_layout_buttons)
         self.v_main_layout.addWidget(self.mark_up_buttons_background_player)
         self.v_main_layout.addWidget(self.mark_up_buttons_background_text)
-
-        """main data. Area text for input and treeview for display on the left
-        checkboxes, treeview for functions and functions creation on right"""
+        """Area text for input and later treeview for display,
+        treeview for functions and functions creation on right"""
         """first, vertical, contains area text and treeview"""
-        # v_layout_main_input = QtWidgets.QVBoxLayout()
-        # v_layout_main_input.setObjectName("main_input_layout")
-        # self.text_test = SimpleFields.SimpleEntry(self)
-        # self.text_test.set_up_widget(self.v_main_layout)
-        # self.area_input = SimpleFields.AreaEntry(self, edit=False)
         self.area_input = area_mark_up()
         self.area_input.setMaximumSize(800, 100)
         self.area_input.set_up_widget(self.v_main_layout)
-        """now, display data on the left and on the right, checkboxes and functions gui"""
+        """now, display data on the left and on the right functions gui"""
         """on the left is treeview for data from input, hidden scene list and hidden scene data.
         on the right area with explanation, treeview with functions and 2 buttons"""
         h_layout_display_f_gui = QtWidgets.QHBoxLayout()
-
-        # v_layout_left_side = QtWidgets.QVBoxLayout()
-        # h_layout_display_f_gui.addLayout(v_layout_left_side)
-
         v_layout_left_side = QtWidgets.QVBoxLayout()
-
+        """target field is field from which user entered. 
+        this markup window should work for scene and some normal text fields"""
         self.target_field = target_field
         if current_scene_list:
             self.current_scenes = current_scene_list
@@ -624,12 +172,9 @@ class MarkUp_Window(QtWidgets.QWidget):
             """first, clean it to make it easier"""
             self.data_fields = []
             self.data_fields = {}
-            """this temp mainfield is created later as part of function gui field.
-             also, needs to show it, as normally is hidden"""
             self.flag_main_data = False
             """creating fields for scene data moved later, after function gui is created. to save space
             for monster, some fields are connected to fields created in functions gui"""
-            # TODO problem is with multilist, they should connect to main treeview, but only main treeview here is created later as part of functions gui
             # if scene_data:
             #     for data_field in scene_data:
             #         for field in scene_data[data_field]:
@@ -687,24 +232,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.v_layout_function_fields.setObjectName('function_fields_layout')
         h_layout_display_f_gui.addLayout(self.v_layout_function_fields)
         h_layout_display_f_gui.addStretch(1)
-        # """2 checkboxes, determine how to add functions"""
-        # h_lay_checkboxes = QtWidgets.QHBoxLayout()
-        # self.checkbox_text = SimpleFields.CheckBox(self, 'TEXT', 't')
-        # self.checkbox_text.set_up_widget(h_lay_checkboxes)
-        # self.checkbox_event = SimpleFields.CheckBox(self, 'EVENT', 'e')
-        # self.checkbox_event.set_up_widget(h_lay_checkboxes)
-        # self.button_group = QtWidgets.QButtonGroup()
-        # self.button_group.addButton(self.checkbox_text)
-        # self.button_group.addButton(self.checkbox_event)
-        # self.button_group.buttonToggled.connect(self.on_checkbox_toggled)
-        # """flag function will be list. first its a 0/1, second, target field"""
-        # self.flag_function_target_type = []
-        # if not scenes_flag:
-        #     self.checkbox_event.setEnabled(False)
-        #     self.checkbox_text.set_val(True)
-        #     self.checkbox_event.setEnabled(False)
-        # h_lay_checkboxes.setAlignment(QtCore.Qt.AlignCenter)
-        # v_layout_right_side.addLayout(h_lay_checkboxes)
         """functions gui"""
         if scenes_flag:
             config_list = [1, self.area_input, self.display_data]
@@ -713,7 +240,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.functions = Function_Gui(None, None, self, fields_lay=self.v_layout_function_fields,
                                       adding_config=config_list, scene_list=current_scene_list)
         self.functions.set_up_widget(v_layout_right_side)
-
         """now create fields for scene data, so it has access to functions gui main data tree
         moved from above"""
         if scene_data:
@@ -737,7 +263,6 @@ class MarkUp_Window(QtWidgets.QWidget):
                 elif self.data_fields[fieldname]["type"] == "singlelist":
                     field_optionbox = SimpleFields.SingleList(self.scene_data_widget_background, fieldname,
                                                               self.data_fields[fieldname])
-                    # field_optionbox.configure(takefocus=1)
                     tempfield = field_optionbox
                 elif self.data_fields[fieldname]["type"] == "filePath":
                     tempfield = SimpleFields.FileField(self.scene_data_widget_background, fieldname,
@@ -757,18 +282,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         """here ends cut in of fields creation"""
 
         self.v_layout_function_fields.addStretch(1)
-        # """second, 2 checkboxes for adding function to text of event and now the hard part, whole functionality"""
-        # h_lay_functions_main = QtWidgets.QHBoxLayout()
-        # h_lay_functions_main.setObjectName('functions_layout_main')
-        # v_layout_function_window = QtWidgets.QVBoxLayout()
-        # v_layout_function_window.setObjectName('function_window_layout')
-        # h_lay_checkboxes = QtWidgets.QHBoxLayout()
-        # self.checkbox_text = SimpleFields.CheckBox(self, 'text', 't')
-        # self.checkbox_text.set_up_widget(h_lay_checkboxes)
-        # self.checkbox_event = SimpleFields.CheckBox(self, 'event', 'e')
-        # self.checkbox_event.set_up_widget(h_lay_checkboxes)
-        # self.flag_function_target_type = None
-        # v_layout_function_window.addLayout(h_lay_checkboxes)
         self.v_main_layout.addLayout(h_layout_display_f_gui)
         h_final_buttons_layout = QtWidgets.QHBoxLayout()
         but_save = SimpleFields.CustomButton(None, 'SAVE')
@@ -825,7 +338,7 @@ class MarkUp_Window(QtWidgets.QWidget):
         if selected_item:
             if selected_item.parent():
                 parent = selected_item.parent()
-            elif selected_item.child(0,0):
+            elif selected_item.child(0, 0):
                 parent = selected_item
             else:
                 return
@@ -835,7 +348,6 @@ class MarkUp_Window(QtWidgets.QWidget):
             data = data[0]
             f_data = list(data.keys())
             f_data += data[f_data[0]]
-
             """now fdata is dictionary with key as function title and list of function values"""
             self.functions.display_explanation(function_title=f_data[0])
             self.functions.prepare_function_fields(f_data)
@@ -845,7 +357,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         label_chara = SimpleFields.CustomLabel(None, 'CHARACTER')
         label_chara.change_position('C')
         v_lay_main.addWidget(label_chara)
-
         h_lay_first = QtWidgets.QHBoxLayout()
         self.l_player_name = SimpleFields.SingleList(label_text='testerror', edit=False, field_data={'choices':['Player Name', 'normal', 'shout', 'initials']})
         # self.l_player_name.reload_options(['Player Name', 'normal', 'shout', 'initials'])
@@ -858,6 +369,9 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_player_progress = SimpleFields.CustomButton(None, 'Player Progress')
         b_player_progress.clicked.connect(lambda: self.area_input.insert_text('{ProgressDisplay}'))
         h_lay_first.addWidget(b_player_progress)
+        b_player_level = SimpleFields.CustomButton(None, 'Player Level')
+        b_player_level.clicked.connect(lambda: self.area_input.insert_text('{PlayerLevel}'))
+        h_lay_first.addWidget(b_player_level)
         h_lay_first.addStretch(1)
         b_player_choice = SimpleFields.CustomButton(None, 'Player Choice')
         b_player_choice.clicked.connect(lambda: self.area_input.insert_text('{DisplayPlayerChoice}'))
@@ -902,8 +416,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         v_lay_main.addWidget(label_text)
 
         h_lay_3 = QtWidgets.QHBoxLayout()
-
-
         b_colour_text = SimpleFields.CustomButton(None, 'C TEXT')
         h_lay_3.addWidget(b_colour_text)
         b_colour_example1 = SimpleFields.CustomButton(None, 'EXAMPLE')
@@ -917,7 +429,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_colour_outline.clicked.connect(lambda: self.show_color_picker(b_colour_example2))
         b_colour_example2.clicked.connect(lambda: self.colour_text(b_colour_example2))
 
-
         b_delay_input = SimpleFields.CustomButton(None, 'Delay until input')
         b_delay_input.setToolTip('will delay the displayed text till user input is given to signal it to continue.\n'
                                  ' It can be given an integer value via {w=int} to make it wait the given\n'
@@ -927,7 +438,7 @@ class MarkUp_Window(QtWidgets.QWidget):
         h_lay_3.addWidget(b_delay_input)
         b_delay_nline = SimpleFields.CustomButton(None, 'Delay until new line')
         b_delay_nline.setToolTip('same as input but inserts line breaks for every time it is called')
-        b_delay_nline.clicked.connect(lambda: self.area_input.insert_text('{}'))
+        b_delay_nline.clicked.connect(lambda: self.area_input.insert_text('{p}'))
         h_lay_3.addWidget(b_delay_nline)
         b_get_over = SimpleFields.CustomButton(None, 'Get over here')
         b_get_over.setToolTip('placed anywhere in the string causes the displayed text to instantly move towards the markup declaration. \n'
@@ -940,15 +451,15 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_text_speed = SimpleFields.CustomButton(None, 'Game text speed')
         b_text_speed.setToolTip('overrides the games default text speed when displaying text, \n'
                                  'standing for characters per second. Useful given the game by default\n'
-                                 ' has all text display instantly.')
-        b_text_speed.clicked.connect(lambda: self.area_input.insert_text('{nw}'))
+                                 'has all text display instantly.')
+        b_text_speed.clicked.connect(lambda: self.area_input.insert_text('{cps=int}'))
         h_lay_4.addWidget(b_text_speed)
         b_after_end = SimpleFields.CustomButton(None, 'Move after End')
         b_after_end.setToolTip('placed anywhere in the string causes the displayed text to automatically\n'
                                'move to the next screen once the final character has been displayed. \n'
                                'Given MGD by default has all text display instantly, this typically\n'
                                'won’t be too useful unless combined with the {cps}.')
-        b_after_end.clicked.connect(lambda: self.area_input.insert_text('{}'))
+        b_after_end.clicked.connect(lambda: self.area_input.insert_text('{fast}'))
         h_lay_4.addWidget(b_after_end)
         b_remove_after = SimpleFields.CustomButton(None, 'Remove After')
         b_remove_after.setToolTip('exists specifically for technical use with OnPlayerOrgasm,\n'
@@ -958,13 +469,13 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_split_text = SimpleFields.CustomButton(None, 'Split Text')
         b_split_text.setToolTip('splits the string, causing everything after the |n|, to display on the next screen of'
                                 ' text. Useful for long attack descriptions or player orgasm lines')
-        b_split_text.clicked.connect(lambda: self.area_input.insert_text('|c|'))
+        b_split_text.clicked.connect(lambda: self.area_input.insert_text('|n|'))
         h_lay_4.addWidget(b_split_text)
         b_vSpace = SimpleFields.CustomButton(None, 'V Space')
         b_vSpace.setToolTip('insert vertical space.')
         b_vSpace.clicked.connect(lambda: self.area_input.insert_text('{vspace=}'))
         h_lay_4.addWidget(b_vSpace)
-        b_hSpace = SimpleFields.CustomButton(None, 'V Space')
+        b_hSpace = SimpleFields.CustomButton(None, 'Space')
         b_hSpace.setToolTip('insert horizontal space.')
         b_hSpace.clicked.connect(lambda: self.area_input.insert_text('{space=}'))
         h_lay_4.addWidget(b_hSpace)
@@ -985,10 +496,10 @@ class MarkUp_Window(QtWidgets.QWidget):
                                                       'Anal: [“ass”, “ass”, “rear”, “behind”, “derriere”]')
         b_sex_word.clicked.connect(lambda: self.area_input.insert_text('{SexWords}'))
         h_lay_5.addWidget(b_sex_word)
-        simple_mark_ups = {'(Underline)': {'style': '', 'beg': '{u}', 'end': '{/u}', 'tooltip': ''},
-                           '(Italic)': {'style': '', 'beg': '{i}', 'end': '{/i}', 'tooltip': ''},
-                           '(Bold)': {'style': 'QPushButton { font-weight: bold; }', 'beg': '{b}', 'end': '{/b}', 'tooltip':''},
-                           '(Strike)': {'style': '', 'beg': '{s}', 'end': '{/s}', 'tooltip': ''},
+        simple_mark_ups = {'(U)': {'style': '', 'beg': '{u}', 'end': '{/u}', 'tooltip': ''},
+                           '(I)': {'style': '', 'beg': '{i}', 'end': '{/i}', 'tooltip': ''},
+                           '(B)': {'style': 'QPushButton { font-weight: bold; }', 'beg': '{b}', 'end': '{/b}', 'tooltip':''},
+                           '(S)': {'style': '', 'beg': '{s}', 'end': '{/s}', 'tooltip': ''},
                            '(Plain)': {'style': '', 'beg': '{plain}', 'end': '{/plain}', 'tooltip': ''},
                            '(Size)': {'style': '', 'beg': '{size=}', 'end': '{/size}', 'tooltip':'will make the following text size equal to the given integer value after = in the markup.\n'
                                                       'You can also make it relatively bigger or smaller compared to its previous state based\n'
@@ -996,7 +507,6 @@ class MarkUp_Window(QtWidgets.QWidget):
                                                       ' You can layer them inside one another, but note {/size} will not end all instances of {size=int}, only one instance at a time.'}}
         last_row_button = []
         for marks in simple_mark_ups:
-            # b_simple_markup = SimpleFields.CustomButton(None, marks)
             b_simple_markup = QtWidgets.QPushButton(text=marks)
             if simple_mark_ups[marks]['tooltip']:
                 b_simple_markup.setToolTip(simple_mark_ups[marks]['tooltip'])
@@ -1016,40 +526,40 @@ class MarkUp_Window(QtWidgets.QWidget):
         custom_font.setUnderline(True)
         last_row_button[0].setFont(custom_font)
 
-        last_row_button[0].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['U']['beg'], simple_mark_ups['U']['end']))
-        last_row_button[1].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['I']['beg'], simple_mark_ups['I']['end']))
-        last_row_button[2].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['B']['beg'], simple_mark_ups['B']['end']))
-        last_row_button[3].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['S']['beg'], simple_mark_ups['S']['end']))
-        last_row_button[4].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['P']['beg'], simple_mark_ups['P']['end']))
-        last_row_button[5].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['Size']['beg'], simple_mark_ups['Size']['end']))
-
+        last_row_button[0].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(U)']['beg'], simple_mark_ups['(U)']['end']))
+        last_row_button[1].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(I)']['beg'], simple_mark_ups['(I)']['end']))
+        last_row_button[2].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(B)']['beg'], simple_mark_ups['(B)']['end']))
+        last_row_button[3].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(S)']['beg'], simple_mark_ups['(S)']['end']))
+        last_row_button[4].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(Plain)']['beg'], simple_mark_ups['(Plain)']['end']))
+        last_row_button[5].clicked.connect(lambda: self.area_input.mark_text(simple_mark_ups['(Size)']['beg'], simple_mark_ups['(Size)']['end']))
 
         v_lay_main.addLayout(h_lay_5)
-
         self.mark_up_buttons_background_player.setLayout(v_lay_main)
         return
 
-    def put_text(self, val):
-        self.area_input.insert_text(val)
+    # def put_text(self, val):
+    #     self.area_input.insert_text(val)
+    #     self.area_input.setFocus()
 
     def show_color_picker(self, field_to_colour):
         # Create a color dialog
         color_dialog = QtWidgets.QColorDialog(self)
-
         # Get the selected color from the dialog
         color = color_dialog.getColor()
-
         if color.isValid():
             # Update the button's background color
             field_to_colour.setStyleSheet("background-color: " + color.name() + ";")
+            field_to_colour.colour = color.name()
 
     def cancel_scene(self):
         self.area_input.clear_val()
         for field in self.data_fields:
             self.data_fields[field].clear_val()
+
     def colour_text(self, field_with_colour):
-        return
-    #     TODO
+        colour_to_set = field_with_colour.colour
+        self.area_input.mark_text('{SetTextColor}' + colour_to_set + '{Done}', '{ColorEnd}')
+
     def player_name(self, value):
         if value != 'Player Name':
             if value == 'normal':
@@ -1060,6 +570,7 @@ class MarkUp_Window(QtWidgets.QWidget):
                 self.area_input.insert_text('{TPN}')
         self.l_player_name.setCurrentIndex(0)
         self.area_input.setFocus()
+
     def damage_target(self, value):
         if value != 'Damage Target':
             if value == 'player':
@@ -1070,7 +581,9 @@ class MarkUp_Window(QtWidgets.QWidget):
                 self.area_input.insert_text('{FinalDamage}')
         self.l_damage_target.setCurrentIndex(0)
         self.area_input.setFocus()
+
     def mark(self, field):
+        """these are for dropdowns, like player target"""
         if field.currentIndex() > 0:
             self.area_input.insert_text('{'+field.itemText(0)+field.get_val()+'}')
             field.setCurrentIndex(0)
@@ -1080,7 +593,6 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.scene_list.hide()
         else:
             self.scene_list.show()
-        return
 
     def change_size(self, param):
         self.adjustSize()
@@ -1093,15 +605,15 @@ class MarkUp_Window(QtWidgets.QWidget):
     # def retranslateUi(self, dialog):
     #     _translate = QtCore.QCoreApplication.translate
     #     dialog.setWindowTitle(_translate("Dialog", "Event Text"))
+
     def update_row(self):
         selected_item = self.display_data.selected_element()
-        # if selected_item.whatsThis() != 'function':
         self.area_input.clear_val()
         self.area_input.set_val(selected_item.text())
         self.area_input.flag_update = True
+
     def save_data(self):
         """first, check if scene name is defined"""
-        # scene_title = self.data_fields[0].get_val()
         scene_title = self.data_fields['NameOfScene'].get_val()
         if not scene_title:
             show_message('Missing scene title', 'Please provide scene title', 'MissMandatory')
@@ -1130,7 +642,6 @@ class MarkUp_Window(QtWidgets.QWidget):
                 scene_data[fields] = final_text
             else:
                 scene_data[fields] = self.data_fields[fields].get_val()
-        # scene_data['theScene'] = final_text
         """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
         so check what is selected and take its parent"""
         """now, how to save scene in scenelist"""
@@ -1148,7 +659,6 @@ class MarkUp_Window(QtWidgets.QWidget):
             if insert_row > -1:
                 """user selected scene, insert new scene above selection"""
                 self.scene_list.insert_row([scene_title])
-                # self.current_scenes[scene_type].insert(insert_row, scene_data)
             else:
                 """user selected parent"""
                 self.scene_list.add_data([scene_title], current_selection)
@@ -1156,6 +666,7 @@ class MarkUp_Window(QtWidgets.QWidget):
         # self.display_data.clear_tree()
         for field in self.data_fields:
             self.data_fields[field].clear_val()
+    #         TODO cleaning
     def switch_to_data(self):
         if self.flag_data:
             """if true, hide data and display scenes"""

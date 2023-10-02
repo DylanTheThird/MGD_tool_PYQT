@@ -25,21 +25,21 @@ import TemplatesPreparation
 # global Mod_Var
 
 
-
+# TODO colours in markup window - done
 # TODO for scene function there are some used mainly for additions
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
-# requiresStance is missing....
+# requiresStance is missing....might be problem with how some write those fields.
 # TODO scene edit - buttons at the bottom move to the left, so DONE is not below functions - fixed
-# TODO colours in markup window
 # TODO when closing main window, scene edit would not close - fixed
 # TODO check when last time mod was edited was checking before temp file for mod was created - fixed
-
+# TODO can load more than 1 item - fixed
+# TODO cleaning
 # Hard problems
-# TODO multilists in addition does not react to delete key, with few exception
+# TODO multilists in addition does not react to delete key, with few exception - workaround
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO function menu > choice from event. works only on debug
 # check most endloops - left ifplayerhasstance
-# TODO for some reason, when opening function designed, first dropdown(single list l_player_name) gets focus. problem is that probably, it gets it before being created and return error. but sometimes it works.
+# TODO for some reason, when opening function designer, first dropdown(single list l_player_name) gets focus. problem is that probably, it gets it before being created and return error. but sometimes it works.
 # TODO scroll bars keep disappeareng
 
 class ModTreeField(ElementsList):
@@ -125,6 +125,7 @@ class ModTreeField(ElementsList):
             Mod_Var.update_mod_display(self.selected_element().text(), folder_name, if_folder=True)
         return temp
 
+
 # class Ui_MainWindow(object):
 class Ui_MainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -132,17 +133,20 @@ class Ui_MainWindow(QtWidgets.QWidget):
         super().__init__(parent)
         # self.setMinimumSize(2000, 5000)
         parent.setObjectName("MainWindow")
-        self.displaying_flag=1
+        self.displaying_flag = 1
+        self.flag_creating_element = False
         # parent.resize(300, 550)
 
     #     this is to check focus in entire app.
         QtWidgets.QApplication.instance().focusObjectChanged.connect(
             self.handleFocusChange)    #
+
     def handleFocusChange(self, source):
         return
         # this focus is working
         print(f'signal-focus-in:', source.objectName())
         print(str(source.parent()))
+
     def setupUi(self):
 
         # QtWidgets.QApplication.instance().focusChanged.connect(self.check_focus)
@@ -523,21 +527,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
                         # print('now clickied multilist')
                         self.main_game_elements.connect_multilist(now.connector_to_outside_complex_class)
                         return
-            # # print('type of clicked widget ' + now.type)
-            # if now.connector_to_outside_complex_class:
-            #     print(str(now.connector_to_outside_complex_class))
-            #     if now.connector_to_outside_complex_class.type == 'main_multilist':
-            #         return
-            #     elif now.connector_to_outside_complex_class.type == 'multilist':
-            #         # print('now clickied multilist')
-            #         self.main_game_elements.connect_multilist(now.connector_to_outside_complex_class)
-            #         return
         self.main_game_elements.disconnect_multilist()
     # except:
     #     print('something wrong with focus on treeview with duplicated data')
     #     pass
     #     print('old is - ' + str(old))
-        return
+    #     return
 
     def change_icon(self):
         if self.flag:
@@ -548,7 +543,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
             self.actionMain_Status.setEnabled(True)
 
     def visual_options(self):
-        # dialog_visual = Dialog_Visual_Options(self.centralwidget)
         dialog_win = Dialog_Window(parent=self.centralwidget)
         dialog_visual = VisualOptions.Visual_Dialog()
         dialog_visual.setupUi(Dialog=dialog_win)
@@ -598,8 +592,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
         if len(self.recent_mods_actions) > self.recent_mod_limit:
             action_to_remove = self.recent_mods_actions.pop(-1)
             self.menuRecentMods.removeAction(action_to_remove)
-        # self.recent_save()
-
 
     def recent_load(self, action_widget=QtWidgets.QAction):
         # when clicking mod in recent list instead of "load mod" option
@@ -635,12 +627,14 @@ class Ui_MainWindow(QtWidgets.QWidget):
             self.cancel()
         selected_element = self.tree_mod_elements.selected_element()
         if selected_element:
+            if isinstance(selected_element, list):
+                return
             self.actionCancel_New.setEnabled(True)
             element_type = self.tree_mod_elements.find_root_parent(selected_element)
             self.load_element_data(None, True)
+            Glob_Var.edit_element = False
             self.templates[element_type.text()].clear_template()
             self.flag_creating_element = True
-
             Glob_Var.edit_element = True
 
     def new_mod_prepare(self, confirm=True):
@@ -653,20 +647,9 @@ class Ui_MainWindow(QtWidgets.QWidget):
             new_mod()
             self.entry_mod_name.clear()
             self.tree_mod_elements.clear_tree()
-            """turning of modifable folders so top elements cannot be clicked"""
-            # self.tree_mod_elements.flag_folders = False
             self.tree_mod_elements.add_data(data=Mod_Var.mod_display)
             self.tree_mod_elements.disable_roots()
             self.main_game_elements.clear_val()
-            # self.tree_mod_elements.flag_folders = Fal
-            # """clean mod items in game data"""
-            # mod_item = self.main_game_elements.main_data.tree_model.item(0, 0)
-            # if mod_item:
-            #     mod_item.removeRows(0, mod_item.rowCount())
-            # selected_element = self.tree_mod_elements.selected_element()
-            # if selected_element:
-            #     element_type = self.tree_mod_elements.find_root_parent(selected_element)
-            #     self.label_welcome.setText('Creating ' + element_type.text())
 
     def save_new_element(self):
         """get current element and root parent - element type"""
@@ -698,16 +681,13 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 self.main_game_elements.update_with_mod_item(self.tree_mod_elements.get_data())
         """change main label to reflect action"""
         self.label_welcome.setText('Displaying ')
-
         """clear displayed data"""
         self.templates[element_type.text()].clear_template()
         self.cancel()
-        # self.actionSave_New.setEnabled(False)
-        # self.actionMain_Status.setEnabled(False)
 
     def prepare_same_core_elements_in_both_displayes(self):
         """this should be obsolete, as instead of complicated adding and deleting, i'll just copy content of mod tree
-        to mod item in game elements everytime something is added or deleted"""
+        to mod item in game elements everytime something is added or deleted. easier, but probably more memory heavy"""
         mod_item = QStandardItem('MOD')
         mod_item.setEditable(False)
         elements_to_add = Mod_Var.mod_display
@@ -723,7 +703,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def cancel(self):
         self.actionCancel_New.setEnabled(False)
         self.flag_creating_element = False
-        # self.load_element_data(None, True)
         self.label_welcome.setText('Displaying ')
         self.actionMain_Status.setEnabled(True)
         self.actionSave_New.setEnabled(False)
@@ -733,8 +712,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
             """first prepare path to save mod"""
             mod_path = Glob_Var.start_path + Glob_Var.mod_main_switch + self.entry_mod_name.text()
             """elements type will be "adventures", "items", element_items should be [{"adventures":{"folder":...},Events}"""
-            # TODO here is problem. it gather all data in a list of dictionaries of string. I need to check items in treeview with whatisthis to know if its a folder
-            # mod_files = self.tree_mod_elements.get_data()
             mod_files = Mod_Var.mod_display
             for elements_type in mod_files:
                 """if its just string, its empty"""
@@ -761,6 +738,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 self.tree_mod_elements.setModel(self.tree_mod_elements.additions_model)
                 for element_type in self.templates:
                     self.templates[element_type].mark_additional_fields()
+
     def create_folder_while_saving_mod(self, template_name, el_path_start, el_items):
         """this is dictionary {'Items': [{'Consumables': ['ElvenHerb']}, {'KeyItems': ['JorasLetter']}]}"""
         for item in el_items:
@@ -771,14 +749,12 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     """new dictionary"""
                     el_path = el_path_start + list(files.keys())[0] + '/'
                     self.create_folder_while_saving_mod(template_name, el_path, files)
-                    # save_Mod_withfolders2(el_name, el_path, el_items[item])
                 else:
                     if item == 'Fetishes':
                         self.templates[template_name].save_element_in_file(el_items[item], el_path_start)
                         break
                     else:
                         self.templates[template_name].save_element_in_file(files, el_path_start)
-                    # save_element(el_name, item, el_path_start)
 
     def update_mod_tree_start(self, new_values):
         self.tree_mod_elements.clear_tree()
@@ -807,28 +783,21 @@ class Ui_MainWindow(QtWidgets.QWidget):
         root_parent = self.tree_mod_elements.find_root_parent(self.current_selected_item).text()
         """here is divide. if loading additional item, load json file based on whatIsThis, otherwise, continue normal"""
         if self.displaying_flag == 2:
+            """if switched to addition"""
             if self.current_selected_item.whatsThis() == 'folder':
-                # if selected_item.text() == root_parent or selected_item.child(0, 0):
                 return
             self.scroll_area.show()
             Glob_Var.edit_element = True
             self.templates[root_parent].load_element_data(self.current_selected_item.text(), self.current_selected_item.whatsThis())
-            # Glob_Var.edit_element = True
-            # self.templates[root_parent].mark_additional_fields()
-            """addition model is set"""
         else:
             if root_parent:
                 if not just_display:
-                    # if selected_item.child(0, 0) or selected_item.text() == root_parent:
                     if self.current_selected_item.whatsThis() == 'folder' or self.current_selected_item.text() == root_parent:
-                    # if selected_item.text() == root_parent or selected_item.child(0, 0):
                         return
                     self.scroll_area.show()
                     Glob_Var.edit_element = False
                     self.templates[root_parent].load_element_data(self.current_selected_item.text())
-                    # self.templates[root_parent].load_element_data(self.current_selected_item.text(), Mod_Var.mod_data[root_parent][self.current_selected_item.text()])
                     Glob_Var.edit_element = True
-                # print(str(selected_item.text()))
         self.layout_templates.setCurrentIndex(self.templates[root_parent].layer_index)
         # TODO adjust size
         if self.MainWindow.isMaximized() is False:
@@ -838,7 +807,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
                 self.MainWindow.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
                 # workaround. scroll bars disappear, so its always something. problem with line below!!!!
                 # self.scroll_area.resize(self.templates[root_parent].size[0], self.templates[root_parent].size[1])
-    # print('double clicked mod tree')
 
     def mark_up_dialog(self):
         # dialog_win = Dialog_Window(parent=self.centralwidget)
@@ -896,13 +864,11 @@ class Ui_MainWindow(QtWidgets.QWidget):
         # self.MainWindow.adjustSize()
 
 
-
 # this is working, but cannot modify dialog window
 # class Dialog_Visual_Options(QtWidgets.QDialog):
 #     def __init__(self, parent=None):
 #         super().__init__(parent)
 #         loadUi("VisualOptions.ui", self)
-
 
 
 class Dialog_Window(QtWidgets.QDialog):
