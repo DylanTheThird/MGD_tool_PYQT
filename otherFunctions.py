@@ -3,10 +3,8 @@ import textwrap
 import json
 import re
 from time import time, ctime
-from os import listdir
 from os.path import join, isfile, isdir, getmtime
-from os import makedirs
-from os import access, F_OK
+from os import access, F_OK, mkdir, makedirs, listdir
 # from functools import partial
 from tkinter import filedialog
 from PyQt5.QtWidgets import QMessageBox
@@ -32,6 +30,15 @@ def change_position(widget, position):
         widget.setAlignment(Qt.AlignLeft)
     elif position == 'right':
         widget.setAlignment(Qt.AlignRight)
+
+
+def check_if_folder_exists(path='files/modsTempData'):
+    if not access(path, F_OK):
+        mkdir(path)
+
+
+def check_if_file_exists(file_path):
+    return isfile(file_path)
 
 
 def write_json_data(file_path, data):
@@ -1029,28 +1036,6 @@ def check_if_addition(field_name, template_name):
         print('found addition')
     else:
         print('not addition')
-
-
-def save_modified_scene(scene_text_field, field_title):
-    # if not GlobalVariables.flag_window_edit_data:
-    #     roots = scene_text_field.get_children()
-    #     scene_texts = []
-    #     for root in roots:
-    #         scene_texts.append(scene_text_field.item(root)['text'])
-    #         if scene_text_field.get_children(root):
-    #             leaves = scene_text_field.get_children(root)
-    #             # templist = []
-    #             for leaf in leaves:
-    #                 scene_texts.append(scene_text_field.item(leaf)['text'])
-    #     file_scene_to_update = GlobalVariables.templates['Events'].input_filename.get_val()
-    #     GlobalVariables.current_mod['Events'][file_scene_to_update][field_title] = scene_texts
-
-    # still there is issue in events if speaker is empty!!
-    if not GlobalVariables.flag_window_edit_data:
-        if field_title == 'EventText':
-            GlobalVariables.templates['Events'].save_element_details_in_current_mod(GlobalVariables.current_mod)
-        else:
-            GlobalVariables.templates['Monsters'].save_element_details_in_current_mod(GlobalVariables.current_mod)
 
 
 def load_recent_mods():
