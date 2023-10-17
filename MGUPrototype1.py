@@ -42,7 +42,7 @@ import TemplatesPreparation
 # TODO for scene function there are some used mainly for additions
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
 # requiresStance is missing....might be problem with how some write those fields.
-# TODO cleaning - Fuctionsclass, Loadmod, Other functions
+# TODO cleaning - Done
 # Hard problems
 # TODO multilists in addition does not react to delete key, with few exception - workaround
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
