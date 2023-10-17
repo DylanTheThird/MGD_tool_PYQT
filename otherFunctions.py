@@ -3,17 +3,13 @@ import textwrap
 import json
 import re
 from time import time, ctime
-from os import listdir
 from os.path import join, isfile, isdir, getmtime
-from os import makedirs
-from os import access, F_OK
-# from functools import partial
+from os import access, F_OK, mkdir, makedirs, listdir
 from tkinter import filedialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 from GlobalVariables import Glob_Var, Mod_Var
-# from GlobalVariables import Glob_Var
-# global Mod_Var
+
 
 def load_json_data(file_path):
     with open(file_path) as fileData:
@@ -34,6 +30,15 @@ def change_position(widget, position):
         widget.setAlignment(Qt.AlignRight)
 
 
+def check_if_folder_exists(path='files/modsTempData'):
+    if not access(path, F_OK):
+        mkdir(path)
+
+
+def check_if_file_exists(file_path):
+    return isfile(file_path)
+
+
 def write_json_data(file_path, data):
     with open(file_path, 'w') as fileData:
         json.dump(data, fileData)
@@ -51,209 +56,7 @@ def clean_text(original_text):
     return cleaned_text
 
 
-def display_options_tree(treeview_field, buttontext):
-    print(str(buttontext.get()))
-    if treeview_field.treeview.winfo_ismapped():
-        treeview_field.hide_tree()
-    else:
-        treeview_field.show_tree()
-        temp = buttontext.get()
-        temp = temp.split('\n')
-        if len(temp) > 1:
-            temp = temp[1:]
-            id_temp_list = []
-            for items in temp:
-                target = clean_text(items)
-                for parent in treeview_field.treeview.get_children():
-                    for child in treeview_field.treeview.get_children(parent):
-                        temp_child = treeview_field.treeview.item(child)['text']
-                        if temp_child == target:
-                            id_temp_list.append(child)
-                            break
-            treeview_field.treeview.selection_set(id_temp_list)
-
-    # print(treeviewField.treeview.focus())
-    # if clicked anything in tree, display options and whatever was clicked, otherwise, display "choose to select"
-    if treeview_field.treeview.focus():
-        final_selection = 'OPTIONS'
-        # print(str(treeviewField.treeview.selection()))
-        temp = treeview_field.treeview.selection()[0]
-        if treeview_field.treeview.parent(temp):
-            for option in treeview_field.treeview.selection():
-                # print(treeview_field.treeview.item(option)['text'])
-                final_selection += '\n' + treeview_field.treeview.item(option)['text']
-        buttontext.set(final_selection)
-    else:
-        buttontext.set("CLICK TO CHOOSE")
-
-
-def getListOptions_backcup(field_data, list_type):
-    # get list of options for field with dropdown
-    # its OPTIONS field in file, if it starts  with dir - list all files in directory, if start with file, read file
-    # if currentmod - add from where in current mod to take data, if currentfield - add field name
-    # try:
-    templist = {}
-    list_values = field_data
-    listTemp = []
-    for values in list_values:
-        #  class. if currentelement(with correct field name) in choices, then bind field list with other functions,
-        #  which could accept field list and the other field data. but it would be best to update when other field
-        #  is changed, not everytime user open list. So first I need a way for all fields send info if it was updated.
-        if 'dir' in values or 'file' in values:
-            name_pos = 0
-            while name_pos < len(values) and values.find('/', name_pos + 1) > 0:
-                if values.find('/', name_pos + 1) > 0:
-                    name_pos = values.find('/', name_pos + 1)
-            name_of_elements = values[name_pos + 1:]
-            if 'file' in values:
-                dot_place = name_of_elements.find('.')
-                name_of_elements = name_of_elements[:dot_place]
-                templist[name_of_elements] = []
-                file_start_position = values.find('-')
-                filename = values[file_start_position + 1:]
-                if access(filename, F_OK):
-                    with open(filename) as listData:
-                        for line in listData:
-                            templist[name_of_elements].append(line.rstrip())
-            if 'dir' in values:
-                templist[name_of_elements] = []
-                dir_start_position = values.find('-')
-                directory = values[dir_start_position + 1:]
-                if access(directory, F_OK):
-                    files = [f for f in listdir(directory) if isfile(join(directory, f))]
-                    for file in files:
-                        if file[0] == '_':
-                            continue
-                        templist[name_of_elements].append(file[:-5])
-        elif 'current' in values:
-            if values.find('/') < 0:
-                end_val_index = len(values)
-            else:
-                end_val_index = values.find('/')
-            # templist[values[7:end_val_index]] = []
-
-            branch_name = values[7:end_val_index]
-            templist[branch_name] = []
-            item_name = values[11:end_val_index]
-            for element_list in GlobalVariables.list_elementlists:
-                if element_list.treeview.heading('#0')['text'] == item_name:
-                    templist[branch_name] = element_list.gather_data()
-                    break
-
-            # if 'Scene' in values:
-            #     for index in range(len(GlobalVariables.list_elementlists)):
-            #         if GlobalVariables.list_elementlists[index].treeview.winfo_ismapped():
-            #             list_name = GlobalVariables.list_elementlists[index].treeview.heading('#0')['text']
-            #
-            #     duplicate_treeview()
-            #     """"""
-            # I forgot this is initated on startup, when all lists are empty.
-            # this should be: currentmod-item, monster/generic, event/scene/choice or currentelement-monster
-            # if values.find('_') > 0:
-            #     value_filter = values[values.find('_')+1:]
-            # else:
-            #     value_filter = 'ALL'
-            # if values.find('/')>0:
-            #     elements = values[values.find('-')+1:values.find('/')]
-            # else:
-            #     elements = values[values.find('-') + 1:]
-            # elements_attribute = values[values.find('/')+1:values.find('_')]
-            # templist['Mod_' + elements_attribute] = []
-            # for element in GlobalVariables.current_mod[elements]:
-            #     #this should be - items/itemname/itemtype - for example, only key items
-            #     # this if should probably be elsewhere
-            #     if elements_attribute in GlobalVariables.current_mod[elements][element]:
-            #         if value_filter == 'ALL':
-            #             templist['Mod_' + elements_attribute].append(element)
-            #         elif GlobalVariables.current_mod[elements][element][elements_attribute] == value_filter:
-            #             templist['Mod_' + elements_attribute].append(element)
-        elif 'main' in values:
-            """text should be main/filepath/finaldirectory. folders should be keys in mainvar
-            check up to first / after it its path in main var where to search for data.
-            split everything before first /, it will be additional options - inc, generic
-             if -inc- means inclusive, so also need to scan folders inside the one mentioned
-             data should be returned as {folderpath1:[items list], folderpath2:[items list]"""
-            search_options = values[:values.find('/')]
-            items_source = values[values.find('/') + 1:]
-            if '-inc-' in search_options:
-                search_deep = True
-            else:
-                search_deep = False
-            """here add how to search for specific element in files, if possible"""
-            #
-            # items_source = items_source.split('/')
-            if search_deep:
-                items_names = get_main_game_items_name_recursive_includeFolders(items_source.split('/'),
-                                                                                GlobalVariables.main_game_items)
-            else:
-                items_names = {}
-                temp = get_main_game_items_name_recursive_one_folder(items_source.split('/'),
-                                                                     GlobalVariables.main_game_items)
-                items_names[items_source] = temp
-            # print(items_source)
-            # print(items_names)
-            if '/Events' in values or '/Monsters' in values:
-                for items_path in items_names:
-                    eventtemplist = []
-                    for event_name in items_names[items_path]:
-                        temp = ''
-                        """final check. here should be possible to search additioal options,
-                         since event contains all data from about element. This was tough"""
-                        """decision is if to break adding. check if generic in event - true means its monster data
-                        then  if data is  not same  as in file, skip - decitions true."""
-                        for key in event_name.keys():
-                            decision = False
-                            if 'generic' in event_name[key]:
-                                if ('generic' in search_options and event_name[key]['generic'] == 'False') or (
-                                        'generic' not in search_options and event_name[key]['generic'] == 'True'):
-                                    decision = True
-                            if decision:
-                                break
-                            temp = key
-                        if temp:
-                            eventtemplist.append(temp)
-                    templist[items_path] = eventtemplist
-            else:
-                for items_path in items_names:
-                    templist[items_path] = items_names[items_path]
-        # elif 'nain' in values:
-        #     temp = values.split('-')
-        #     templist['main-'+temp[1]] = []
-        elif values == 'Stances':
-            for stance_type in GlobalVariables.stances:
-                templist[stance_type] = GlobalVariables.stances[stance_type]
-        elif values == 'Fetishes':
-            templist['Fetishes'] = GlobalVariables.main_game_items["Fetishes"]["Fetish"]
-            templist['Addictions'] = GlobalVariables.main_game_items["Fetishes"]["Addiction"]
-            custom_fetishes = GlobalVariables.list_elementlists[2].treeview.get_children()
-            if custom_fetishes:
-                templist['Mod'] = []
-                for custom_fetish in custom_fetishes:
-                    templist['Mod'].append(GlobalVariables.list_elementlists[2].treeview.item(custom_fetish))
-        elif "game" in values:
-            temp = values[5:]
-            temp = temp.split('-')
-            for val in GlobalVariables.game_hard_data[temp[0]][temp[1]]:
-                listTemp.append(val)
-        else:
-            listTemp.append(values)
-    if listTemp:
-        templist['options'] = listTemp
-    #                    if len(line)>fieldWidth:
-    #                        fieldWidth = len(line)
-    # print(templist)
-    if list_type == 'single':
-        final_list = []
-        for keys in templist:
-            # final_list.append(keys)
-            for items in templist[keys]:
-                final_list.append(items)
-                # print(len(final_list))
-    else:
-        final_list = templist
-    return final_list
-
-
+# TODO check this list options, some stuff still are loaded from file and there like, 10 items at most
 def getListOptions(field_data, list_type):
     # get list of options for field with dropdown
     # its OPTIONS field in file, if it starts  with dir - list all files in directory, if start with file, read file
@@ -261,6 +64,7 @@ def getListOptions(field_data, list_type):
     # try:
         templist = {}
         list_values = field_data
+        print(field_data)
         listTemp = []
         for values in list_values:
             #  class. if currentelement(with correct field name) in choices, then bind field list with other functions,
@@ -425,257 +229,257 @@ def getListOptions(field_data, list_type):
     #     print('problem with function getListOptions with data - ' + str(fieldData))
 
 
-def get_main_game_items_name_recursive_includeFolders(keys_list, main_items_place=Glob_Var.main_game_items, keypath = ''):
-    """keylist is list made form starting filepath to reach - that is first IF. keypath is to display in treeview"""
-    """then is FOR - check stuff inside, if there is something besides dictionary with files, enter and repeat"""
-    tempdict = {}
-    if len(keys_list) > 0:
-        items_names = get_main_game_items_name_recursive_includeFolders(keys_list[1:], main_items_place[keys_list[0]], keypath+'/'+keys_list[0])
-        tempdict.update(items_names)
-        return items_names
-    if 'files' not in main_items_place:
-        main_items_place['files'] = []
-    for files_and_directories in main_items_place:
-        if files_and_directories != 'files':
-            items_names = get_main_game_items_name_recursive_includeFolders([],
-                                                                            main_items_place[files_and_directories],
-                                                                            keypath + '/' + files_and_directories)
-            tempdict.update(items_names)
-        #         in main game in folder perks/levelperks for some reason 'files' are not created
-        if 'files' in main_items_place:
-            if main_items_place['files']:
-                tempdict[keypath] = main_items_place['files']
-            """problem in different place - loadmod - load main game items. level perks are groups in directories, and
-             its coded for only depts 1 directories. if it goes deepers, it does not add empty list of files for
-              directoried in between. In short, i expected it to be game/dir/dir max, and level perks are
-               game/dir/dir/dir and for middle dir, it does not add empty files list. So just add here if list is
-                missing, add it before FOR"""
-    return tempdict
+# TODO probably obsolete
+# def get_main_game_items_name_recursive_includeFolders(keys_list, main_items_place=Glob_Var.main_game_items, keypath = ''):
+#     """keylist is list made form starting filepath to reach - that is first IF. keypath is to display in treeview"""
+#     """then is FOR - check stuff inside, if there is something besides dictionary with files, enter and repeat"""
+#     tempdict = {}
+#     if len(keys_list) > 0:
+#         items_names = get_main_game_items_name_recursive_includeFolders(keys_list[1:], main_items_place[keys_list[0]], keypath+'/'+keys_list[0])
+#         tempdict.update(items_names)
+#         return items_names
+#     if 'files' not in main_items_place:
+#         main_items_place['files'] = []
+#     for files_and_directories in main_items_place:
+#         if files_and_directories != 'files':
+#             items_names = get_main_game_items_name_recursive_includeFolders([],
+#                                                                             main_items_place[files_and_directories],
+#                                                                             keypath + '/' + files_and_directories)
+#             tempdict.update(items_names)
+#         #         in main game in folder perks/levelperks for some reason 'files' are not created
+#         if 'files' in main_items_place:
+#             if main_items_place['files']:
+#                 tempdict[keypath] = main_items_place['files']
+#             """problem in different place - loadmod - load main game items. level perks are groups in directories, and
+#              its coded for only depts 1 directories. if it goes deepers, it does not add empty list of files for
+#               directoried in between. In short, i expected it to be game/dir/dir max, and level perks are
+#                game/dir/dir/dir and for middle dir, it does not add empty files list. So just add here if list is
+#                 missing, add it before FOR"""
+#     return tempdict
+#
+#     # tempdict[keypath] = main_items_place['files']
+#     # return tempdict
 
-    # tempdict[keypath] = main_items_place['files']
-    # return tempdict
-
-
-def get_main_game_items_name_recursive_one_folder(keys_list, main_items_place=Glob_Var.main_game_items):
-    """same as above, but only check folder in keylist and return files from there."""
-    # temp = main_items_place[keys_list[0]]
-    # print(str(temp))
-    if len(keys_list) > 0:
-        if keys_list[0] in main_items_place:
-            items_names = get_main_game_items_name_recursive_one_folder(keys_list[1:], main_items_place[keys_list[0]])
-            return items_names
-        else:
-            return ['Not found']
-    return main_items_place['files']
-
-
-def save_item(item_file_name, item_data, elementPath):
-    # print('test should next be item name')
-    # print(item_data['name'])
-    item_Type = item_data['itemType']
-    # elementPath = mod_name + '/Items/'
-    # elementPath = mod_name
-    # if item_Type == 'Consumable':
-    #     item_destination = 'Consumables/Healing/'
-    # elif item_Type == 'CombatConsumable' or item_Type == 'CombatConsumable' or item_Type == 'DissonantConsumable':
-    #     item_destination = 'Consumables/'
-    # elif item_Type == 'Accessory':
-    #     item_destination = 'Equipment/'
-    # elif item_Type == 'Rune':
-    #     item_destination = 'Equipment/Rune/'
-    # elif item_Type == 'Key':
-    #     item_destination = 'KeyItems/'
-    # elif item_Type == 'Loot':
-    #     item_destination = 'Loot/'
-    # else:
-    #     item_destination = 'i dont know where it goes'
-    # elementPath += item_destination
-    if not access(elementPath, F_OK):
-        makedirs(elementPath)
-        # print(elementPath)
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(elementPath + file_name + '.json', 'w') as objectF:
-            objectF.write(json.dumps(item_data, indent='\t'))
+# def get_main_game_items_name_recursive_one_folder(keys_list, main_items_place=Glob_Var.main_game_items):
+#     """same as above, but only check folder in keylist and return files from there."""
+#     # temp = main_items_place[keys_list[0]]
+#     # print(str(temp))
+#     if len(keys_list) > 0:
+#         if keys_list[0] in main_items_place:
+#             items_names = get_main_game_items_name_recursive_one_folder(keys_list[1:], main_items_place[keys_list[0]])
+#             return items_names
+#         else:
+#             return ['Not found']
+#     return main_items_place['files']
 
 
-def save_adventure(item_file_name, item_data, mod_name):
-    # print('test should next be item name')
-    # print(item_data['name'])
-    # elementPath = mod_name
-    if not access(mod_name, F_OK):
-        makedirs(mod_name)
-        # print(elementPath)
-    # file_name = item_file_name
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(mod_name + file_name + '.json', 'w') as objectF:
-            objectF.write(json.dumps(item_data, indent='\t'))
+# def save_item(item_file_name, item_data, elementPath):
+#     # print('test should next be item name')
+#     # print(item_data['name'])
+#     item_Type = item_data['itemType']
+#     # elementPath = mod_name + '/Items/'
+#     # elementPath = mod_name
+#     # if item_Type == 'Consumable':
+#     #     item_destination = 'Consumables/Healing/'
+#     # elif item_Type == 'CombatConsumable' or item_Type == 'CombatConsumable' or item_Type == 'DissonantConsumable':
+#     #     item_destination = 'Consumables/'
+#     # elif item_Type == 'Accessory':
+#     #     item_destination = 'Equipment/'
+#     # elif item_Type == 'Rune':
+#     #     item_destination = 'Equipment/Rune/'
+#     # elif item_Type == 'Key':
+#     #     item_destination = 'KeyItems/'
+#     # elif item_Type == 'Loot':
+#     #     item_destination = 'Loot/'
+#     # else:
+#     #     item_destination = 'i dont know where it goes'
+#     # elementPath += item_destination
+#     if not access(elementPath, F_OK):
+#         makedirs(elementPath)
+#         # print(elementPath)
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(elementPath + file_name + '.json', 'w') as objectF:
+#             objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_location(item_file_name, item_data, elementPath):
-    # print('test should next be item name')
-    # print(item_data['name'])
-    # elementPath = mod_name
-    if not access(elementPath, F_OK):
-        makedirs(elementPath)
-        # print(elementPath)
-    # file_name = item_data['name']
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(elementPath + file_name + '.json', 'w') as objectF:
-            objectF.write(json.dumps(item_data, indent='\t'))
+# def save_adventure(item_file_name, item_data, mod_name):
+#     # print('test should next be item name')
+#     # print(item_data['name'])
+#     # elementPath = mod_name
+#     if not access(mod_name, F_OK):
+#         makedirs(mod_name)
+#         # print(elementPath)
+#     # file_name = item_file_name
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(mod_name + file_name + '.json', 'w') as objectF:
+#             objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_event(item_file_name, item_data, element_path):
-    # print('test should next be item name')
-    # print(item_data['name'])
-    # element_path = mod_name
-    if not access(element_path, F_OK):
-        makedirs(element_path)
-        # print(elementPath)
-    # file_name = item_data['name']
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(element_path + file_name + '.json', 'w') as objectF:
-            objectF.write(json.dumps(item_data, indent='\t'))
+# def save_location(item_file_name, item_data, elementPath):
+#     # print('test should next be item name')
+#     # print(item_data['name'])
+#     # elementPath = mod_name
+#     if not access(elementPath, F_OK):
+#         makedirs(elementPath)
+#         # print(elementPath)
+#     # file_name = item_data['name']
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(elementPath + file_name + '.json', 'w') as objectF:
+#             objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_fetish(item_data, mod_name):
-    """fetish list is a one item dictionary of  list of dictionaries of fetishes
-        create a template for fetish and saving in list, but as mod saving all to one file
-        item data is dictionary of ordered dictionaries, so"""
-    # print('test')
-    # print(item_data)
-    if item_data:
-        temp_dictionary1 = {'FetishList': []}
-        temp_dictionary2 = {'FetishList': []}
-        elementPath = mod_name + '/'
-        if not access(elementPath, F_OK):
-            makedirs(elementPath)
-            # print(elementPath)
-        for fetish in item_data:
-            if item_data[fetish]['Type'] == 'Fetish':
-                temp_dictionary1["FetishList"].append(item_data[fetish])
-            if item_data[fetish]['Type'] == 'Addiction':
-                temp_dictionary2["FetishList"].append(item_data[fetish])
-        if temp_dictionary1['FetishList']:
-            with open(elementPath + '0fetishList.json', 'w') as Fetishes_file:
-                    Fetishes_file.write(json.dumps(temp_dictionary1, indent='\t'))
-        if temp_dictionary2['FetishList']:
-            with open(elementPath + 'addictionList.json', 'w') as Fetishes_file:
-                    Fetishes_file.write(json.dumps(temp_dictionary2, indent='\t'))
+# def save_event(item_file_name, item_data, element_path):
+#     # print('test should next be item name')
+#     # print(item_data['name'])
+#     # element_path = mod_name
+#     if not access(element_path, F_OK):
+#         makedirs(element_path)
+#         # print(elementPath)
+#     # file_name = item_data['name']
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(element_path + file_name + '.json', 'w') as objectF:
+#             objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_monster(item_file_name, item_data, elementPath):
-    # elementPath = mod_name
-    if not access(elementPath, F_OK):
-        makedirs(elementPath)
-        # print(elementPath)
-    # file_name = item_file_name
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(elementPath + file_name + '.json', 'w') as objectF:
-        objectF.write(json.dumps(item_data, indent='\t'))
+# def save_fetish(item_data, mod_name):
+#     """fetish list is a one item dictionary of  list of dictionaries of fetishes
+#         create a template for fetish and saving in list, but as mod saving all to one file
+#         item data is dictionary of ordered dictionaries, so"""
+#     # print('test')
+#     # print(item_data)
+#     if item_data:
+#         temp_dictionary1 = {'FetishList': []}
+#         temp_dictionary2 = {'FetishList': []}
+#         elementPath = mod_name + '/'
+#         if not access(elementPath, F_OK):
+#             makedirs(elementPath)
+#             # print(elementPath)
+#         for fetish in item_data:
+#             if item_data[fetish]['Type'] == 'Fetish':
+#                 temp_dictionary1["FetishList"].append(item_data[fetish])
+#             if item_data[fetish]['Type'] == 'Addiction':
+#                 temp_dictionary2["FetishList"].append(item_data[fetish])
+#         if temp_dictionary1['FetishList']:
+#             with open(elementPath + '0fetishList.json', 'w') as Fetishes_file:
+#                     Fetishes_file.write(json.dumps(temp_dictionary1, indent='\t'))
+#         if temp_dictionary2['FetishList']:
+#             with open(elementPath + 'addictionList.json', 'w') as Fetishes_file:
+#                     Fetishes_file.write(json.dumps(temp_dictionary2, indent='\t'))
 
 
-def save_standard(item_file_name, item_data, mod_name):
-    # print('test should next be item name ' + mod_name)
-    # print(item_data['name'])
-    elementPath = mod_name + '/'
-    if not access(elementPath, F_OK):
-        makedirs(elementPath)
-        # print(elementPath)
-    # file_name = item_file_name
-    file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
-    with open(elementPath + file_name + '.json', 'w') as objectF:
-            objectF.write(json.dumps(item_data, indent='\t'))
+# def save_monster(item_file_name, item_data, elementPath):
+#     # elementPath = mod_name
+#     if not access(elementPath, F_OK):
+#         makedirs(elementPath)
+#         # print(elementPath)
+#     # file_name = item_file_name
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(elementPath + file_name + '.json', 'w') as objectF:
+#         objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_Mod(mod_name):
-    """should be obsolete as I made one with folders included"""
-    whole_mod = GlobalVariables.current_mod
-    # print('test')
-    # print(mod_name.get())
-    # modname = mod_name.get()
-    mod_path = GlobalVariables.startPath + GlobalVariables.mod_main_switch
-    for elements in whole_mod:
-        if elements == 'Adventures':
-            for adventure in whole_mod[elements]:
-                save_adventure(whole_mod[elements][adventure], mod_path + mod_name.get())
-        elif elements == "Items":
-            # print("test save item")
-            for item in whole_mod[elements]:
-                # print(item)
-                # print(whole_mod[elements][item])
-                save_item(whole_mod[elements][item], mod_path + mod_name.get())
-        elif elements == 'Fetishes':
-            # print(whole_mod[elements])
-            # for fetish in whole_mod[elements]:
-            #     print('fetish? - ' + fetish)
-            save_fetish(whole_mod[elements], mod_name.get())
-        elif elements == 'Locations' and whole_mod[elements]:
-            for location in whole_mod[elements]:
-                save_location(whole_mod[elements][location], mod_path + mod_name.get())
-        elif elements == 'Monsters' and whole_mod[elements]:
-            for monster in whole_mod[elements]:
-                save_monster(whole_mod[elements][monster], mod_path + mod_name.get())
-        elif elements == 'Events' and whole_mod[elements]:
-            for monster in whole_mod[elements]:
-                save_event(whole_mod[elements][monster], mod_path + mod_name.get())
-        else:
-            for element in whole_mod[elements]:
-                save_standard(whole_mod[elements][element], mod_path + mod_name.get(), elements)
+# def save_standard(item_file_name, item_data, mod_name):
+#     # print('test should next be item name ' + mod_name)
+#     # print(item_data['name'])
+#     elementPath = mod_name + '/'
+#     if not access(elementPath, F_OK):
+#         makedirs(elementPath)
+#         # print(elementPath)
+#     # file_name = item_file_name
+#     file_name = re.sub('[^A-Za-z0-9]+', '', item_file_name)
+#     with open(elementPath + file_name + '.json', 'w') as objectF:
+#             objectF.write(json.dumps(item_data, indent='\t'))
 
 
-def save_Mod_withfolders(mod_name):
-    """should be obsolete as I change it into function of main window, which then sends data of files to templates
-    and templates save data into files"""
-    mod_path = Glob_Var.start_path + Glob_Var.mod_main_switch + mod_name
-    """elements name will be "adventures", "items", element_items should be {"folders":{"folder":...},"files":[]}"""
-    for elements_name in Mod_Var.mod_display:
-        element_items = Mod_Var.mod_display[elements_name]
-        save_Mod_withfolders2(elements_name, mod_path + '/' + elements_name + '/', element_items)
+# def save_Mod(mod_name):
+#     """should be obsolete as I made one with folders included"""
+#     whole_mod = GlobalVariables.current_mod
+#     # print('test')
+#     # print(mod_name.get())
+#     # modname = mod_name.get()
+#     mod_path = GlobalVariables.startPath + GlobalVariables.mod_main_switch
+#     for elements in whole_mod:
+#         if elements == 'Adventures':
+#             for adventure in whole_mod[elements]:
+#                 save_adventure(whole_mod[elements][adventure], mod_path + mod_name.get())
+#         elif elements == "Items":
+#             # print("test save item")
+#             for item in whole_mod[elements]:
+#                 # print(item)
+#                 # print(whole_mod[elements][item])
+#                 save_item(whole_mod[elements][item], mod_path + mod_name.get())
+#         elif elements == 'Fetishes':
+#             # print(whole_mod[elements])
+#             # for fetish in whole_mod[elements]:
+#             #     print('fetish? - ' + fetish)
+#             save_fetish(whole_mod[elements], mod_name.get())
+#         elif elements == 'Locations' and whole_mod[elements]:
+#             for location in whole_mod[elements]:
+#                 save_location(whole_mod[elements][location], mod_path + mod_name.get())
+#         elif elements == 'Monsters' and whole_mod[elements]:
+#             for monster in whole_mod[elements]:
+#                 save_monster(whole_mod[elements][monster], mod_path + mod_name.get())
+#         elif elements == 'Events' and whole_mod[elements]:
+#             for monster in whole_mod[elements]:
+#                 save_event(whole_mod[elements][monster], mod_path + mod_name.get())
+#         else:
+#             for element in whole_mod[elements]:
+#                 save_standard(whole_mod[elements][element], mod_path + mod_name.get(), elements)
 
 
-def save_Mod_withfolders2(el_name, el_path_start, el_items):
-    """obsolete"""
-    for item in el_items:
-        # if item != 'files':
-        if isinstance(item, dict):
-            for folder in item:
-                el_path = el_path_start + folder + '/'
-                save_Mod_withfolders2(el_name, el_path, item[folder])
-            # save_Mod_withfolders2(el_name, el_path, el_items[item])
-        else:
-            # for file in el_items[item]:
-            save_element(el_name, item, el_path_start)
-        # TODO safe to delete
-        # if 'folder' in el_list.treeview.item(item)['tags']:
-        #     el_path = el_path_start + el_list.treeview.item(item)['text'] + '/'
-        #     el_items = el_list.treeview.get_children(item)
-        #     save_Mod_withfolders2(el_name, el_path, el_items, el_list)
-        # else:
-        #     item = el_list.treeview.item(item)['text']
-        #     save_element(el_name, item, el_path_start)
+# def save_Mod_withfolders(mod_name):
+#     """should be obsolete as I changed it into function of main window, which then sends data of files to templates
+#     and templates save data into files"""
+#     mod_path = Glob_Var.start_path + Glob_Var.mod_main_switch + mod_name
+#     """elements name will be "adventures", "items", element_items should be {"folders":{"folder":...},"files":[]}"""
+#     for elements_name in Mod_Var.mod_display:
+#         element_items = Mod_Var.mod_display[elements_name]
+#         save_Mod_withfolders2(elements_name, mod_path + '/' + elements_name + '/', element_items)
 
 
-def save_element(elements, item, mod_path):
-    """obsolete - should be inside each template with customization for separate items"""
-    whole_mod = Mod_Var.mod_data
-    if elements == 'Adventures':
-            save_adventure(item, whole_mod[elements][item], mod_path)
-    elif elements == "Items":
-        # print("test save item")
-            save_item(item, whole_mod[elements][item], mod_path)
-    elif elements == 'Fetishes':
-        # print(whole_mod[elements])
-        # for fetish in whole_mod[elements]:
-        #     print('fetish? - ' + fetish)
-        save_fetish(whole_mod[elements], mod_path)
-    # elif elements == 'Locations' and whole_mod[elements]:
-    #         save_location(whole_mod[elements][item], mod_path)
-    # elif elements == 'Monsters' and whole_mod[elements]:
-    #         save_monster(whole_mod[elements][item], mod_path)
-    # elif elements == 'Events' and whole_mod[elements]:
-    #         save_event(whole_mod[elements][item], mod_path)
-    else:
-            save_standard(item, whole_mod[elements][item], mod_path)
+# def save_Mod_withfolders2(el_name, el_path_start, el_items):
+#     """obsolete"""
+#     for item in el_items:
+#         # if item != 'files':
+#         if isinstance(item, dict):
+#             for folder in item:
+#                 el_path = el_path_start + folder + '/'
+#                 save_Mod_withfolders2(el_name, el_path, item[folder])
+#             # save_Mod_withfolders2(el_name, el_path, el_items[item])
+#         else:
+#             # for file in el_items[item]:
+#             save_element(el_name, item, el_path_start)
+#         # TODO safe to delete
+#         # if 'folder' in el_list.treeview.item(item)['tags']:
+#         #     el_path = el_path_start + el_list.treeview.item(item)['text'] + '/'
+#         #     el_items = el_list.treeview.get_children(item)
+#         #     save_Mod_withfolders2(el_name, el_path, el_items, el_list)
+#         # else:
+#         #     item = el_list.treeview.item(item)['text']
+#         #     save_element(el_name, item, el_path_start)
+
+
+# def save_element(elements, item, mod_path):
+#     """obsolete - should be inside each template with customization for separate items"""
+#     whole_mod = Mod_Var.mod_data
+#     if elements == 'Adventures':
+#             save_adventure(item, whole_mod[elements][item], mod_path)
+#     elif elements == "Items":
+#         # print("test save item")
+#             save_item(item, whole_mod[elements][item], mod_path)
+#     elif elements == 'Fetishes':
+#         # print(whole_mod[elements])
+#         # for fetish in whole_mod[elements]:
+#         #     print('fetish? - ' + fetish)
+#         save_fetish(whole_mod[elements], mod_path)
+#     # elif elements == 'Locations' and whole_mod[elements]:
+#     #         save_location(whole_mod[elements][item], mod_path)
+#     # elif elements == 'Monsters' and whole_mod[elements]:
+#     #         save_monster(whole_mod[elements][item], mod_path)
+#     # elif elements == 'Events' and whole_mod[elements]:
+#     #         save_event(whole_mod[elements][item], mod_path)
+#     else:
+#             save_standard(item, whole_mod[elements][item], mod_path)
 
 #     nice funtion, goes over directories and file in it and create huge dictionary of all files and their content
 # def LoadMod(mod_name, mod_path='.', localdict={}):
@@ -718,36 +522,36 @@ def save_element(elements, item, mod_path):
 
 
 # def browse_files(button_to_display_filename, variable_for_file_path, media_path):
-def browse_files(file_type, return_list):
-    if file_type:
-        file_type = (("Image files", "*.png*"), ("all files", "*.*"))
-    else:
-        file_type = (("Music files", "*.opus*"), ("Music files", "*.ogg*"), ("Music files", "*.mp3*"),
-                     ("Music files", "*.wav*"), ("all files", "*.*"))
-    if return_list:
-        filename = filedialog.askopenfilenames(initialdir=GlobalVariables.startPath + "/game/mods/",
-                                               title="Select a Files",
-                                               filetypes=file_type)
-    else:
-        filename = filedialog.askopenfilename(initialdir=GlobalVariables.startPath + "/game/mods/",
-                                              title="Select a File",
-                                              filetypes=file_type)
-    # filename = filedialog.askopenfilename(initialdir=GlobalVariables.startPath + "/game/mods/",
-    #                                       title="Select a File",
-    #                                       filetypes=(("Image files", "*.png*"),
-    #                                                  ("all files", "*.*")))
-    if filename:
-        if not isinstance(filename, tuple):
-            return [filename]
-        return filename
-    else:
-        return False
-        # temp = filename.find('Mods/')
-        # local_path = media_path + filename[temp:]
-        # variable_for_file_path.set(local_path)
-        #
-        # filename =filename.split('/')
-        # button_to_display_filename['text'] = filename[-1]
+# def browse_files(file_type, return_list):
+#     if file_type:
+#         file_type = (("Image files", "*.png*"), ("all files", "*.*"))
+#     else:
+#         file_type = (("Music files", "*.opus*"), ("Music files", "*.ogg*"), ("Music files", "*.mp3*"),
+#                      ("Music files", "*.wav*"), ("all files", "*.*"))
+#     if return_list:
+#         filename = filedialog.askopenfilenames(initialdir=GlobalVariables.startPath + "/game/mods/",
+#                                                title="Select a Files",
+#                                                filetypes=file_type)
+#     else:
+#         filename = filedialog.askopenfilename(initialdir=GlobalVariables.startPath + "/game/mods/",
+#                                               title="Select a File",
+#                                               filetypes=file_type)
+#     # filename = filedialog.askopenfilename(initialdir=GlobalVariables.startPath + "/game/mods/",
+#     #                                       title="Select a File",
+#     #                                       filetypes=(("Image files", "*.png*"),
+#     #                                                  ("all files", "*.*")))
+#     if filename:
+#         if not isinstance(filename, tuple):
+#             return [filename]
+#         return filename
+#     else:
+#         return False
+#         # temp = filename.find('Mods/')
+#         # local_path = media_path + filename[temp:]
+#         # variable_for_file_path.set(local_path)
+#         #
+#         # filename =filename.split('/')
+#         # button_to_display_filename['text'] = filename[-1]
 
 
 def wrap(string, length=20, row_len=39):
@@ -769,74 +573,6 @@ def wrap(string, length=20, row_len=39):
 #     buttonnewelement['text'] = 'NEW ' + elementtext
 
 
-def focus_next_window(event):
-    event.widget.tk_focusNext().focus()
-    return("break")
-
-def get_visible_treeview_data():
-    for index in range(len(GlobalVariables.list_elementlists)):
-        # check which list if in front
-        if GlobalVariables.list_elementlists[index].treeview.winfo_ismapped():
-            # get list heading and thus number in order of visible list
-            listName = GlobalVariables.list_elementlists[index].treeview.heading('#0')['text']
-            treeviewlistno = index
-            break
-    return [treeviewlistno, listName]
-
-def update_multilists(update_type, item_data, element_type):
-    """since i changed how things are display, all fields are not permanently created at start, but when user click edit
-     od new, so everytime it should load all data again."""
-    return
-    """updateType - add or del
-        item name - [item probably name, maybe possible to make it id - it should be id;item parent]
-        elementType - items, events, monsters etc"""
-    # print('update multilist test')
-    """first, find correct list in global multilist dictionary of lists. search by element type
-        then, remove east - search first child (these are mods items) and remove element.
-        add is harder. need to know where to add. need to use parent(folder or root-element type),
-         search that parent for childs. if found with same name, do nothing, if not found, add, """
-    if item_data[0] == '':
-        return
-    if update_type == 'add':
-        # print(str(item_name[1]))
-        item_name = item_data[0][:item_data[0].find('_')]
-        for list_field in GlobalVariables.multi_lists_to_refresh[element_type]:
-            # print(str(list_field.treeview.get_children()))
-            # tmp = list_field.find_iid(item_data[1])
-            # leaf_list = list_field.treeview.get_children(tmp)
-            # if len(leaf_list) == 0:
-            #     # list_field.add_leaves(item_data[1], item_data[0], update_flag=False)
-            #     list_field.add_leaf(item_data[1], item_data[0], item_name)
-            #     continue
-            # if item_data[0] in leaf_list:
-            #     continue
-            # for leaf in leaf_list:
-            #     if leaf == item_name[0]:
-            #         """if found item, nothing to add, so just return"""
-            #         return
-            list_field.add_leaf(item_data[1], item_data[0], item_name)
-    else:
-        """remove item"""
-        if element_type in GlobalVariables.multi_lists_to_refresh:
-            for list_field in GlobalVariables.multi_lists_to_refresh[element_type]:
-                list_field.treeview.delete(item_data[0])
-
-def refresh_multilists():
-    """this is used when loading new mod or loading multilis in function interface - refresh all or specific
-     with data from mod"""
-    current_data = {}
-    for element_list in GlobalVariables.list_elementlists:
-        element_type = element_list.treeview.heading("#0")['text']
-        current_data[element_type] = element_list.gather_data()
-    # for element_type in GlobalVariables.multi_lists_to_refresh:
-    #     for list_field in GlobalVariables.multi_lists_to_refresh[element_type]:
-    #         leaves = list_field.treeview.get_children('')
-    #         try:
-    #             list_field.add_data(current_data[element_type], leaves[0])
-    #         except:
-    #             print('old class for element list')
-
-
 def error_log(log_data):
     if GlobalVariables.file_log:
         with open('error_logs.txt', 'a', encoding='utf-8-sig') as error_file:
@@ -851,6 +587,7 @@ def duplicate_treeview(source, destination, source_leaf='', destination_leaf='')
         new_leaf = destination.insert(destination_leaf, "end", text=source.item(child)['text'])
         if source.get_children(child):
             duplicate_treeview(source, destination, child, new_leaf)
+
 
 def find_current_displayed_characters(event_type=None, current_scene_field=None):
     """it needs to check current edited scene from last item in list backwards for tag  'DisplayCharacters'
@@ -874,7 +611,9 @@ def find_current_displayed_characters(event_type=None, current_scene_field=None)
             break
     return display_characters_list
 
-def FindMonsterSkills(girl_id, data_deep=None, save_data=None):
+
+def FindMonsterSkills(girl_id):
+    """returns girls skill list"""
     if girl_id in Mod_Var.mod_data['Monsters']:
         skill_list = Mod_Var.mod_data['Monsters'][girl_id]['skillList']
     else:
@@ -884,34 +623,6 @@ def FindMonsterSkills(girl_id, data_deep=None, save_data=None):
         if skill not in return_list:
             return_list.append(skill)
     return return_list
-    # if girl_id in Mod_Var.mod_data['Monsters']:
-    #     return Mod_Var.mod_data['Monsters'][girl_id]['skillList']
-    # return Glob_Var.main_game_data['Girls'][girl_id]['skillList']
-    # if not data_deep:
-    #     for current_mod_girls in Mod_Var.current_mod['Monsters']:
-    #         if current_mod_girls == girl_id:
-    #             return GlobalVariables.current_mod['Monsters'][current_mod_girls]['skillList']
-    #     data_deep = GlobalVariables.main_game_items['Monsters']
-    # return GlobalVariables.main_game_data['Girls'][girl_id]['skillList']
-    # for lvl1 in data_deep:
-    #     if save_data:
-    #         return save_data
-    #     if lvl1 == girl_id:
-    #         save_data = data_deep[lvl1]['skillList']
-    #         return save_data
-    #     if isinstance(data_deep, list):
-    #         if not save_data:
-    #             save_data = FindMonsterSkills(girl_id, lvl1, save_data)
-    #         else:
-    #             return save_data
-    #     else:
-    #         if 'skillList' in data_deep[lvl1]:
-    #             return
-    #         if not save_data:
-    #             save_data = FindMonsterSkills(girl_id, data_deep[lvl1], save_data)
-    #         else:
-    #             return save_data
-    # return save_data
 
 
 
@@ -926,135 +637,91 @@ def FindMonsterSkills(girl_id, data_deep=None, save_data=None):
     # for scenes in scene_list:
     #     if scene_list['NameOfScene'] ==
 
+
 def findSkillTags(skill_name):
     return
 # ask around if this is even needed.
-# def find_main_data(target, data_deep, save_data)
-
-def load_current_scenes():
-
-    return
 
 
-def update_config():
-    with open('config.ini', 'w') as configuration_file:
-        temp_dict = {
-            'path': GlobalVariables.startPath,
-            'log': GlobalVariables.file_log,
-            'main_modification': GlobalVariables.main_modification_date,
-            "current_font_type": GlobalVariables.current_font_type,
-            "current_font_size": GlobalVariables.current_font_size
-        }
-        json.dump(temp_dict, configuration_file)
-
-
-def load_main_game_item_2(main_path='./../json', element_type='', main_var=None):
-    """ this should load main game data into global variable, to use later in other fields where you choose items """
-    mod_directories = [f for f in listdir(main_path) if isdir(join(main_path, f))]
-    # print(mod_files)
-    # print(mod_directories)
-    # recursive go into folders until no more folder available
-    for element in mod_directories:
-        temp_dict = {element: []}
-        main_var.append(temp_dict)
-        load_main_game_item_2(main_path + '/' + element, element_type, main_var[-1][element])
-    mod_files = [f for f in listdir(main_path) if isfile(join(main_path, f))]
-    for file in mod_files:
-        if file[0] != '_':
-            main_var.append(file[:-5])
-    load_main_game_files_data(main_path)
-
-def load_main_game_files_data(file_path=''):
-    mod_files = [f for f in listdir(file_path) if isfile(join(file_path, f))]
-
-    """open each file. usually only need name from file, but in some cases also need scene text or maybe something else.
-    so final list usually is list of file names or dictionaries with file name and more stuff inside  to choose from """
-    for file_data in mod_files:
-        if file_data[0] == '_':
-            continue
-        # print(str(main_item_dict))
-        # try:
-        with open(file_path + '/' + file_data, encoding='utf-8') as file:
-            files = file_data[:-5]
-            file_data = json.load(file, object_hook=OrderedDict)
-            if 'Fetishes' in file_path:
-                continue
-            # name = file_data['name']
-            # if name != ' ':
-            if 'Events' in file_path:
-                temp_scene_list = []
-                for scenes in file_data['EventText']:
-                    # TODO might need to add to search to choices too
-                    temp_scene_list.append(scenes['NameOfScene'])
-                GlobalVariables.main_game_items['Events']['data'][files] = temp_scene_list
-            elif 'Monsters' in file_path:
-                # name = file_data['IDname']
-                scene_list = {}
-                loss_scene_list = []
-                victory_scene_list = []
-                for scenes in file_data['lossScenes']:
-                    loss_scene_list.append(scenes['NameOfScene'])
-                for scenes in file_data['victoryScenes']:
-                    victory_scene_list.append(scenes['NameOfScene'])
-                scene_list['lossScenes'] = loss_scene_list
-                scene_list['victoryScenes'] = victory_scene_list
-                scene_list['generic'] = file_data['generic']
-                scene_list['skillList'] = file_data['skillList']
-                # temp_file_list.append({name: scene_list})
-                """new organization. file data in main_game_data. later change main_game_item_data to only have path display"""
-                girl_data = {'lossScenes': loss_scene_list, 'victoryScenes': victory_scene_list,
-                             'generic': file_data['generic'], 'skillList': file_data['skillList']}
-                # GlobalVariables.main_game_data['Girls'][files] = girl_data
-                GlobalVariables.main_game_data['Girls'][file_data['IDname']] = girl_data
-
-            elif 'Fetish' in file_path:
-                continue
-            elif 'Skills' in file_path:
-                GlobalVariables.main_game_items['Skills']['data'][files] = {'skillTags': file_data['skillTags'],
-                                                                        'fetishTags': file_data['fetishTags']}
-                # GlobalVariables.main_game_items['Skills_Data'][name] = {'skillTags': file_data['skillTags'],
-                #                                                         'fetishTags': file_data['fetishTags']}
-                # temp_file_list.append(name)
-
-            # else:
-            #     temp_file_list.append(name)
-    # except UnicodeDecodeError as json_load_error:
-    #     print(json_load_error.object)
-    # print('something  wrong with ' + files)
-
-    return
-
-def check_if_addition(field_name, template_name):
-    if 'addition' in GlobalVariables.templates[template_name].json_templates[field_name]:
-        print('found addition')
-    else:
-        print('not addition')
-
-
-def save_modified_scene(scene_text_field, field_title):
-    # if not GlobalVariables.flag_window_edit_data:
-    #     roots = scene_text_field.get_children()
-    #     scene_texts = []
-    #     for root in roots:
-    #         scene_texts.append(scene_text_field.item(root)['text'])
-    #         if scene_text_field.get_children(root):
-    #             leaves = scene_text_field.get_children(root)
-    #             # templist = []
-    #             for leaf in leaves:
-    #                 scene_texts.append(scene_text_field.item(leaf)['text'])
-    #     file_scene_to_update = GlobalVariables.templates['Events'].input_filename.get_val()
-    #     GlobalVariables.current_mod['Events'][file_scene_to_update][field_title] = scene_texts
-
-    # still there is issue in events if speaker is empty!!
-    if not GlobalVariables.flag_window_edit_data:
-        if field_title == 'EventText':
-            GlobalVariables.templates['Events'].save_element_details_in_current_mod(GlobalVariables.current_mod)
-        else:
-            GlobalVariables.templates['Monsters'].save_element_details_in_current_mod(GlobalVariables.current_mod)
+# def load_main_game_item_2(main_path='./../json', element_type='', main_var=None):
+#     """ this should load main game data into global variable, to use later in other fields where you choose items """
+#     mod_directories = [f for f in listdir(main_path) if isdir(join(main_path, f))]
+#     # print(mod_files)
+#     # print(mod_directories)
+#     # recursive go into folders until no more folder available
+#     for element in mod_directories:
+#         temp_dict = {element: []}
+#         main_var.append(temp_dict)
+#         load_main_game_item_2(main_path + '/' + element, element_type, main_var[-1][element])
+#     mod_files = [f for f in listdir(main_path) if isfile(join(main_path, f))]
+#     for file in mod_files:
+#         if file[0] != '_':
+#             main_var.append(file[:-5])
+#     load_main_game_files_data(main_path)
+#
+# def load_main_game_files_data(file_path=''):
+#     mod_files = [f for f in listdir(file_path) if isfile(join(file_path, f))]
+#
+#     """open each file. usually only need name from file, but in some cases also need scene text or maybe something else.
+#     so final list usually is list of file names or dictionaries with file name and more stuff inside  to choose from """
+#     for file_data in mod_files:
+#         if file_data[0] == '_':
+#             continue
+#         # print(str(main_item_dict))
+#         # try:
+#         with open(file_path + '/' + file_data, encoding='utf-8') as file:
+#             files = file_data[:-5]
+#             file_data = json.load(file, object_hook=OrderedDict)
+#             if 'Fetishes' in file_path:
+#                 continue
+#             # name = file_data['name']
+#             # if name != ' ':
+#             if 'Events' in file_path:
+#                 temp_scene_list = []
+#                 for scenes in file_data['EventText']:
+#                     # TODO might need to add to search to choices too
+#                     temp_scene_list.append(scenes['NameOfScene'])
+#                 GlobalVariables.main_game_items['Events']['data'][files] = temp_scene_list
+#             elif 'Monsters' in file_path:
+#                 # name = file_data['IDname']
+#                 scene_list = {}
+#                 loss_scene_list = []
+#                 victory_scene_list = []
+#                 for scenes in file_data['lossScenes']:
+#                     loss_scene_list.append(scenes['NameOfScene'])
+#                 for scenes in file_data['victoryScenes']:
+#                     victory_scene_list.append(scenes['NameOfScene'])
+#                 scene_list['lossScenes'] = loss_scene_list
+#                 scene_list['victoryScenes'] = victory_scene_list
+#                 scene_list['generic'] = file_data['generic']
+#                 scene_list['skillList'] = file_data['skillList']
+#                 # temp_file_list.append({name: scene_list})
+#                 """new organization. file data in main_game_data. later change main_game_item_data to only have path display"""
+#                 girl_data = {'lossScenes': loss_scene_list, 'victoryScenes': victory_scene_list,
+#                              'generic': file_data['generic'], 'skillList': file_data['skillList']}
+#                 # GlobalVariables.main_game_data['Girls'][files] = girl_data
+#                 GlobalVariables.main_game_data['Girls'][file_data['IDname']] = girl_data
+#
+#             elif 'Fetish' in file_path:
+#                 continue
+#             elif 'Skills' in file_path:
+#                 GlobalVariables.main_game_items['Skills']['data'][files] = {'skillTags': file_data['skillTags'],
+#                                                                         'fetishTags': file_data['fetishTags']}
+#                 # GlobalVariables.main_game_items['Skills_Data'][name] = {'skillTags': file_data['skillTags'],
+#                 #                                                         'fetishTags': file_data['fetishTags']}
+#                 # temp_file_list.append(name)
+#
+#             # else:
+#             #     temp_file_list.append(name)
+#     # except UnicodeDecodeError as json_load_error:
+#     #     print(json_load_error.object)
+#     # print('something  wrong with ' + files)
+#
+#     return
 
 
 def load_recent_mods():
-    file_data={}
+    file_data= {}
     if access('recent_mods.json', F_OK):
         with open('recent_mods.json', encoding='utf-8') as file:
             file_data = json.load(file, object_hook=OrderedDict)
@@ -1063,21 +730,21 @@ def load_recent_mods():
     return file_data['recentmods']
 
 
-def unlock_field(field):
-    if field.type in ['text', 'area']:
-        field.setReadOnly(False)
-        field.setFocus()
-    else:
-        field.setEnabled(True)
-    return
-
-
-def lock_field(field):
-    if field.type in ['text', 'area', 'multilist']:
-        field.setReadOnly(True)
-    else:
-        field.setEnabled(False)
-    return
+# def unlock_field(field):
+#     if field.type in ['text', 'area']:
+#         field.setReadOnly(False)
+#         field.setFocus()
+#     else:
+#         field.setEnabled(True)
+#     return
+#
+#
+# def lock_field(field):
+#     if field.type in ['text', 'area', 'multilist']:
+#         field.setReadOnly(True)
+#     else:
+#         field.setEnabled(False)
+#     return
 
 
 def show_message(title, information, win_title):
@@ -1101,6 +768,7 @@ def confirmation_message():
     elif selection == QMessageBox.Cancel:
         return 'cancel'
 
+
 def message_yes_no():
     msg = QMessageBox()
     msg.setInformativeText("Do you want to continue?")
@@ -1112,8 +780,6 @@ def message_yes_no():
     elif selection == QMessageBox.No:
         return 0
 
+
 def get_file_time_modification(file):
     return getmtime(file)
-
-def nice_print_dict(dictA):
-    print('test')

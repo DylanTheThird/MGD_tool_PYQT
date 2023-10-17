@@ -1,20 +1,14 @@
 from os.path import isfile
 import copy
-# # import textwrap
-# # import json
-# # from collections import OrderedDict
 import GlobalVariables
 import otherFunctions
-# import FunctionalWindow
-# import Edit_Data_Window
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import QStandardItemModel, QStandardItem, QAbstractItemView, QSize, QBrush, QColor
 from PyQt5.QtCore import Qt, pyqtSignal
 
 
 """pyqt widges"""
-"""simple fields contains 1 widget, so display and create has not much difference, so display inherits from create.
- display adds option to lock and ulock fields"""
+"""simple fields contains mostly 1 widget"""
 
 
 class CustomWidget:
@@ -31,7 +25,7 @@ class CustomWidget:
             self.custom_layout.addWidget(self.label_custom)
 
     def set_up_widget(self, outside_layout, insert_for_optional=False, insert_pos=0):
-        """insert for optional is mostly for optional fields to insert widget before last stretch"""
+        """insert is mostly for optional fields to insert widget before last stretch"""
         if insert_for_optional:
             if insert_pos == 0:
                 insert_pos = outside_layout.count() - 1
@@ -45,6 +39,7 @@ class CustomWidget:
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
         self.custom_layout.deleteLater()
+
 
 class CustomLabel(QtWidgets.QLabel):
     # doubleClicked = pyqtSignal()
@@ -65,8 +60,10 @@ class CustomLabel(QtWidgets.QLabel):
 
     def change_background_color(self):
         self.setStyleSheet("background-color: red")
+
     def clear_color(self):
         self.setStyleSheet("")
+
 
 class CustomButton(QtWidgets.QPushButton):
     def __init__(self, master, label_text, class_connector=None):
@@ -78,6 +75,7 @@ class CustomButton(QtWidgets.QPushButton):
 
     def change_background_color(self):
         self.setStyleSheet("background-color: red")
+
     def clear_color(self):
         self.setStyleSheet("")
 
@@ -93,8 +91,8 @@ class SimpleEntry(QtWidgets.QLineEdit):
             self.custom_layout = QtWidgets.QVBoxLayout()
             self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
         if field_name:
-            # if len(field_name) < 2:
-            if isinstance(field_name, int):
+            if len(field_name) < 2:
+            # if isinstance(field_name, int):
                 field_name = 'Amount'
             self.label_custom = CustomLabel(master_widget, field_name)
             self.custom_layout.addWidget(self.label_custom)
@@ -109,7 +107,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
         self.setMaximumWidth(220)
         self.row_size = 1
         """this is for multilist display. in case multilist class accepts only 1 value, no points in making entire tree.
-        so intead, just make simple text field, which is created in another class"""
+        so instead, just make simple text field, which is created in another class"""
         self.connector_to_outside_complex_class = class_connector
         self.treeview_with_main_and_mod_data = main_data_treeview
         if field_data:
@@ -120,8 +118,6 @@ class SimpleEntry(QtWidgets.QLineEdit):
             if 'options' in field_data:
                 if 'addition' in field_data['options']:
                     self.addition = True
-
-        # self.temp_master = master
         self.shortcuts = []
         self.setObjectName('entry')
         if edit:
@@ -147,7 +143,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
         self.setText(new_value)
 
     def set_up_widget(self, outside_layout, insert_for_optional=False):
-        """insert for optional is mostly for optional fields to insert widget before last stretch"""
+        """insert is mostly for optional fields to insert widget before last stretch"""
         if insert_for_optional:
             outside_layout.insertLayout(outside_layout.count()-1, self.custom_layout)
             # outside_layout.insertWidget(outside_layout.count()-1, self.custom_layout)
@@ -183,6 +179,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
+
     def center(self):
         self.setAlignment(QtCore.Qt.AlignCenter)
     # def focusOutEvent(self, event):
@@ -191,6 +188,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
 
 
 class SimpleEntryDisplay(SimpleEntry):
+    # TODO might be obsolete
     doubleClicked = pyqtSignal()
 
     def __init__(self, master=None, field_name=None, tooltip_text=None, field_data=None, class_connector=None):
@@ -268,67 +266,6 @@ class NumericEntry(SimpleEntry):
             return super().keyPressEvent(event)
 
 
-class NumericEntryDisplay(NumericEntry):
-    doubleClicked = pyqtSignal()
-
-    def __init__(self, master=None, field_name=None, wid=0, field_data=None, class_connector=None):
-        super().__init__(master=master, field_name=field_name, tooltip_text=tooltip_text, wid=wid, f_data=field_data
-                         , class_connector=class_connector)
-        self.setReadOnly(True)
-        self.doubleClicked.connect(self.modify_field)
-
-    def keyPressEvent(self, event: QtGui.QKeyEvent):
-        if event.key() == Qt.Key_Escape:
-            self.cancel()
-        # elif event.key() == Qt.Key_Return:
-        #     self.save_field()
-        return super().keyPressEvent(event)
-
-    def event(self, event):
-        if event.type() == QEvent.Type.MouseButtonDblClick:
-            self.doubleClicked.emit()
-        return super().event(event)
-
-    def modify_field(self):
-        # if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-        #     if self.addition:
-        #         flag = True
-        #     else:
-        #         flag = False
-        # else:
-        #     flag = True
-        # if flag:
-        if True:
-            self.setReadOnly(False)
-            self.setFocus()
-        return
-
-    def save_field(self, ):
-        if '-' in self.template_name:
-            field_address = self.template_name.split('-')
-            GlobalVariables.current_mod[field_address[0]][GlobalVariables.currentSelectedItem['text']][
-                field_address[1]][
-                self.title] = self.get_val()
-        else:
-            GlobalVariables.current_mod[self.template_name][GlobalVariables.currentSelectedItem['text']][
-                self.title] = self.get_val()
-        self.cancel()
-        return
-
-    # def limit_size_day(self, *args):
-    #     value = self.var.get()
-    #     if len(value) > 3:
-    #         self.var.set(value[:3])
-    #
-    # def check_for_digit(self, event):
-    #     v = event.char
-    #     try:
-    #         v = int(v)
-    #     except ValueError:
-    #         if v != "\x08" and v != "" and v != ".":
-    #             return "break"
-
-
 class AreaEntry(QtWidgets.QTextEdit):
     def __init__(self, master_window=None, label_text=None, tooltip=None, field_data=None,
                  width_i=200, height_i=70, template_name=None, class_connector=None, edit=True, label_pos='V'):
@@ -354,21 +291,15 @@ class AreaEntry(QtWidgets.QTextEdit):
         self.row_size = 4
         # Font_tuple = ("Comic Sans MS", 8)
         # self.field.configure(font=Font_tuple)
-        # self.field.bind('<Double-Button-1>', self.modify_field)
         self.addition = False
         if field_data:
             if 'options' in field_data:
                 if 'addition' in field_data['options']:
                     self.addition = True
-        # self.setMinimumWidth(width_i)
-        # self.setMaximumWidth(120)
-        # # self.setFixedWidth(width_i)
-        # self.setMinimumHeight(height_i)
         if edit:
             self.field_modified_check()
 
     def get_val(self, temp_dict_container=None):
-        # self.data
         field_text = self.toPlainText()
         field_text = field_text.replace('\n', ' ')
         if temp_dict_container is not None:
@@ -391,6 +322,7 @@ class AreaEntry(QtWidgets.QTextEdit):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
+
     def focusInEvent(self, event):
         if self.connector_to_outside_complex_class:
             GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
@@ -407,57 +339,6 @@ class AreaEntry(QtWidgets.QTextEdit):
         else:
             outside_layout.addLayout(self.custom_layout)
         self.custom_layout.setAlignment(QtCore.Qt.AlignCenter)
-
-# obsolete
-# class AreaEntryDisplay(AreaEntry):
-#     doubleClicked = pyqtSignal()
-#
-#     def __init__(self, master=None, field_name=None, tooltip_text=None, template_name=None,
-#                  width_i=200, height_i=70, class_connector=None):
-#         super().__init__(master_window=master, label_text=field_name, tooltip=tooltip_text, template_name=template_name,
-#                          width_i=width_i, height_i=height_i, class_connector=class_connector)
-#         self.setReadOnly(True)
-#         # self.setText('What I would like to do is to execute an action when the text of the QLineEdit is changed programmatically, i.e. by clicking the button , doing the following:')
-#         self.doubleClicked.connect(lambda arg=self: otherFunctions.lock_field(arg))
-#         # self.doubleClicked.connect(otherFunctions.unlock_field(self))
-#         self.shortcut_save_data = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+s'), self)
-#         self.shortcut_save_data.activated.connect(self.save_field)
-#         self.shortcut_save_data = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+e'), self)
-#         self.shortcut_save_data.activated.connect(lambda arg=self: otherFunctions.unlock_field(arg))
-#
-#     def keyPressEvent(self, event: QtGui.QKeyEvent):
-#         if event.key() == Qt.Key_Escape:
-#             otherFunctions.lock_field(self)
-#         return super().keyPressEvent(event)
-#
-#     def modify_field(self):
-#         # if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-#         #     if self.addition:
-#         #         flag = True
-#         #     else:
-#         #         flag = False
-#         # else:
-#         #     flag = True
-#         # if flag:
-#         if True:
-#             self.setReadOnly(False)
-#             self.setFocus()
-#         return
-#
-#     def save_field(self):
-#         print('teste save')
-#         return
-#         if '-' in self.template_name:
-#             field_address = self.template_name.split('-')
-#             GlobalVariables.current_mod[field_address[0]][GlobalVariables.currentSelectedItem['text']][field_address[1]][
-#             self.title] = self.get_val()
-#         else:
-#             GlobalVariables.current_mod[self.template_name][GlobalVariables.currentSelectedItem['text']][
-#                 self.title] = self.get_val()
-#         self.cancel()
-#         return
-#     def index(self):
-#         return self.field.index()
 
 
 class SingleList(QtWidgets.QComboBox):
@@ -519,7 +400,6 @@ class SingleList(QtWidgets.QComboBox):
 
     def reload_options(self, options_list=list):
         if options_list:
-            # self.list = options_list
             self.clear()
             self.list = otherFunctions.getListOptions(options_list, "single")
             self.set_val(self.list)
@@ -536,7 +416,6 @@ class SingleList(QtWidgets.QComboBox):
 
     def clear_val(self):
         self.setCurrentIndex(0)
-        # self.clear()
 
     def field_modified_check(self):
         self.currentIndexChanged.connect(GlobalVariables.Glob_Var.edited_field)
@@ -577,30 +456,11 @@ class SingleList(QtWidgets.QComboBox):
     #         print(self.title)
     #         print(self.list)
 
-# should be obsolete
-class SingleListDisplay(SingleList):
-    def __init__(self, master_window=None, label_text=None, tooltip=None, template_name=None, list_path=None):
-        super().__init__(master_window=master_window, label_text=label_text, tooltip=tooltip, template_name=template_name,
-                         list_path=list_path)
-        # self.setEnabled(False)
-        self.activated.connect(self.modify_field)
-    def modify_field(self):
-        return
-        if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-            if self.addition:
-                flag = True
-            else:
-                flag = False
-        else:
-            flag = True
-        if flag:
-            Edit_Data_Window.ElementEditWindow(structure_path=self.template_name + '-' + self.title,
-                                                          structure_data=self.get_val(), structure_link=self)
-
 
 class UniqueView(QtWidgets.QListView):
     def __init__(self, master, field_title=None, class_connector=None, data_treeview=None):
         super().__init__(parent=master)
+        """this is used for multilist display, to show items that should not repeat"""
         self.connector_to_outside_complex_class = class_connector
         self.type = 'multilist'
         self.tree_model = QStandardItemModel()
@@ -641,10 +501,10 @@ class UniqueView(QtWidgets.QListView):
     def clear_val(self):
         self.tree_model.clear()
         self.setFixedHeight(20)
+
     def add_data(self, node=None, data=[]):
         # example data ['file',{'folder ':['file']}]
         if not node:
-            # node = self.rootnode
             node = self.tree_model
         else:
             if isinstance(node, str):
@@ -668,34 +528,15 @@ class UniqueView(QtWidgets.QListView):
             node.appendRow(bottom_row)
             if self.height() < 100:
                 self.setFixedHeight(self.height() + 20)
-        # if not node:
-        #     # node = self.rootnode
-        #     node = self.tree_model
-        # else:
-        #     if isinstance(node, str):
-        #         node = self.find_node(node)
-        #         node = self.tree_model.itemFromIndex(node)
-        # for values in data:
-        #     if isinstance(values, dict):
-        #         for keys in values:
-        #             parent_row = QStandardItem()
-        #             parent_row.setText(keys)
-        #             if self.flag_folders:
-        #                 parent_row.setEditable(False)
-        #             node.appendRow(parent_row)
-        #             self.add_data(parent_row, values[keys])
-        #     else:
-        #         bottom_row = QStandardItem()
-        #         bottom_row.setText(values)
-        #         bottom_row.setEditable(False)
-        #         node.appendRow(bottom_row)
         if self.flag_edit:
             GlobalVariables.Glob_Var.edited_field()
+
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         if event.key() == Qt.Key_Delete:
             # self.delete_leaf()
             self.delete()
         super().keyPressEvent(event)
+
     def delete(self):
         selected_items_idx = self.selectedIndexes()
         selected_items = []
@@ -708,11 +549,13 @@ class UniqueView(QtWidgets.QListView):
                 self.setFixedHeight(self.height() - 20)
         if self.flag_edit:
             GlobalVariables.Glob_Var.edited_field()
+
     def destroy(self):
         for idx in range(self.custom_layout.count()):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
+
     def get_data(self, parent_index=None, root_list=None):
         """stuff are in a list, where file should be strings, while folders should be dict
         should return something like [row0, row1, {row2:[row20, row21]},[row3column0, row3column1]}"""
@@ -750,6 +593,7 @@ class UniqueView(QtWidgets.QListView):
                 root_list.append(parent_index.data())
             else:
                 return rows_list
+
     def focusInEvent(self, event):
         """when clicked on widget, connect it to main multilist, where it filters appropiate items to select and add"""
         if self.connector_to_outside_complex_class:
@@ -769,9 +613,6 @@ class ElementsList(QtWidgets.QTreeView):
         # TODO ctrl up or down - move rows. Probably cut tthem out and insert
         super().__init__(parent=masterWun)
         self.layout = QtWidgets.QVBoxLayout(masterWun)
-        # self.row_placement = rowPos
-        # self.col_placement = colPos
-        # self.col_span_placement = colspan
         self.title = listTitle
         self.type = 'element_list'
         self.flag_folders = folders
@@ -784,16 +625,10 @@ class ElementsList(QtWidgets.QTreeView):
         self.setHeaderHidden(True)
         self.setModel(self.tree_model)
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-
-        # self.search_var = tk.StringVar()
-        # self.search_var.trace_add("write", self.searchval)
         """seach fields needs to be last as it required different model to be used and
          I dont know how to add and remove from it"""
-        # for example, when limited, find top level element - items, remove other top level stuff, make proxy from it
-        #  and use that proxy model
         if search_field:
             self.flag_search = True
-            # self.entry_search = QtWidgets.QLineEdit(parent=self)
             self.entry_search = SimpleEntry(self, class_connector=self.connector_to_outside_complex_class)
             # self.entry_search.setMinimumWidth(200)
             self.entry_search.setMaximumSize(150, 20)
@@ -811,23 +646,6 @@ class ElementsList(QtWidgets.QTreeView):
         self.layout.addWidget(self)
         self.layout.setAlignment(self, QtCore.Qt.AlignCenter)
         self.layout.addStretch(1)
-
-
-        # self.treeview = QtWidgets.QTreeView(parent=masterWun)
-        # if self.title:
-        #     header = QtWidgets.QHeaderView()
-        #     # header.se
-        #     self.treeview.setHeader()
-        # else:
-        # self.treeview.setHeaderHidden(True)
-        # self.tree_model = QStandardItemModel()
-        # self.treeview.setModel(self.tree_model)
-        # self.rootnode = self.tree_model.invisibleRootItem()
-        # self.setHeaderHidden(True)
-        # self.tree_model = QStandardItemModel()
-
-
-        # self.rootnode = self.tree_model.invisibleRootItem()
         self.rootnode = None
         self.tree_data = []
         # temp_data = ['val 1',
@@ -846,7 +664,6 @@ class ElementsList(QtWidgets.QTreeView):
         self.setMaximumSize(200, 350)
         self.model_index = QtCore.QModelIndex()
         self.back_up_deleted = []
-
         self.flag_delete = delete_flag
 
         self.shortcut_restore = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+z'), self)
@@ -869,7 +686,6 @@ class ElementsList(QtWidgets.QTreeView):
             self.selectionModel().clear()
         super().keyPressEvent(event)
 
-
     def focusInEvent(self, event):
         # might be problems with it, if something, change name and figure out field custom>monster groups
         # print('event-focus-in:', self.objectName())
@@ -884,11 +700,11 @@ class ElementsList(QtWidgets.QTreeView):
         if self.flag_search:
             self.entry_search.hide()
         super().hide()
+
     def show(self):
         if self.flag_search:
             self.entry_search.show()
         super().show()
-
 
     def add_data(self, data=[], node=None, update_flag=False, insert_row=False, data_info = ''):
         if update_flag:
@@ -1049,9 +865,8 @@ class ElementsList(QtWidgets.QTreeView):
         if self.flag_edit:
             GlobalVariables.Glob_Var.edited_field()
 
-
     def add_data_parent_item(self, node=None, data=[]):
-        # same as above, but without final items, just add more rows to parent node
+        # same as above, but without final items, just add more rows to parent node. This is recursive.
         if isinstance(node, str):
             node = self.find_node(node)
             node = self.tree_model.itemFromIndex(node)
@@ -1091,65 +906,6 @@ class ElementsList(QtWidgets.QTreeView):
             if not self.flag_child_editable:
                 bottom_row.setEditable(False)
             node.appendRow(bottom_row)
-
-    def add_data_to_display_old(self, node=None, data=[]):
-        # example data ['file',{'folder ':['file']}]
-        if not node:
-            # node = self.rootnode
-            node = self.tree_model
-        else:
-            if isinstance(node, str):
-                node = self.find_node(node)
-                node = self.tree_model.itemFromIndex(node)
-        if isinstance(data, list):
-            for values in data:
-                self.add_data_to_display(values, node)
-        elif isinstance(data, dict):
-            for key in data:
-                parent_row = QStandardItem()
-                parent_row.setText(key)
-                if self.flag_folders:
-                    parent_row.setEditable(False)
-                node.appendRow(parent_row)
-                self.add_data_to_display(data[key], parent_row)
-        else:
-            """if data is just string"""
-            bottom_row = QStandardItem()
-            bottom_row.setText(data)
-            if not self.flag_child_editable:
-                bottom_row.setEditable(False)
-            node.appendRow(bottom_row)
-        # old, did not always work, as it always required values as list
-        # for values in data:
-        #     """if its [{key:[val]}]"""
-        #     if isinstance(values, dict):
-        #         for keys in values:
-        #             parent_row = QStandardItem()
-        #             parent_row.setText(keys)
-        #             if self.flag_folders:
-        #                 parent_row.setEditable(False)
-        #             node.appendRow(parent_row)
-        #             self.add_data(parent_row, values[keys])
-        #         """if its {key:value}"""
-        #     elif isinstance(data, dict):
-        #         parent_row = QStandardItem()
-        #         parent_row.setText(values)
-        #         bottom_row = QStandardItem()
-        #         bottom_row.setText(data[values])
-        #         if self.flag_folders:
-        #             parent_row.setEditable(False)
-        #         if not self.flag_child_editable:
-        #             bottom_row.setEditable(False)
-        #         parent_row.appendRow(bottom_row)
-        #         node.appendRow(parent_row)
-        #         """if its just string"""
-        #     else:
-        #         bottom_row = QStandardItem()
-        #         bottom_row.setText(values)
-        #         if not self.flag_child_editable:
-        #             bottom_row.setEditable(False)
-        #         node.appendRow(bottom_row)
-
     # def fill_dict_from_model(self, parent_index, root_list):
     #     current_row_folder = {}
     #     sub_level_list = []
@@ -1211,7 +967,6 @@ class ElementsList(QtWidgets.QTreeView):
             col_range = self.tree_model.columnCount()
         current_row_folder = {}
         rows_list = []
-        ix = None
         for i in range(row_range):
             cols_list = []
             for ii in range(col_range):
@@ -1257,40 +1012,11 @@ class ElementsList(QtWidgets.QTreeView):
             else:
                 row_index = self.tree_model.index(i, 0)
             if row_index.data() == node_to_find:
-                found_node = self.tree_model.item(row_index.row(), row_index.column(),)
+                # found_node = self.tree_model.item(row_index.row(), row_index.column(),)
                 return row_index
             search_node = self.find_node(node_to_find, row_index)
             if search_node:
                 return search_node
-    # def get_data_fromtreeview(self, row=0, item=None):
-    #     return
-    #     # cant figure this out, above methods are working nice
-    #     # since here single item does not seem to have access to siblings, i need to check while i have full access
-    #     #  to children. so if has children, go over children, if there is another nested inside, recurrence by that
-    #     temp_list = []
-    #     while True:
-    #         if not item:
-    #             item = self.tree_model.item(row, 0)
-    #         print(item.text())
-    #         if item.hasChildren():
-    #             rowB = 0
-    #             temp_Blist = []
-    #             while item.child(rowB,0):
-    #                 if item.child(rowB,0).hasChildren():
-    #                     self.get_data_fromtreeview(row, item.child(rowB, 0))
-    #                 else:
-    #                     temp_Blist.append(item.child(rowB,0).text())
-    #                 rowB += 1
-    #             temp_dict = {item.text(): temp_Blist}
-    #             temp_list.append(temp_dict)
-    #         else:
-    #             temp_list.append(item.text())
-    #         row += 1
-    #         item = self.tree_model.item(row, 0)
-    #         if not item:
-    #             break
-    #     return temp_list
-
 
     def selected_element(self):
         """selected_index is indexes of items, not items themselfs
@@ -1327,6 +1053,7 @@ class ElementsList(QtWidgets.QTreeView):
         #     return None
 
     def select_element(self, text=str, inverse_selection=False):
+        """this is to select element in treeview. Used in pair with restore selected"""
         if isinstance(text, str):
             element_index = self.find_node(text)
         else:
@@ -1490,11 +1217,13 @@ class ElementsList(QtWidgets.QTreeView):
         # for idx in range(self.tree_model.rowCount()):
         #     item = self.tree_model.item(idx)
         #     item.setSizeHint(QSize(0, new_height))
+
     def change_row_color(self, item, color):
         if color == 'good':
             item.setBackground(QBrush(QColor("#ffffff")))
         else:
             item.setBackground(QBrush(QColor("#ff8080")))
+
     def update_leaf(self, new_text):
         """just change displayed text"""
         selected_item = self.tree_model.itemFromIndex(self.currentIndex())
@@ -1511,43 +1240,6 @@ class ElementsList(QtWidgets.QTreeView):
     #         for values in new_data:
     #             self.treeview.insert(item, 'end', text=values)
     #
-    # def add_data(self, data, branch=''):
-    #     """data here might be a dictionary with lists and stuff, so it needs to be smart"""
-    #     if isinstance(data, dict):
-    #         for keys in data:
-    #             if isinstance(data[keys], list):
-    #                 new_branch = self.treeview.insert(branch, 'end', text=keys)
-    #                 # for value in data[keys]:
-    #                 self.add_data(data[keys], new_branch)
-    #             elif isinstance(data[keys], dict):
-    #                 temp = list(data[keys].keys())
-    #                 new_branch = self.treeview.insert(branch, 'end', text=temp[0])
-    #                 for value in data[keys]:
-    #                     self.add_data(data[keys][value], new_branch)
-    #     else:
-    #         for values in data:
-    #             if isinstance(values, list):
-    #                 new_branch = self.treeview.insert(branch, 'end', text=values)
-    #                 for value in values:
-    #                     self.add_data(value, new_branch)
-    #             elif isinstance(values, dict):
-    #                 temp = list(values.keys())
-    #                 new_branch = self.treeview.insert(branch, 'end', text=temp[0])
-    #                 for value in values:
-    #                     self.add_data(values[value], new_branch)
-    #             else:
-    #                 self.treeview.insert(branch, 'end', text=values)
-    #
-    # def gather_data(self, branch=''):
-    #     temp_list = []
-    #     for leaves in self.treeview.get_children(branch):
-    #         if not self.treeview.get_children(leaves):
-    #             temp_list.append(self.treeview.item(leaves)['text'])
-    #         else:
-    #             temp_dict = {self.treeview.item(leaves)['text']: self.gather_data(leaves)}
-    #             # temp_dict[leaves] = self.gather_data(leaves)
-    #             temp_list.append(temp_dict)
-    #     return temp_list
     #
     # def on_tv_select(self, event):
     #     # curItem = self.treeview.focus()  # element, który otrzymał fokus
@@ -1577,20 +1269,6 @@ class ElementsList(QtWidgets.QTreeView):
     #     #     self.treeview.selection_remove(self.treeview.selection()[0])
     #     #     print(self.treeview.selection())
     #
-    # def hide_tree(self):
-    #     self.treeview.grid_forget()
-    #     self.sb_treeview.grid_forget()
-    #     if self.flag_search:
-    #         self.label_search.grid_forget()
-    #         self.entry_search.grid_forget()
-    #
-    # def show_tree(self):
-    #     self.treeview.grid(row=self.row_placement+1, column=self.col_placement, sticky=tk.NSEW)
-    #     self.sb_treeview.grid(row=self.row_placement+1, column=self.col_placement+1, sticky=tk.NS + tk.E)
-    #     if self.flag_search:
-    #         self.label_search.grid(row=self.row_placement, column=self.col_placement, columnspan=self.col_span_placement, sticky='W')
-    #         self.entry_search.grid(row=self.row_placement, column=self.col_placement, columnspan=self.col_span_placement, sticky='E')
-    #
     def delete_leaf(self, branch=None):
         # if branch is a string, need to find the item, if a list, will have compare by texts and remove
         if branch:
@@ -1616,6 +1294,7 @@ class ElementsList(QtWidgets.QTreeView):
         return
 
     def delete_with_backup(self):
+        """this is used with shortcuts, to be able to restore deleted items."""
         # this is list of indexes for selected items
         items_to_delete = self.selectedIndexes()
         # item_to_delete = self.find_node('sub value 3')
@@ -1678,25 +1357,13 @@ class ElementsList(QtWidgets.QTreeView):
                 branch_to_insert.insertRow(item['index'], new_item)
                 if item['leaves']:
                     self.add_data(item['leaves'], new_item)
-    # def restore_deleted(self):
-    #     if self.back_up_deleted:
-    #         element_to_restore = self.back_up_deleted.pop(-1)
-    #         branch_to_insert = self.tree_model.itemFromIndex(element_to_restore['parent'])
-    #         new_item = QStandardItem()
-    #         new_item.setText(element_to_restore['text'])
-    #         new_item.setEditable(False)
-    #         if not branch_to_insert:
-    #             branch_to_insert = self.tree_model
-    #         branch_to_insert.insertRow(element_to_restore['index'], new_item)
-    #         if element_to_restore['leaves']:
-    #             self.add_data(new_item, element_to_restore['leaves'])
-    #         return
     # # TODO add moving selection up and down
     # def move_up(self):
     #     return
     # #     selected_items = self.treeview.selection_get()
     # def move_down(self):
     #     return
+
     def insert_row(self, new_rows):
         # might need to add if for values, as they probably should be standardItems
         rows_to_insert = []
@@ -1716,8 +1383,6 @@ class ElementsList(QtWidgets.QTreeView):
     def clear_tree(self):
         row_count = self.tree_model.rowCount()
         self.tree_model.removeRows(0, row_count)
-        # for leaves in range(row_count,-1,-1):
-        #     self.tree_model.remov
 
     def clear_val(self):
         self.clear_tree()
@@ -1726,68 +1391,13 @@ class ElementsList(QtWidgets.QTreeView):
         self.title = new_title
         self.setHeaderHidden(False)
         self.tree_model.setHorizontalHeaderLabels([new_title])
-    #
-    # def filter_leafs(self, item, branch):
-    #     # it might works, returning from reversed hidden leafs. this way we put them back in order they were taken away
-    #     # if not work, will have to change to one list as main, filter it and copy to display
-    #     # branches = self.treeview.get_children()
-    #     for leaves in branch:
-    #         leafs = list(self.treeview.get_children(leaves))
-    #         if leafs:
-    #             self.filter_leafs(item, self.treeview.get_children(leaves))
-    #             if not self.treeview.get_children(leaves):
-    #                 # if no more leaves in this branch, hide branch too. we can only interact with leaves.
-    #                 # print('koniec lisci na = ' + leaves)
-    #                 item_parent = self.treeview.parent(leaves)
-    #                 item_no = self.treeview.index(leaves)
-    #                 self.hidden_leafs.append({'itemNumber': item_no, 'itemParent': item_parent, 'itemID': leaves})
-    #                 self.treeview.detach(leaves)
-    #     # for branch in branches:
-    #     #     leafs = list(self.treeview.get_children(branch))
-    #     #
-    #     #     for leaf in leafs:
-    #     #
-    #     #         lvl_2_leaf = self.treeview.get_children(leaf)
-    #     #         if lvl_2_leaf:
-    #     #             print(leaf)
-    #     #     if "_" not in leaves:
-    #     #         continue
-    #         else:
-    #             if item.lower() not in leaves[:leaves.find('_')].lower():
-    #                 item_parent = self.treeview.parent(leaves)
-    #                 item_no = self.treeview.index(leaves)
-    #                 self.hidden_leafs.append({'itemNumber': item_no, 'itemParent': item_parent, 'itemID': leaves})
-    #                 self.treeview.detach(leaves)
-    #     # check if branch still has leaves. if not, hide branch
-    #
-    #         # if item.lower() not in branch[:branch.find('_')].lower():
-    #         #     item_parent = self.treeview.parent(branch)
-    #         #     item_no = self.treeview.index(branch)
-    #         #     self.hidden_leafs.append({'itemNumber': item_no, 'itemParent': item_parent, 'itemID': branch})
-    #         #     self.treeview.detach(branch)
-    #
-    # def display_all(self):
-    #     for hiddenleafs in reversed(self.hidden_leafs):
-    #         self.treeview.reattach(hiddenleafs['itemID'], hiddenleafs['itemParent'], hiddenleafs['itemNumber'])
-    #
-    # def selected_item(self, value='name'):
-    #     # curItem = self.treeview.selection()  # element, który otrzymał fokus
-    #     if self.treeview.selection():
-    #         cur_item = self.treeview.selection()[0]
-    #     else:
-    #         cur_item = ''
-    #     cur_item_name = self.treeview.item(cur_item)["text"]
-    #     if value == 'name':
-    #         return cur_item_name
-    #     else:
-    #         return cur_item
+
     def search_value(self, name='', index='', mode=''):
         # self.setModel(self.sorting)
         search_val = self.entry_search.text()
         self.sorting.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.sorting.setFilterWildcard(search_val)
         # self.setModel(self.tree_model)
-        return
 
     def open_tree(self):
         self.expandAll()
@@ -1813,143 +1423,18 @@ class ElementsList(QtWidgets.QTreeView):
             element_index_to_item = self.sorting.mapToSource(element_index_to_item)
         element_index_to_item = self.tree_model.itemFromIndex(element_index_to_item)
         return element_index_to_item
+
     def set_up_widget(self, outside_layout, insert_for_options=False):
         if insert_for_options:
             outside_layout.insertLayout(outside_layout.count() - 1, self.layout)
         else:
             outside_layout.addLayout(self.layout)
         outside_layout.setAlignment(self, QtCore.Qt.AlignCenter)
-    #
-
-    #
-    # def on_click(self, event):
-    #     return
-    #     #     """Set tag for selected datasets."""
-    #     #
-    #     # # # Remove 'plotted' tag if existent
-    #     # # if 'plotted' in self.treeview.item(self.treeview.selection())['tags']:
-    #     # #     self.treeview.item(self.treeview.selection(), tags=())
-    #     # #
-    #     # # # Select only items that have no children
-    #     # # elif not self.treeview.get_children(self.treeview.selection()):
-    #     #     self.treeview.item(self.treeview.selection(), tags='plotted')
-    #     # # self.treeview.column('#0', anchor=tk.E)
-    # def cancel_selection(self):
-    #     self.treeview.selection_remove(self.treeview.selection()[0])
 
     def set_val(self, data):
         self.add_data_to_display(data)
-class MultiList_old:
-    def __init__(self, master=None, field_name=None, tooltip_text=None,
-                 field_options=[], template_name=None):
-        self.title = field_name
-        self.type = 'multilist'
-        self.template_name = template_name
-        # self.label_custom = custom_label(master, field_name) # cant make doouble click on label, switched to button
-        self.label_custom = CustomButton(master, field_name)
-        self.custom_layout = QtWidgets.QVBoxLayout()
-        self.custom_layout.addWidget(self.label_custom)
-        self.label_custom.setToolTip(tooltip_text)
-        # self.label_custom.change_position('center')
-        # self.label_custom.button_transform()
-        self.field_frame = master
-        """ there should be 3 versions:
-        unique - can add multiple items, cannot duplicate
-        multi_item - items can be duplicated
-        single_item - can only select 1 item  
-        multi_item means if it should be possible to select one item multiple times. this means separate treeview
-         for adding items."""
-        if 'single_item' in field_options:
-            self.version = 'single'
-            self.displayed_value_field = SimpleEntryDisplay(self)
-            self.custom_layout.addWidget(self.displayed_value_field)
-            self.displayed_value_field.doubleClicked.connect(self.on_double_click_edit_field)
-            # self.field.bind("<Double-Button-1>", self.on_double_click_edit_field)
-            # self.field.grid(row=1, column=0, columnspan=3)
-        else:
-            self.version = 'unique'
-            self.final_data_tree = ElementsList(master, field_name)
-            self.custom_layout.addWidget(self.final_data_tree)
-            # self.set_row_size(6)
-            # self.data_tree = ElementsList(self, 3, 0, 'Double Click to Edit', colspan=3, treeview_height=3)
-            # self.data_tree.treeview.configure(selectmode='extended')
-            # self.data_tree.treeview.bind("<Double-Button-1>", self.on_double_click_edit_field)
-            # self.data_tree.treeview.unbind("<Delete>")
-            # self.data_tree.treeview.unbind("<Control_L>")
-
-        self.addition = False
-        if field_options:
-            if 'addition' in field_options:
-                self.addition = True
-
-        # self.set_row_size(5)
-        # self.tree_options_choose = ElementsList(self, 1, 1, field_name, 2, delete_flag=False)
-        # self.data_tree.treeview.bind('<Escape>', lambda event: self.deselect_row())
-        # self.label_custom.doubleClicked.connect(self.edit_value)
-        # self.label_custom.doubleClicked.connect(self.edit_value)
-        self.label_custom.clicked.connect(self.edit_value)
 
 
-    def set_val(self, values):
-        """might not be good, because it only adds. when updating, it should first clear val."""
-        if self.version != 'single':
-            for value in values:
-                if value:
-                    self.data_tree.add_branch(value, [], update_flag=False)
-        else:
-            self.var.set(values)
-    def get_val(self, temp_dict_container=None):
-        if self.version == 'single':
-            temp = self.var.get()
-            if 'CLICK' in temp:
-                temp = ''
-        else:
-            temp = []
-            all_vals = self.data_tree.treeview.get_children()
-            for value in all_vals:
-                temp.append(self.data_tree.treeview.item(value)['text'])
-            # this might be important if there is a problem with values returned somewhere
-            # if len(temp) == 0:
-            #     temp.append('')
-        if temp_dict_container is not None:
-            temp_dict_container[self.title] = temp
-        else:
-            return temp
-
-    def clear_val(self):
-        # self.selected_items.clear()
-        self.var.set('no values')
-        if self.version != 'single':
-            for item in self.data_tree.treeview.get_children():
-                self.data_tree.treeview.delete(item)
-    def on_double_click_edit_field(self, event):
-        # TODO this looks exactly the same?
-        if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-            if self.addition:
-                flag = True
-            else:
-                flag = False
-        else:
-            flag = True
-        if flag:
-            if self.version == 'single':
-                Edit_Data_Window.ElementEditWindow(structure_path=self.template_name + '-' + self.title,
-                                                   structure_data=self.get_val(), structure_link=self)
-            else:
-                region = self.data_tree.treeview.identify("region", event.x, event.y)
-                if region == "heading":
-                    Edit_Data_Window.ElementEditWindow(structure_path=self.template_name + '-' + self.title,
-                                                       structure_data=self.get_val(), structure_link=self)
-    def edit_value(self):
-        print('test edit value miltilist)')
-        item_win = QtWidgets.QDialog(parent=self.field_frame)
-        item_visual = MainGameItemsInNewWindow()
-        item_visual.setupUi(Dialog=item_win)
-        item_win.show()
-
-    def set_up_widget(self, outside_layout):
-        outside_layout.addLayout(self.custom_layout)
-# below is newer version
 class MultiListDisplay:
     """there are 3 types of data here.
     single item - only 1 item allowed, so it could be an input field, where you can type text to autosearch for
@@ -1962,7 +1447,6 @@ class MultiListDisplay:
         self.type = 'multilist'
         self.template_name = template_name
         self.label_custom = CustomLabel(master, field_name)
-        # self.label_custom = custom_button(master, field_name)
         self.addition = False
         self.row_size = 4
         self.limit = 0
@@ -1981,8 +1465,6 @@ class MultiListDisplay:
                 self.limit = field_data['limit']
         if 'tooltip' in field_data:
             self.label_custom.setToolTip(field_data['tooltip'])
-        # self.label_custom.change_position('center')
-        # self.label_custom.button_transform()
         self.field_frame = master
         self.selection_type = ''
         if 'choices' in field_data:
@@ -2016,13 +1498,13 @@ class MultiListDisplay:
             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
             self.label_custom.change_position('C')
         else:
+            # well, this last should probably be simple element list.
             self.final_data = UniqueView(master=master, class_connector=self, data_treeview=main_data_treeview)
             # self.final_data = ElementsList(master, field_name, class_connector=self)
             self.label_custom.change_position('C')
         self.custom_layout.addWidget(self.label_custom)
         self.custom_layout.addWidget(self.final_data)
         self.custom_layout.addStretch(1)
-
             # self.set_row_size(6)
             # self.data_tree = ElementsList(self, 3, 0, 'Double Click to Edit', colspan=3, treeview_height=3)
             # self.data_tree.treeview.configure(selectmode='extended')
@@ -2043,7 +1525,8 @@ class MultiListDisplay:
                 current_count = self.final_data.tree_model.rowCount()
                 if self.limit:
                     if current_count > self.limit:
-                        otherFunctions.show_message('Warning','Reached limit. Please remove some before adding more','Warning')
+                        otherFunctions.show_message('Warning',' Reached limit. Please remove some before adding more'
+                                                    ,'Warning')
                         return
                 current_values = []
                 for idx in range(current_count):
@@ -2056,31 +1539,17 @@ class MultiListDisplay:
             #             TODO maybe add warning?
             else:
                 self.final_data.add_data(data=[values])
+
     def get_val(self, temp_dict_container=None):
-        # if self.version == 'single':
-        #     temp = self.var.get()
-        #     if 'CLICK' in temp:
-        #         temp = ''
-        # else:
-        #     temp = []
-        #     all_vals = self.data_tree.treeview.get_children()
-        #     for value in all_vals:
-        #         temp.append(self.data_tree.treeview.item(value)['text'])
-        #     # this might be important if there is a problem with values returned somewhere
-        #     # if len(temp) == 0:
-        #     #     temp.append('')
         if self.version == 'single':
             return_data = self.final_data.get_val()
-        elif self.version == 'unique':
+        else:
+        # elif self.version == 'unique':
             # since both unique and normal are uniqueView, just get_data should work in both cases
             return_data = self.final_data.get_data()
-            # return_data = []
-            # current_count = self.final_data.count()
-            # for idx in range(current_count):
-            #     item = self.final_data.item(idx)
-            #     return_data.append(item.text())
-        else:
-            return_data = self.final_data.get_data()
+        # else:
+        # since final data is separate custom field, it should have get_data()
+        # return_data = self.final_data.get_data()
         if temp_dict_container is not None:
             temp_dict_container[self.title] = return_data
         else:
@@ -2088,23 +1557,21 @@ class MultiListDisplay:
 
     def clear_val(self):
         if self.version == 'unique':
-            self.final_data.clear()
+            # self.final_data.clear()
+            # should work the same
+            self.final_data.clear_val()
         else:
             self.final_data.clear_val()
+
     def hide(self):
         self.label_custom.hide()
         self.final_data.hide()
+
     def show(self):
         self.final_data.show()
         if self.label_custom.text():
             self.label_custom.show()
-    def edit_value(self):
-        # this is for editing in new window
-        print('test edit value miltilist)')
-        item_win = QtWidgets.QDialog(parent=self.field_frame)
-        item_visual = MainGameItemsInNewWindow()
-        item_visual.setupUi(Dialog=item_win)
-        item_win.show()
+
     def destroy(self):
         # self.custom_layout.deleteLater()
         for idx in range(self.custom_layout.count()):
@@ -2114,6 +1581,7 @@ class MultiListDisplay:
                 if not isinstance(temp, QtWidgets.QSpacerItem):
                     temp.widget().deleteLater()
         self.custom_layout.deleteLater()
+
     def set_up_widget(self, outside_layout, insert_for_options=False):
         if insert_for_options:
             outside_layout.insertLayout(outside_layout.count() - 1, self.custom_layout)
@@ -2121,16 +1589,15 @@ class MultiListDisplay:
             outside_layout.addLayout(self.custom_layout)
         outside_layout.setAlignment(self.custom_layout,QtCore.Qt.AlignCenter)
 
-# this is multilist with main item data.
+
+# this is multilist with main item data. Customized.
 class Main_MultiList:
-    def __init__(self, master=None, field_name=None, tooltip_text=None, main_label_flag=True):
-        # super().__init__(master=master, label=field_name, tooltip=tooltip_text, label_pos=label_position)
+    def __init__(self, master=None, field_name=None, main_label_flag=True):
         self.custom_layout = QtWidgets.QVBoxLayout()
         self.title = field_name
         self.type = 'main_multilist'
         self.edit_flag = False
         select_mode = 'extended'
-        # self.field_frame = master
         """ this contains necessary mod and game items. so Always display treeview and need
          to be updated when adding new mod items."""
         # self.label_info = custom_label(master, 'NOT Editing')
@@ -2157,84 +1624,6 @@ class Main_MultiList:
         self.main_data.shortcut_cut.disconnect()
         self.main_data.shortcut_paste.disconnect()
         self.main_data.doubleClicked.connect(self.add_item_to_multilist)
-        # # if 'multi_item' in field_options:
-        # #     self.version = 'multi'
-        # #     self.set_row_size(6)
-        # # elif 'single_item' in field_options:
-        # #     self.version = 'single'
-        # #     select_mode = 'browse'
-        # # else:
-        # #     self.version = 'unique'
-        # #     self.set_row_size(6)
-        # #  if 'multi_item' in field_options:
-        # #     self.multi_value_flag = True
-        # # else:
-        # #     self.multi_value_flag = False
-        # # if 'single_item' in field_options:
-        # #     self.single_item = 1
-        # #     select_mode = 'browse'
-        # # else:
-        # #     self.single_item = 0
-        # # self.self_button_main = tk.Button(self, text='Click to select values', wraplength=150, textvariable=self.var,
-        # #                                   command=self.open_tree)
-        # self.self_button_main = tk.Button(self, wraplength=150, textvariable=self.var,
-        #                                   command=self.open_tree, text='test')
-        # self.self_button_main.grid(row=1, column=0, columnspan=3)
-        # self.button_done = tk.Button(self, text='DONE', command=self.done)
-        #
-        # """for multi and unique, need buttons to add and delete"""
-        # self.button_select = tk.Button(self, text='ADD', command=self.add_multi_value)
-        # # self.button_select.grid(row=rowposition, column=colpos)
-        # self.button_clear = tk.Button(self, text='DELETE', command=self.delete_multi_value)
-        # self.button_clear.bind('<Shift-c>', self.clear_selected)
-
-        # self.list = otherFunctions.getListOptions(list_path, 'multi')
-        # self.var.set('CLICK')
-        # if 'search' in field_options:
-        #     flag_search_field = True
-        # else:
-        #     flag_search_field = False
-        # self.tree_options_choose = ElementsList(self, 2, 1, field_name, 2,flag_search_field, delete_flag=False)
-        # # masterWun, rowPos, colPos, listTitle, colspan = 1,
-        # for element_name in self.list:
-        #     self.tree_options_choose.add_branch(element_name, self.list[element_name])
-        # self.tree_options_choose.hide_tree()
-        # self.tree_options_choose.treeview.configure(selectmode=select_mode)
-        # self.tree_options_choose.treeview.tag_configure('selected', background='red')
-        # if self.multi_value_flag:
-        #     self.tree_options_choose.treeview.bind('<s>', lambda event: self.add_multi_value())
-        # else:
-        #     self.tree_options_choose.treeview.bind('<s>', lambda event: self.select_row())
-        # self.selected_items = []
-        # self.get, self.set = self.var.get, self.var.set
-        # self.display_flag = True
-        # # if self.multi_value_flag:
-        # # temp = tk.StringVar
-        # # self.self_button_main.configure(textvariable=temp)
-        # # self.button_select['text'] = 'Add'
-        # # self.button_select.configure(command=self.add_multi_value)
-        # # self.button_clear['text'] = 'Delete'
-        # # self.button_clear.configure(command=self.delete_multi_value)
-        # self.data_tree = ElementsList(self, 3, 1, 'Selected values', colspan=2, treeview_height=3)
-        # self.data_tree.treeview.configure(selectmode='extended')
-        # self.data_tree.treeview.bind('<Escape>', lambda event: self.deselect_row())
-        # # if self.version == 'single':
-        # self.data_tree.hide_tree()
-        # self.data_tree_display = False
-        # # else:
-        # if self.version != 'single':
-        #     self.tree_options_choose.treeview.bind('<a>', lambda event: self.add_multi_value())
-        # for key in self.list.keys():
-        #     if 'Mod' in key:
-        #         # if key.find('/') < 0:
-        #         #     end_val_index = len(key)
-        #         # else:
-        #         #     end_val_index = key.find('/')
-        #         element = key[4:]
-        #         GlobalVariables.multi_lists_to_refresh[element].append(self.tree_options_choose)
-        #         break
-        # self.shortcut_restore = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+a'), self)
-        # self.shortcut_restore.activated.connect(self.add_value_to_field)
         self.data_for_display = GlobalVariables.Glob_Var.display_elements_game_and_mod
         """scene source is for functions jump to scene. if its 'current', get data from global-template-field.
         if something else, it should be event name, get also from global-events-search for scenes"""
@@ -2248,6 +1637,7 @@ class Main_MultiList:
             outside_layout.addWidget(self.main_data, 8, 0, 1, 1)
         else:
             outside_layout.addLayout(self.custom_layout)
+
     def connect_multilist(self, multilist):
         # print('connected')
         if self.connected_multilist == multilist or multilist == self:
@@ -2259,6 +1649,7 @@ class Main_MultiList:
             self.label_info.update_label('Add to ' + self.connected_multilist.title)
         self.filter_options(multilist.selection_type)
         # print(multilist.selection_type)
+
     def disconnect_multilist(self):
         # print('disconnected')
         if self.connected_multilist:
@@ -2290,7 +1681,6 @@ class Main_MultiList:
                     for a in list_of_dictionary_scenes[scene]:
                         scene_names.append(list_of_dictionary_scenes[scene][a]['NameOfScene'])
                 self.main_data.add_data(scene_names)
-                # GlobalVariables.Glob_Var.access_templates['Events'].frame_fields[]
             # if flag_current_event:
             #     if self.event == 'EventText':
             #         element = 'Events'
@@ -2356,15 +1746,13 @@ class Main_MultiList:
                 #     value_to_check = list(element.keys())[0]
                 if element in filter:
                     self.main_data.add_data(self.data_for_display[element])
+
     def add_item_to_multilist(self):
         selected_item = self.main_data.selected_element()
         if selected_item and self.connected_multilist:
             if not selected_item.child(0, 0):
-                # selected_item_type = self.main_data.find_root_parent(selected_item)
-                # selection_type = self.connected_multilist.selection_type
-                # if selection_type:
-                #     if selected_item_type.text() in selection_type:
                 self.connected_multilist.set_val(selected_item.text())
+
     def block_tree(self, parent_index=None):
         # need to block edition on all fields
         if parent_index:
@@ -2379,6 +1767,7 @@ class Main_MultiList:
             item = self.main_data.tree_model.itemFromIndex(row_index)
             item.setEditable(False)
             self.block_tree(row_index)
+
     def add_main_game_items(self):
         main_game_items = GlobalVariables.Glob_Var.main_game_items
         for element in main_game_items:
@@ -2386,7 +1775,6 @@ class Main_MultiList:
                 if element == 'Fetishes':
                     self.data_for_display['Fetishes'] = [{'main game': list(main_game_items[element]['Fetish'].keys())}]
                     self.data_for_display['Addiction'] = [{'main game': list(main_game_items[element]['Addiction'].keys())}]
-
                 else:
                     self.data_for_display[element] = [{'main game': main_game_items[element]['path']}]
                 # self.data_for_display
@@ -2424,30 +1812,29 @@ class Main_MultiList:
         # self.main_data.add_data(data={'Sesitivity': skill_tags})
         self.filter_options([])
         return
-    def get_val(self, temp_dict_container=None):
-        if self.version == 'single':
-            temp = self.var.get()
-            # for some reason i had to lower text here?
-            # temp = self.var.get().lower()
-            if temp in ['click', 'CLICK']:
-            # if 'click' in temp or 'CLICK' in temp:
-                temp = ''
-        # elif self.version == 'multi':
-        #     all_vals = self.data_tree.treeview.get_children()
-        #     for value in all_vals:
-        #         temp.append(self.data_tree.treeview.item(value)['text'])
-        else:
-            temp = []
-            all_vals = self.data_tree.treeview.get_children()
-            for value in all_vals:
-                temp.append(self.data_tree.treeview.item(value)['text'])
-            # this might be important if there is a problem with values returned somewhere
-            # if len(temp) == 0:
-            #     temp.append('')
-        if temp_dict_container is not None:
-            temp_dict_container[self.title] = temp
-        else:
-            return temp
+
+    # def get_val(self, temp_dict_container=None):
+    #     if self.version == 'single':
+    #         temp = self.var.get()
+    #         if temp in ['click', 'CLICK']:
+    #         # if 'click' in temp or 'CLICK' in temp:
+    #             temp = ''
+    #     # elif self.version == 'multi':
+    #     #     all_vals = self.data_tree.treeview.get_children()
+    #     #     for value in all_vals:
+    #     #         temp.append(self.data_tree.treeview.item(value)['text'])
+    #     else:
+    #         temp = []
+    #         all_vals = self.data_tree.treeview.get_children()
+    #         for value in all_vals:
+    #             temp.append(self.data_tree.treeview.item(value)['text'])
+    #         # this might be important if there is a problem with values returned somewhere
+    #         # if len(temp) == 0:
+    #         #     temp.append('')
+    #     if temp_dict_container is not None:
+    #         temp_dict_container[self.title] = temp
+    #     else:
+    #         return temp
 
     def clear_val(self):
         """when creating new mod, this should be called to remove stuff from previous mod"""
@@ -2459,171 +1846,6 @@ class Main_MultiList:
             self.data_for_display[item] = []
             self.data_for_display[item].append(temp)
         self.data_for_display['Stances']['Custom'] = []
-
-    def open_tree(self):
-        # print('open tree')
-        if self.version != 'single':
-            self.button_select.grid(row=1, column=1, sticky='W')
-            self.button_clear.grid(row=1, column=1)
-        else:
-            selected_values = self.var.get()
-            if len(selected_values) > 1:
-                # self.selected_items = selected_values[1:]
-                self.select_loaded_items_in_tree()
-                # self.selected_items = selected_values[1:]
-        self.button_done.grid(row=1, column=1, sticky='E')
-
-        # print(selected_values)
-        self.self_button_main.grid_forget()
-        """for now, there is usually word OPTION in list, so if there is something selected, there will be more
-        since selectItemsInTree removes items from the selectedItems list, i make a temp list, which later is
-        copied back to the selectedItems. This way, when done selecting, no need to iterate over the treeview to check
-        for selected tags, just display what is in the selectedItems list"""
-        # if len(selected_values) > 1:
-        #     self.selected_items = selected_values[1:]
-        #     self.select_loaded_items_in_tree()
-        #     self.selected_items = selected_values[1:]
-        # self.var.set("                                                              ")
-        # self.button_select.grid(row=self.start_pos_row, column=self.start_pos_col)
-        # self.button_clear.grid(row=self.start_pos_row, column=self.start_pos_col + 1)
-        # self.button_done.grid(row=self.start_pos_row, column=self.start_pos_col + 2)
-
-        self.tree_options_choose.show_tree()
-    def select_row_notused(self):
-        # print(self.selected_items)
-        # print(str(self.treeview_optionstochoose.treeview.selection()))
-        user_selection = self.tree_options_choose.treeview.selection()
-        if not user_selection:
-            return
-        if self.single_item and len(user_selection)>1:
-            messagebox.showwarning('only single item allowed','Please select only 1 item', parent=self)
-            return
-        for selection in user_selection:
-            if self.tree_options_choose.treeview.get_children(selection) == ():
-                if 'selected' in self.tree_options_choose.treeview.item(selection)['tags']:
-                    self.tree_options_choose.treeview.item(selection, tags=())
-                    self.selected_items.remove(self.tree_options_choose.treeview.item(selection)['text'])
-                    if self.single_item > 0:
-                        self.single_item -= 1
-                else:
-                    if self.single_item > 0:
-                        if self.single_item > 1:
-                            messagebox.showwarning('only single item allowed', 'Please deselect previous item', parent=self)
-                            return
-                        else:
-                            self.single_item += 1
-                    self.tree_options_choose.treeview.item(selection, tags='selected')
-                    self.selected_items.append(self.tree_options_choose.treeview.item(selection)['text'])
-        self.tree_options_choose.treeview.selection_remove(self.tree_options_choose.treeview.selection()[0])
-        # self.edit_flag = True
-    def clear_selected_notused(self):
-        warning = messagebox.askokcancel("clearing all items", "are you sure you want to clear all selected items?", parent=self)
-        if warning:
-            self.clear_all_tags()
-            self.selected_items = []
-            if self.single_item > 1:
-                self.single_item -= 1
-        self.edit_flag = True
-    def clear_all_tags_notused(self, item=''):
-        # print('test')
-        # recursivly search all lowest levels and clear tags
-        children_of_item = self.tree_options_choose.treeview.get_children(item)
-        if children_of_item:
-            for items in children_of_item:
-                self.clear_all_tags(items)
-        else:
-            if 'selected' in self.tree_options_choose.treeview.item(item)['tags']:
-                self.tree_options_choose.treeview.item(item, tags=())
-
-    def select_loaded_items_in_tree(self, item_to_check=''):
-        children_of_item = self.tree_options_choose.treeview.get_children(item_to_check)
-        if children_of_item:
-            for items in children_of_item:
-                if self.select_loaded_items_in_tree(items):
-                    break
-        else:
-            if self.var.get() == self.tree_options_choose.treeview.item(item_to_check)['text']:
-                # self.tree_options_choose.treeview.item(item_to_check, tags='selected')
-                self.tree_options_choose.treeview.selection_set(item_to_check)
-                return True
-            # for select in self.selected_items:
-                # if select == self.tree_options_choose.treeview.item(item_to_check)['text']:
-                #     self.tree_options_choose.treeview.item(item_to_check, tags='selected')
-                #     self.selected_items.remove(select)
-                # break
-
-    def done(self):
-        # print('done in multilist')
-        """similar to function display list tree, hide buttons, treeview and update main button with items from
-        selectedItems list"""
-        # self.treeview_optionstochoose.hide_tree()
-        # print(str(self.treeview_optionstochoose.treeview.item(self.treeview_optionstochoose.treeview.focus())))
-        if self.tree_options_choose.treeview.winfo_ismapped():
-            self.tree_options_choose.hide_tree()
-        if self.version != 'single':
-            self.button_select.grid_forget()
-            self.button_clear.grid_forget()
-        self.button_done.grid_forget()
-        if self.version == 'single':
-            selected = self.tree_options_choose.selected_item()
-            if selected:
-                self.var.set(selected)
-                self.self_button_main['text'] = 'Selected ' + selected
-        # if self.edit_flag:
-        #         if self.multi_value_flag:
-        #             for branches in self.data_tree.treeview.get_children():
-        #                 self.selected_items.append(self.data_tree.treeview.item(branches)['text'])
-        #         final_selected_items_text = 'OPTIONS'
-        #         for selected in self.selected_items:
-        #             final_selected_items_text += '\n' + selected
-        #         self.var.set(final_selected_items_text)
-        self.self_button_main.grid(row=1, column=0, columnspan=2)
-        # self.edit_flag = False
-
-    def display(self, flag=None):
-        if flag is None:
-            flag = self.display_flag
-        if flag:
-            self.grid_forget()
-            self.tree_options_choose.hide_tree()
-            self.display_flag = False
-        else:
-            self.self_button_main.grid(row=self.start_pos_row + 1, column=0, columnspan=2)
-            self.tree_options_choose.show_tree()
-            self.display_flag = True
-
-    def add_multi_value(self, single_value=None):
-        if not self.data_tree_display:
-            self.data_tree.show_tree()
-            self.data_tree_display = True
-        if single_value:
-            item = single_value
-        else:
-            item = self.tree_options_choose.selected_item()
-        if self.version == 'unique':
-            temp = self.tree_options_choose.selected_item(value='name')
-            current_added = self.data_tree.treeview.get_children()
-            for child in current_added:
-                if temp == self.data_tree.treeview.item(child)['text']:
-                    messagebox.showerror('Only unique', 'No points in repeating data', parent=self)
-                    return
-            # if temp in current_added:
-        # self.data_tree.add_branch(item, [], update_flag=False)
-        self.data_tree.add_leaves_simple('', [item])
-        # self.data_tree.add_leaf('', self.tree_options_choose.selected_item(value='code'), item)
-        self.edit_flag = True
-        # self.selected_items.append(item)
-        # self.var.set(self.var.get() + '\n' + item)
-
-    def delete_multi_value(self):
-        item = self.data_tree.selected_item(value='code')
-        self.data_tree.delete_leaf(item)
-        if not self.data_tree.treeview.get_children():
-            self.data_tree.hide_tree()
-        self.edit_flag = True
-
-    def deselect_row(self):
-        self.data_tree.treeview.selection_remove(self.data_tree.treeview.selection()[0])
 
     def update_with_mod_item(self, mod_tree_copy):
         """new approach - spread it to appropiate branches"""
@@ -2689,7 +1911,6 @@ class Main_MultiList:
         mod_item.removeRows(0,mod_item.rowCount())
         new_values_without_empty_items = {}
         for items in new_values:
-
             if len(new_values[items]) > 0:
                 new_values_without_empty_items[items] = new_values[items]
         self.main_data.add_data_to_display(new_values_without_empty_items, mod_item)
@@ -2711,7 +1932,6 @@ class Main_MultiList:
                     if data['targetType'] == 'single':
                         temp_data.append(a)
         return temp_data
-
 
     def add_folder(self, parent_text, folder_name):
         # mod_item = self.main_data.tree_model.item(0, 0)
@@ -2742,427 +1962,7 @@ class Main_MultiList:
     def show(self):
         self.main_data.show()
         self.main_data.entry_search.show()
-# class MultiListDisplay(SimpleField):
-#     def __init__(self, master=None, field_name=None, tooltip_text=None, label_position='U',
-#                  field_options=[], template_name=None):
-#         super().__init__(master=master, label=field_name, tooltip=tooltip_text, label_pos=label_position)
-#         self.var = tk.StringVar()
-#         self.title = field_name
-#         self.type = 'multilist'
-#         self.template_name = template_name
-#         # self.field_frame = master
-#         """ there should be 3 versions:
-#         unique - can add multiple items, cannot duplicate
-#         multi_item - items can be duplicated
-#         single_item - can only select 1 item
-#         multi_item means if it should be possible to select one item multiple times. this means separate treeview
-#          for adding items."""
-#         if 'single_item' in field_options:
-#             self.version = 'single'
-#             self.field = tk.Entry(self, textvariable=self.var, state='disabled')
-#             self.field.bind("<Double-Button-1>", self.on_double_click_edit_field)
-#             self.field.grid(row=1, column=0, columnspan=3)
-#         else:
-#             self.version = 'unique'
-#             self.set_row_size(6)
-#             self.data_tree = ElementsList(self, 3, 0, 'Double Click to Edit', colspan=3, treeview_height=3)
-#             self.data_tree.treeview.configure(selectmode='extended')
-#             self.data_tree.treeview.bind("<Double-Button-1>", self.on_double_click_edit_field)
-#             self.data_tree.treeview.unbind("<Delete>")
-#             self.data_tree.treeview.unbind("<Control_L>")
-#
-#         self.addition = False
-#         if field_options:
-#             if 'addition' in field_options:
-#                 self.addition = True
-#         self.set_row_size(5)
-#         # self.tree_options_choose = ElementsList(self, 1, 1, field_name, 2, delete_flag=False)
-#         # masterWun, rowPos, colPos, listTitle, colspan = 1,
-#         self.get, self.set = self.var.get, self.var.set
-#         # self.data_tree.treeview.bind('<Escape>', lambda event: self.deselect_row())
-#
-#     def set_val(self, values):
-#         """might not be good, because it only adds. when updating, it should first clear val."""
-#         if self.version != 'single':
-#             for value in values:
-#                 if value:
-#                     self.data_tree.add_branch(value, [], update_flag=False)
-#         else:
-#             self.var.set(values)
-#     def get_val(self, temp_dict_container=None):
-#         if self.version == 'single':
-#             temp = self.var.get()
-#             if 'CLICK' in temp:
-#                 temp = ''
-#         else:
-#             temp = []
-#             all_vals = self.data_tree.treeview.get_children()
-#             for value in all_vals:
-#                 temp.append(self.data_tree.treeview.item(value)['text'])
-#             # this might be important if there is a problem with values returned somewhere
-#             # if len(temp) == 0:
-#             #     temp.append('')
-#         if temp_dict_container is not None:
-#             temp_dict_container[self.title] = temp
-#         else:
-#             return temp
-#
-#     def clear_val(self):
-#         # self.selected_items.clear()
-#         self.var.set('no values')
-#         if self.version != 'single':
-#             for item in self.data_tree.treeview.get_children():
-#                 self.data_tree.treeview.delete(item)
-#     def on_double_click_edit_field(self, event):
-#         # TODO this looks exactly the same?
-#         if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-#             if self.addition:
-#                 flag = True
-#             else:
-#                 flag = False
-#         else:
-#             flag = True
-#         if flag:
-#             if self.version == 'single':
-#                 Edit_Data_Window.ElementEditWindow(structure_path=self.template_name + '-' + self.title,
-#                                                    structure_data=self.get_val(), structure_link=self)
-#             else:
-#                 region = self.data_tree.treeview.identify("region", event.x, event.y)
-#                 if region == "heading":
-#                     Edit_Data_Window.ElementEditWindow(structure_path=self.template_name + '-' + self.title,
-#                                                        structure_data=self.get_val(), structure_link=self)
-#
-#     def bind_control(self, binding):
-#         if binding:
-#             self.data_tree.bind('<Double-Button-1>', self.on_double_click_edit_field)
-#         else:
-#
-#             self.data_tree.unbind('<Double-Button-1>')
-#
-# class MultiList(SimpleField):
-#     def __init__(self, master=None, field_name=None, tooltip_text=None, label_position='U',
-#                  list_path=['test'], field_options=[]):
-#         super().__init__(master=master, label=field_name, tooltip=tooltip_text, label_pos=label_position)
-#         self.start_pos_row = 1
-#         self.start_pos_col = 1
-#         self.var = tk.StringVar()
-#         self.title = field_name
-#         self.type = 'multilist'
-#         self.edit_flag = False
-#         select_mode = 'extended'
-#         # self.field_frame = master
-#         """ there should be 3 versions:
-#         unique - can add multiple items, cannot duplicate
-#         multi_item - items can be duplicated
-#         single_item - can only select 1 item
-#         multi_item means if it should be possible to select one item multiple times. this means separate treeview
-#          for adding items."""
-#
-#         self.set_row_size(2)
-#         if 'multi_item' in field_options:
-#             self.version = 'multi'
-#             self.set_row_size(6)
-#         elif 'single_item' in field_options:
-#             self.version = 'single'
-#             select_mode = 'browse'
-#         else:
-#             self.version = 'unique'
-#             self.set_row_size(6)
-#         #  if 'multi_item' in field_options:
-#         #     self.multi_value_flag = True
-#         # else:
-#         #     self.multi_value_flag = False
-#         # if 'single_item' in field_options:
-#         #     self.single_item = 1
-#         #     select_mode = 'browse'
-#         # else:
-#         #     self.single_item = 0
-#         # self.self_button_main = tk.Button(self, text='Click to select values', wraplength=150, textvariable=self.var,
-#         #                                   command=self.open_tree)
-#         self.self_button_main = tk.Button(self, wraplength=150, textvariable=self.var,
-#                                           command=self.open_tree, text='test')
-#         self.self_button_main.grid(row=1, column=0, columnspan=3)
-#         self.button_done = tk.Button(self, text='DONE', command=self.done)
-#
-#         """for multi and unique, need buttons to add and delete"""
-#         self.button_select = tk.Button(self, text='ADD', command=self.add_multi_value)
-#         # self.button_select.grid(row=rowposition, column=colpos)
-#         self.button_clear = tk.Button(self, text='DELETE', command=self.delete_multi_value)
-#         # self.button_clear.bind('<Shift-c>', self.clear_selected)
-#
-#         self.list = otherFunctions.getListOptions(list_path, 'multi')
-#         self.var.set('CLICK')
-#         if 'search' in field_options:
-#             flag_search_field = True
-#         else:
-#             flag_search_field = False
-#         self.tree_options_choose = ElementsList(self, 2, 1, field_name, 2,flag_search_field, delete_flag=False)
-#         # masterWun, rowPos, colPos, listTitle, colspan = 1,
-#         for element_name in self.list:
-#             self.tree_options_choose.add_branch(element_name, self.list[element_name])
-#         self.tree_options_choose.hide_tree()
-#         self.tree_options_choose.treeview.configure(selectmode=select_mode)
-#         # self.tree_options_choose.treeview.tag_configure('selected', background='red')
-#         # if self.multi_value_flag:
-#         #     self.tree_options_choose.treeview.bind('<s>', lambda event: self.add_multi_value())
-#         # else:
-#         #     self.tree_options_choose.treeview.bind('<s>', lambda event: self.select_row())
-#         # self.selected_items = []
-#         self.get, self.set = self.var.get, self.var.set
-#         self.display_flag = True
-#         # if self.multi_value_flag:
-#         # temp = tk.StringVar
-#         # self.self_button_main.configure(textvariable=temp)
-#         # self.button_select['text'] = 'Add'
-#         # self.button_select.configure(command=self.add_multi_value)
-#         # self.button_clear['text'] = 'Delete'
-#         # self.button_clear.configure(command=self.delete_multi_value)
-#         self.data_tree = ElementsList(self, 3, 1, 'Selected values', colspan=2, treeview_height=3)
-#         self.data_tree.treeview.configure(selectmode='extended')
-#         self.data_tree.treeview.bind('<Escape>', lambda event: self.deselect_row())
-#         # if self.version == 'single':
-#         self.data_tree.hide_tree()
-#         self.data_tree_display = False
-#         # else:
-#         if self.version != 'single':
-#             self.tree_options_choose.treeview.bind('<a>', lambda event: self.add_multi_value())
-#         for key in self.list.keys():
-#             if 'Mod' in key:
-#                 # if key.find('/') < 0:
-#                 #     end_val_index = len(key)
-#                 # else:
-#                 #     end_val_index = key.find('/')
-#                 element = key[4:]
-#                 GlobalVariables.multi_lists_to_refresh[element].append(self.tree_options_choose)
-#                 break
-#
-#     def set_val(self, values):
-#         if self.version != 'single':
-#             for value in values:
-#                 if value:
-#                     self.data_tree.add_branch(value, [], update_flag=False)
-#                     if not self.data_tree_display:
-#                         self.data_tree.show_tree()
-#                         self.data_tree_display = True
-#         else:
-#             # temp = 'OPTIONS'
-#             # if not isinstance(values, list):
-#             #     values = [values]
-#             # for value in values:
-#             #     if value == '':
-#             #         continue
-#             #     temp = temp + '\n' + value
-#             self.var.set(values)
-#             self.self_button_main['text'] = 'Selected ' + values
-#     def get_val(self, temp_dict_container=None):
-#         if self.version == 'single':
-#             temp = self.var.get()
-#             # for some reason i had to lower text here?
-#             # temp = self.var.get().lower()
-#             if temp in ['click', 'CLICK']:
-#             # if 'click' in temp or 'CLICK' in temp:
-#                 temp = ''
-#         # elif self.version == 'multi':
-#         #     all_vals = self.data_tree.treeview.get_children()
-#         #     for value in all_vals:
-#         #         temp.append(self.data_tree.treeview.item(value)['text'])
-#         else:
-#             temp = []
-#             all_vals = self.data_tree.treeview.get_children()
-#             for value in all_vals:
-#                 temp.append(self.data_tree.treeview.item(value)['text'])
-#             # this might be important if there is a problem with values returned somewhere
-#             # if len(temp) == 0:
-#             #     temp.append('')
-#         if temp_dict_container is not None:
-#             temp_dict_container[self.title] = temp
-#         else:
-#             return temp
-#
-#     def clear_val(self):
-#         # self.selected_items.clear()
-#         self.var.set('Click to select values')
-#         # self.clear_all_tags()
-#         # if self.single_item != 0:
-#         #     self.single_item = 1
-#         for item in self.tree_options_choose.treeview.selection():
-#             self.tree_options_choose.treeview.selection_remove(item)
-#         if self.version != 'single':
-#             for item in self.data_tree.treeview.get_children():
-#                 self.data_tree.treeview.delete(item)
-#         if self.data_tree_display:
-#             self.data_tree.hide_tree()
-#             self.data_tree_display = False
-#
-#     def open_tree(self):
-#         # print('open tree')
-#         if self.version != 'single':
-#             self.button_select.grid(row=1, column=1, sticky='W')
-#             self.button_clear.grid(row=1, column=1)
-#         else:
-#             selected_values = self.var.get()
-#             if len(selected_values) > 1:
-#                 # self.selected_items = selected_values[1:]
-#                 self.select_loaded_items_in_tree()
-#                 # self.selected_items = selected_values[1:]
-#         self.button_done.grid(row=1, column=1, sticky='E')
-#
-#         # print(selected_values)
-#         self.self_button_main.grid_forget()
-#         """for now, there is usually word OPTION in list, so if there is something selected, there will be more
-#         since selectItemsInTree removes items from the selectedItems list, i make a temp list, which later is
-#         copied back to the selectedItems. This way, when done selecting, no need to iterate over the treeview to check
-#         for selected tags, just display what is in the selectedItems list"""
-#         # if len(selected_values) > 1:
-#         #     self.selected_items = selected_values[1:]
-#         #     self.select_loaded_items_in_tree()
-#         #     self.selected_items = selected_values[1:]
-#         # self.var.set("                                                              ")
-#         # self.button_select.grid(row=self.start_pos_row, column=self.start_pos_col)
-#         # self.button_clear.grid(row=self.start_pos_row, column=self.start_pos_col + 1)
-#         # self.button_done.grid(row=self.start_pos_row, column=self.start_pos_col + 2)
-#
-#         self.tree_options_choose.show_tree()
-#     def select_row_notused(self):
-#         # print(self.selected_items)
-#         # print(str(self.treeview_optionstochoose.treeview.selection()))
-#         user_selection = self.tree_options_choose.treeview.selection()
-#         if not user_selection:
-#             return
-#         if self.single_item and len(user_selection)>1:
-#             messagebox.showwarning('only single item allowed','Please select only 1 item', parent=self)
-#             return
-#         for selection in user_selection:
-#             if self.tree_options_choose.treeview.get_children(selection) == ():
-#                 if 'selected' in self.tree_options_choose.treeview.item(selection)['tags']:
-#                     self.tree_options_choose.treeview.item(selection, tags=())
-#                     self.selected_items.remove(self.tree_options_choose.treeview.item(selection)['text'])
-#                     if self.single_item > 0:
-#                         self.single_item -= 1
-#                 else:
-#                     if self.single_item > 0:
-#                         if self.single_item > 1:
-#                             messagebox.showwarning('only single item allowed', 'Please deselect previous item', parent=self)
-#                             return
-#                         else:
-#                             self.single_item += 1
-#                     self.tree_options_choose.treeview.item(selection, tags='selected')
-#                     self.selected_items.append(self.tree_options_choose.treeview.item(selection)['text'])
-#         self.tree_options_choose.treeview.selection_remove(self.tree_options_choose.treeview.selection()[0])
-#         # self.edit_flag = True
-#     def clear_selected_notused(self):
-#         warning = messagebox.askokcancel("clearing all items", "are you sure you want to clear all selected items?", parent=self)
-#         if warning:
-#             self.clear_all_tags()
-#             self.selected_items = []
-#             if self.single_item > 1:
-#                 self.single_item -= 1
-#         self.edit_flag = True
-#     def clear_all_tags_notused(self, item=''):
-#         # print('test')
-#         # recursivly search all lowest levels and clear tags
-#         children_of_item = self.tree_options_choose.treeview.get_children(item)
-#         if children_of_item:
-#             for items in children_of_item:
-#                 self.clear_all_tags(items)
-#         else:
-#             if 'selected' in self.tree_options_choose.treeview.item(item)['tags']:
-#                 self.tree_options_choose.treeview.item(item, tags=())
-#
-#     def select_loaded_items_in_tree(self, item_to_check=''):
-#         children_of_item = self.tree_options_choose.treeview.get_children(item_to_check)
-#         if children_of_item:
-#             for items in children_of_item:
-#                 if self.select_loaded_items_in_tree(items):
-#                     break
-#         else:
-#             if self.var.get() == self.tree_options_choose.treeview.item(item_to_check)['text']:
-#                 # self.tree_options_choose.treeview.item(item_to_check, tags='selected')
-#                 self.tree_options_choose.treeview.selection_set(item_to_check)
-#                 return True
-#             # for select in self.selected_items:
-#                 # if select == self.tree_options_choose.treeview.item(item_to_check)['text']:
-#                 #     self.tree_options_choose.treeview.item(item_to_check, tags='selected')
-#                 #     self.selected_items.remove(select)
-#                 # break
-#
-#     def done(self):
-#         # print('done in multilist')
-#         """similar to function display list tree, hide buttons, treeview and update main button with items from
-#         selectedItems list"""
-#         # self.treeview_optionstochoose.hide_tree()
-#         # print(str(self.treeview_optionstochoose.treeview.item(self.treeview_optionstochoose.treeview.focus())))
-#         if self.tree_options_choose.treeview.winfo_ismapped():
-#             self.tree_options_choose.hide_tree()
-#         if self.version != 'single':
-#             self.button_select.grid_forget()
-#             self.button_clear.grid_forget()
-#         self.button_done.grid_forget()
-#         if self.version == 'single':
-#             selected = self.tree_options_choose.selected_item()
-#             if selected:
-#                 self.var.set(selected)
-#                 self.self_button_main['text'] = 'Selected ' + selected
-#         # if self.edit_flag:
-#         #         if self.multi_value_flag:
-#         #             for branches in self.data_tree.treeview.get_children():
-#         #                 self.selected_items.append(self.data_tree.treeview.item(branches)['text'])
-#         #         final_selected_items_text = 'OPTIONS'
-#         #         for selected in self.selected_items:
-#         #             final_selected_items_text += '\n' + selected
-#         #         self.var.set(final_selected_items_text)
-#         self.self_button_main.grid(row=1, column=0, columnspan=2)
-#         # self.edit_flag = False
-#
-#     def display(self, flag=None):
-#         if flag is None:
-#             flag = self.display_flag
-#         if flag:
-#             self.grid_forget()
-#             self.tree_options_choose.hide_tree()
-#             self.display_flag = False
-#         else:
-#             self.self_button_main.grid(row=self.start_pos_row + 1, column=0, columnspan=2)
-#             self.tree_options_choose.show_tree()
-#             self.display_flag = True
-#
-#     def add_multi_value(self, single_value=None):
-#         if not self.data_tree_display:
-#             self.data_tree.show_tree()
-#             self.data_tree_display = True
-#         if single_value:
-#             item = single_value
-#         else:
-#             item = self.tree_options_choose.selected_item()
-#         if self.version == 'unique':
-#             temp = self.tree_options_choose.selected_item(value='name')
-#             current_added = self.data_tree.treeview.get_children()
-#             for child in current_added:
-#                 if temp == self.data_tree.treeview.item(child)['text']:
-#                     messagebox.showerror('Only unique', 'No points in repeating data', parent=self)
-#                     return
-#             # if temp in current_added:
-#         # self.data_tree.add_branch(item, [], update_flag=False)
-#         self.data_tree.add_leaves_simple('', [item])
-#         # self.data_tree.add_leaf('', self.tree_options_choose.selected_item(value='code'), item)
-#         self.edit_flag = True
-#         # self.selected_items.append(item)
-#         # self.var.set(self.var.get() + '\n' + item)
-#
-#     def delete_multi_value(self):
-#         item = self.data_tree.selected_item(value='code')
-#         self.data_tree.delete_leaf(item)
-#         if not self.data_tree.treeview.get_children():
-#             self.data_tree.hide_tree()
-#         self.edit_flag = True
-#
-#     def deselect_row(self):
-#         self.data_tree.treeview.selection_remove(self.data_tree.treeview.selection()[0])
-#
-#     # def reload_options(self, new_values):
-#     #     self.list = new_values
-#     #     for element_name in self.list:
-#     #         self.tree_options_choose.add_branch(element_name, self.list[element_name])
+
 
 class FileField:
     def __init__(self, master=None, field_name=None, field_data=None, mode=1, template_name=None):
@@ -3210,7 +2010,6 @@ class FileField:
                 file_name = val.split('/')[-1]
                 self.files_container[file_name] = val
                 self.file_display.addItem(file_name)
-
             if self.flag_edit:
                 GlobalVariables.Glob_Var.edited_field()
 
@@ -3309,19 +2108,19 @@ class FileField:
             self.files_container.pop(item_to_delete_from_container.text())
         return
 
-    def focusInEvent(self, event):
-        if self.connector_to_outside_complex_class:
-            GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-        else:
-            GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-        super().focusInEvent(event)
+    # def focusInEvent(self, event):
+    #     if self.connector_to_outside_complex_class:
+    #         GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
+    #     else:
+    #         GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
+    #     super().focusInEvent(event)
 
 
 class InputList(CustomWidget):
     def __init__(self, master=None, flag_delete=False, field_name=None, pass_tooltip=None, field_data={}):
         super().__init__(master_widget=master, field_name=field_name, label_pos='H')
-        """here i attempt to test the other way of making customer widget, which is with 
-        default customer widget with defs instead of making customer Entry, list etc and each having same defs
+        """here i attempt to test the other way of making custom widget, which is with 
+        default custom widget with defs instead of making custom Entry, list etc and each having same defs
         and here specific widget should be named self.field"""
         self.label_custom.setToolTip(pass_tooltip)
         # self.label_custom.change_position('L')
@@ -3377,19 +2176,6 @@ class InputList(CustomWidget):
         else:
             self.field.addItems(self.list_values)
 
-    def select_val(self, *args):
-        """get selected item from displayed list, put it in the entry(var) and hide the list"""
-        val = self.field_list.get(self.field_list.curselection())
-        self.var.set(val)
-        self.field_list.grid_forget()
-        self.displayed_list = False
-        """if selected entry is file, it should trigger file load, get file path and put the path instead."""
-        if val == 'file':
-            temp = otherFunctions.browse_files(False, False)[0]
-            file_path = temp[temp.find('game'):]
-            file_path = file_path.replace('game', '...')
-            self.var.set(file_path)
-
     def delete_val(self):
         """for now, deleting will be mainly for choices and maybe displayed characters."""
         val_to_delete = self.field.currentText()
@@ -3407,11 +2193,6 @@ class CheckBox(QtWidgets.QCheckBox):
         super().__init__(parent=master_window)
         self.return_value = return_value
         self.setText(field_name)
-        # self.custom_widget = QtWidgets.QWidget()
-        # cl = QtWidgets.QHBoxLayout()
-        # self.custom_widget.setLayout(cl)
-        # cl.addWidget(self)
-        # self.stateChanged.connect(self.test)
 
     def test(self):
         print('checkbox clicked')
@@ -3439,20 +2220,9 @@ class CheckBox(QtWidgets.QCheckBox):
     def set_up_widget(self, outside_layout):
         outside_layout.addWidget(self)
         # outside_layout.addWidget(self.custom_widget)
+
     def destroy(self):
         self.deleteLater()
-    # def focusInEvent(self, event):
-    #     if self.connector_to_outside_complex_class:
-    #         GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-    #     else:
-    #         GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-    #     super().focusInEvent(event)
-
-    # def pack(self):
-    #     self.pack(side=tk.LEFT)
-    #
-    # def destroy(self):
-    #     self.destroy()
 
 
 """game temp data. should contains info about choices and displayed characters.like this
@@ -3474,9 +2244,10 @@ class ModTempData:
         # print('test creation modtempdata')
         # with open('files/temp_data/' + mod_name + '_temp_data.json', 'r', encoding='utf-8-sig') as event_data:
         #     self.mod_data = json.load(event_data, object_hook=OrderedDict)
-        from os import access, F_OK, mkdir
-        if not access('files/modsTempData', F_OK):
-            mkdir('files/modsTempData')
+        otherFunctions.check_if_folder_exists('files/modsTempData')
+        # from os import access, F_OK, mkdir
+        # if not access(, F_OK):
+        #     mkdir('files/modsTempData')
 
     def start_new_mod(self, text):
         self.current_mod = text
@@ -3491,12 +2262,13 @@ class ModTempData:
         self.mod_data['events'][event_name]['Functionized'] = {}
 
     def prepare_data_load_mod(self, mod_name, mod_path):
-        # return
         self.current_mod = mod_name
         rewrite_flag = False
         data_filename = 'files/modsTempData/' + mod_name + '_mod_temp_data.json'
-        if isfile(data_filename):
+        # if isfile(data_filename):
+        if otherFunctions.check_if_file_exists(data_filename):
             """first check if mod folder was updated. this is in case user load same mod from 2 different places"""
+            # TODO move to to if rewrite flag else after cleaning. no point in loading if need to rewrite after
             self.mod_data = otherFunctions.load_json_data(data_filename)
             mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
             if 'last_update' in list(self.mod_data.keys()):
@@ -3509,7 +2281,7 @@ class ModTempData:
             rewrite_flag = True
         if rewrite_flag:
             """need to go over all events and write up all choices and displayed chara
-            this should be used after all is loaded, so everything is in globabl in current mode"""
+            this should be used after all is loaded, so everything is in global in current mode"""
             self.mod_data['stances'].clear()
             self.mod_data['girls'].clear()
             for event in GlobalVariables.Mod_Var.mod_data['Events']:  # this is all data
@@ -3563,13 +2335,10 @@ class ModTempData:
                         else:
                             temp_dict_list_dischara[event_text['NameOfScene']] = current_chara
                             prev_chara = current_chara
-                    # this not working still
+                    # this not working still # TODO
                 self.mod_data['events'][event]['DisplayCharacters'] = temp_dict_list_dischara
                 mod_folder_time_date = otherFunctions.get_file_time_modification(mod_path)
                 self.mod_data['last_update'] = mod_folder_time_date
-
-                # self.mod_data['events'][event]['name'] = event
-        # self.save_file()
 
     def save_file(self):
         if self.current_mod:
@@ -3578,6 +2347,7 @@ class ModTempData:
 
     def add_stances(self, stance_list):
         self.mod_data['stances'] = stance_list
+
     def add_choice(self, choice_number, choice_text):
         """first get current event name"""
         event_name = self.templates_access['Events'].input_filename.get_val()
@@ -3591,7 +2361,7 @@ class ModTempData:
             self.mod_data['events'][event_name]['choices'][choice_number] = [choice_text]
 
     def get_choices(self, get_val, event_name=None):
-        # issues - seems to run when reloading list of choices for each choise. should run only once
+        # issues - seems to run when reloading list of choices for each choice. should run only once
         if not event_name:
             event_name = self.current_editing_event
         # for event in self.mod_data['events']:
@@ -3602,7 +2372,6 @@ class ModTempData:
                 return choices_list
             else:
                 if get_val in choices_list:
-                    # return list(self.mod_data['events'][event_name]['choices'][get_val])
                     return self.mod_data['events'][event_name]['choices'][get_val]
                 else:
                     return []
@@ -3610,6 +2379,7 @@ class ModTempData:
             return []
 
     def get_gates(self, choice, event_name=None):
+        """as gates i understand number assigned to choice. As it is a gate to different choices"""
         if not event_name:
             event_name = self.current_editing_event
         if event_name in self.mod_data['events']:
@@ -3628,6 +2398,8 @@ class ModTempData:
         return temp_list
 
     def update_chara(self, characters_list_or_scene_name):
+        """not used, probably need seperate field in scene window to view currect characters in scene
+        for future"""
         """since i messed up, as always, i cant add characters from function directly. too much work and wasted 2 hours on thinking
         instead, make temporary list of characters. then, when saving scene, if there is a temporary list,
          get scene name and add chara to the data"""
@@ -3673,7 +2445,6 @@ class ModTempData:
         """this connects second with first field, but app breaks since first field is already connected, it kinda loops"""
         # field_choice_text.field.currentTextChanged.connect(lambda arg1=field_choice_no, arg2=field_choice_text:
         #                                                     self.set_up_choices_no(arg1, arg2))
-
 
     def set_up_event_source(self, field_choice_no, field_choice_text, event_field_source=None):
         if event_field_source:
