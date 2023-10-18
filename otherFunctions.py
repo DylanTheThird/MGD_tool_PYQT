@@ -64,7 +64,7 @@ def getListOptions(field_data, list_type):
     # try:
         templist = {}
         list_values = field_data
-        print(field_data)
+        # print(field_data)
         listTemp = []
         for values in list_values:
             #  class. if currentelement(with correct field name) in choices, then bind field list with other functions,

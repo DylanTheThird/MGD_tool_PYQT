@@ -472,11 +472,12 @@ import MarkUpDialog
 class DeckField:
     def __init__(self, master=None, field_data=None):
         self.custom_layout = QtWidgets.QVBoxLayout()
+        # self.custom_layout.setAlignment(Qt.AlignCenter)
         self.title = 'Deck'
         self.type = 'multilist'
         self.selection_type = ''
         self.option_flag = False #for adding monster list. later, is set to 1 if adding monsters, when done, add end tag
-        self.option_list = ["Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
+        self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
                             "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
         self.row_size = 6
 
@@ -564,42 +565,48 @@ class DeckField:
 
     def add_data(self):
         selected_option = self.options_selection.get_val()
-        new_insert = QStandardItem(selected_option)
-        # adding to monster or event group
-        """if selected option is monster or event take value from designed field
-         then check in data tree if it should be added to correct branch or create new branch"""
-        if selected_option == 'Monster' or selected_option == 'Event':
-            tree_selection = self.deck_tree.selected_element()
-            new_insert.setText(self.field_for_events_and_monsters.get_val())
-            if tree_selection:
-                """if selected item is group, append to that group"""
-                if tree_selection.text() == selected_option:
-                    tree_selection.appendRow(new_insert)
-                    return
-                elif tree_selection.parent():
-                    """if selected item is in group, just insert above it"""
-                    if tree_selection.parent().text() == selected_option:
-                        tree_selection.parent().insertRow(tree_selection.row(), new_insert)
-                        return
-            """if selected group which is not same as selected option. for example, still selected event,
-                while adding monsters, need to add to the end of deck tree, but first check
-                if there is proper group there"""
-            last_item = self.deck_tree.tree_model.item(self.deck_tree.tree_model.rowCount()-1)
-            if last_item.text() == selected_option:
-                last_item.appendRow(new_insert)
-                return
-            new_group = QStandardItem(selected_option)
-            new_group.appendRow(new_insert)
-            self.deck_tree.tree_model.appendRow(new_group)
-        else:
-            tree_selection = self.deck_tree.selected_element()
-            if tree_selection:
-                if tree_selection.parent():
-                    tree_selection = tree_selection.parent()
-                self.deck_tree.tree_model.insertRow(tree_selection.row(), new_insert)
+        if selected_option:
+            new_insert = QStandardItem(selected_option)
+            # adding to monster or event group
+            """if selected option is monster or event take value from designed field
+             then check in data tree if it should be added to correct branch or create new branch"""
+            if selected_option == 'Monster' or selected_option == 'Event':
+                tree_selection = self.deck_tree.selected_element()
+                selected_item = self.field_for_events_and_monsters.get_val()
+                if selected_item:
+                    new_insert.setText(self.field_for_events_and_monsters.get_val())
+                    if tree_selection:
+                        """if selected item is group, append to that group"""
+                        if tree_selection.text() == selected_option:
+                            tree_selection.appendRow(new_insert)
+                            return
+                        elif tree_selection.parent():
+                            """if selected item is in group, just insert above it"""
+                            if tree_selection.parent().text() == selected_option:
+                                tree_selection.parent().insertRow(tree_selection.row(), new_insert)
+                                return
+                    """if selected group which is not same as selected option. for example, still selected event,
+                        while adding monsters, need to add to the end of deck tree, but first check
+                        if there is proper group there"""
+                    last_item = self.deck_tree.tree_model.item(self.deck_tree.tree_model.rowCount()-1)
+                    if last_item:
+                        if last_item.text() == selected_option:
+                            last_item.appendRow(new_insert)
+                            Glob_Var.edited_field()
+                            return
+                    new_group = QStandardItem(selected_option)
+                    new_group.appendRow(new_insert)
+                    self.deck_tree.tree_model.appendRow(new_group)
+                    Glob_Var.edited_field()
             else:
-                self.deck_tree.tree_model.appendRow(new_insert)
-        Glob_Var.edited_field()
+                tree_selection = self.deck_tree.selected_element()
+                if tree_selection:
+                    if tree_selection.parent():
+                        tree_selection = tree_selection.parent()
+                    self.deck_tree.tree_model.insertRow(tree_selection.row(), new_insert)
+                else:
+                    self.deck_tree.tree_model.appendRow(new_insert)
+                Glob_Var.edited_field()
 
     def options_prepare(self, selected_value=None):
         if selected_value in 'Monsters Events':
@@ -617,6 +624,7 @@ class DeckField:
 class ExpandDictionaryField(QtWidgets.QWidget):
     # this is attempt at adding working shortcuts. Class is derivered from Qwidget
     # changes: added self.setLayout(customlayout) and in setUpWidget is adding self as widget instead of custom layout
+    """purpose of this is to be able to add several times same stuff. Expand dictionary - keep adding dictionaries"""
     def __init__(self, master=None, field_name=None, fields_data=None, templateName='', mode=0):
         super().__init__()
         self.addition = False
@@ -1530,14 +1538,14 @@ class CombatTrigger(SimpleFields.ElementsList):
     # def __init__(self, master=None,  field_name=None, tooltip_text=None, label_position='U', fields=None):
     #     super().__init__(master=master, label='', tooltip=None, label_pos=None)
     def __init__(self, master=None, field_name='', fields_data=None):
-        super().__init__(master, field_name)
+        super().__init__(master, field_name, all_edit=True, folders=True)
         self.title = field_name
         self.files_container = {}
         self.data = []
         self.row_size = 6
         self.flag_child_editable = True
-        self.flag_folders = False
-        self.add_leaf(['doubleclick to edit'], row_height=40)
+        self.flag_folders = True
+        self.add_leaf(['doubleclick to edit'], editable=True, row_height=40)
         self.doubleClicked.connect(self.on_double_click)
         self.activated.connect(self.edit_selected)
         self.max_text_length = 20
@@ -1573,6 +1581,8 @@ class CombatTrigger(SimpleFields.ElementsList):
                     file_list.append(filename)
                 self.set_val(file_list)
         else:
+            item = self.tree_model.itemFromIndex(index)
+            item.setEditable(True)  #for some reason, its not editable by default
             self.setCurrentIndex(index)
             self.edit(index)
             self.tree_model.itemChanged.connect(self.on_item_changed)

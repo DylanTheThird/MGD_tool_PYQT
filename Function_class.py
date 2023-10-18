@@ -1488,8 +1488,7 @@ class Function_Gui:
                                                           main_data_treeview=self.treeview_main_game_items)
                 self.flag_main_game_items = True
             elif structure[field]["type"] == 'combobox':
-                tempfield = SimpleFields.InputList(None, flag_delete=True, field_name=field
-                                                   , field_data=structure[field])
+                tempfield = SimpleFields.InputList(None, field_name=field, field_data=structure[field])
             elif structure[field]["type"] == 'filePath':
                 tempfield = SimpleFields.FileField(None, 'File', field_data=structure[field])
             self.function_fields_list.append(tempfield)

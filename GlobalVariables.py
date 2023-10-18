@@ -131,6 +131,7 @@ class GlobalVariable:
         # print('retrievieg function data')
         # print(function_data)
         return function_data
+
     def edited_field(self):
         # print('test if edited field - global variable def')
         if self.edit_element:

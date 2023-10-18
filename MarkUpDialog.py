@@ -419,12 +419,14 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_colour_text = SimpleFields.CustomButton(None, 'C TEXT')
         h_lay_3.addWidget(b_colour_text)
         b_colour_example1 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        b_colour_example1.setEnabled(False)
         h_lay_3.addWidget(b_colour_example1)
         b_colour_text.clicked.connect(lambda: self.show_color_picker(b_colour_example1))
         b_colour_example1.clicked.connect(lambda: self.colour_text(b_colour_example1))
         b_colour_outline = SimpleFields.CustomButton(None, 'C OUTLINE')
         h_lay_3.addWidget(b_colour_outline)
         b_colour_example2 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        b_colour_example2.setEnabled(False)
         h_lay_3.addWidget(b_colour_example2)
         b_colour_outline.clicked.connect(lambda: self.show_color_picker(b_colour_example2))
         b_colour_example2.clicked.connect(lambda: self.colour_text(b_colour_example2))
@@ -542,6 +544,7 @@ class MarkUp_Window(QtWidgets.QWidget):
     #     self.area_input.setFocus()
 
     def show_color_picker(self, field_to_colour):
+        field_to_colour.setEnabled(True)
         # Create a color dialog
         color_dialog = QtWidgets.QColorDialog(self)
         # Get the selected color from the dialog

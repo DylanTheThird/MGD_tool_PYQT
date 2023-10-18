@@ -398,27 +398,8 @@ class SingleList(QtWidgets.QComboBox):
         else:
             self.setCurrentText(value)
 
-    def reload_options(self, options_list=list):
-        if options_list:
-            self.clear()
-            self.list = otherFunctions.getListOptions(options_list, "single")
-            self.set_val(self.list)
-            # TODO dropdown display adjust
-            """below should limit rectangle box that appeares when clicking dropdown, probably for choices, but otherwise limits view"""
-            # w = self.fontMetrics().boundingRect(max(self.list, key=len)).width()
-            # self.view().setFixedWidth(w + 20)
-        else:
-            return
-
-    def add_items_to_skip_sort(self, items=list):
-        self.list += items
-        self.addItems(items)
-
     def clear_val(self):
         self.setCurrentIndex(0)
-
-    def field_modified_check(self):
-        self.currentIndexChanged.connect(GlobalVariables.Glob_Var.edited_field)
 
     def set_up_widget(self, outside_layout, insert_for_options=False, insert_pos=0):
         if self.custom_layout:
@@ -439,6 +420,26 @@ class SingleList(QtWidgets.QComboBox):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
             temp.widget().deleteLater()
+
+    def add_items_to_skip_sort(self, items=list):
+        self.list += items
+        self.addItems(items)
+
+    def field_modified_check(self):
+        self.currentIndexChanged.connect(GlobalVariables.Glob_Var.edited_field)
+
+    def reload_options(self, options_list=list):
+        if options_list:
+            self.clear()
+            self.list = otherFunctions.getListOptions(options_list, "single")
+            self.set_val(self.list)
+            # TODO dropdown display adjust
+            """below should limit rectangle box that appeares when clicking dropdown, probably for choices, but otherwise limits view"""
+            # w = self.fontMetrics().boundingRect(max(self.list, key=len)).width()
+            # self.view().setFixedWidth(w + 20)
+        else:
+            return
+
     # it sometimes causes error when opening function designer. I don't remember where it was needed.
     # if something else does not work, enable it
     # def focusInEvent(self, event):
@@ -2134,14 +2135,19 @@ class InputList(CustomWidget):
         if 'choices' in field_data:
             self.list_values = field_data['choices']
             self.field.addItems(self.list_values)
-        if flag_delete:
-            self.del_button = CustomButton(None, label_text='X')
-            self.del_button.clicked.connect(self.delete_val)
-            self.del_button.setFixedWidth(30)
-            self.custom_layout.addWidget(self.del_button)
-            self.delete_place = None
-            self.choice_no_field = None
-            self.event_name = None
+
+        if 'options' in field_data:
+            if "file" in field_data['options']:
+                self.field.currentTextChanged.connect(self.file_open)
+            if 'delete' in field_data['options']:
+            # if flag_delete:
+                self.del_button = CustomButton(None, label_text='X')
+                self.del_button.clicked.connect(self.delete_val)
+                self.del_button.setFixedWidth(30)
+                self.custom_layout.addWidget(self.del_button)
+                self.delete_place = None
+                self.choice_no_field = None
+                self.event_name = None
 
     def get_val(self, temp_dict_container=None):
         if temp_dict_container is not None:
@@ -2165,6 +2171,13 @@ class InputList(CustomWidget):
         for idx in range(self.field.count()):
             self.field.removeItem(0)
         self.field.addItems(self.list_values)
+
+    def file_open(self, selected_option):
+        if selected_option == 'file':
+            file = QtWidgets.QFileDialog.getOpenFileNames(None, "Select files")
+            if file[0]:
+                # file here is a tuple of ([filenames],types of files)
+                self.field.setEditText(file[0][0])
 
     def limit_options(self, limit_list):
         """this is for """

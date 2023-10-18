@@ -25,25 +25,23 @@ import TemplatesPreparation
 # global Mod_Var
 
 # TODO evenings - picture viewer
-# TODO color button in scenese - should check if var colour exists first
-# TODO mod temp data var should not be in simpleFields
-# TODO opening to load could point in main folder
-# TODO functions - play sound effect - dropdown got X to remove options. What for?
-# TODO functions - add monster to encounter
-# TODO functions - SET attackt
+# TODO add more stuff outside from lists, like sound banks
+# TODO color button in scenese - should check if var colour exists first - done
+# TODO opening to load mod could point in main folder - done
+# TODO functions - play sound effect - dropdown got X to remove options. - default from choice field. - fixed
+# TODO functions - SET attackt - fixed misspelling
 # TODO - saving mod is broken - fixed
 # TODO loading perk data is overwritten and not finished - fixed
 # TODO combat field finish
-# TODO monster>combat field - cannot edit text
-# TODO adventure>Deck - adding event or monster without changing options, will try to add data from additional imput field, that does not exists yet.
+# TODO monster>combat field - cannot edit text - fixed
+# TODO adventure>Deck - adding event or monster without changing options - fixed
 # TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
 
 # TODO for scene function there are some used mainly for additions
+# Hard problems
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
 # requiresStance is missing....might be problem with how some write those fields.
-# TODO cleaning - Done
-# Hard problems
 # TODO multilists in addition does not react to delete key, with few exception - workaround
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO function menu > choice from event. works only on debug
@@ -81,6 +79,7 @@ class ModTreeField(ElementsList):
         else:
             return ''
 
+    # TODO obsolete?
     def get_data1(self, parent_index=None, root_list=None, remove_title=False):
         """temporary solution - overwrite get data"""
         if parent_index:
@@ -207,21 +206,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.tree_mod_elements.flag_edit = False
         self.tree_mod_elements.parent_tag = 'folder'
         self.tree_mod_elements.doubleClicked.connect(self.load_element_data)
-        # self.tree_mod_elements = QtWidgets.QTreeView(self.layoutWidget)
-        # self.tree_mod_elements.setDragEnabled(True)
-        # self.tree_mod_elements.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
-        # self.tree_mod_elements.setHeaderHidden(True)
-        # self.tree_mod_elements.setObjectName("tree_mod_elements")
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # self.layout_central.addWidget(self.tree_mod_elements)
         self.tree_mod_elements.set_up_widget(self.layout_main)
         # self.layout_main.addStretch(0)
         # self.gridLayout.addWidget(self.tree_mod_elements, 2, 0, 2, 1)
@@ -231,9 +215,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.main_game_elements = Main_MultiList(self.centralwidget, "Game elements")
         self.main_game_elements.main_data.flag_edit = False
         Glob_Var.main_game_field = self.main_game_elements
-        # self.main_game_elements.set_val(Glob_Var.)
         self.main_game_elements.set_up_widget(self.layout_main)
-        # self.gridLayout.addItem(spacerItem, 1, 1, 1, 1)
 
         # all other menus and bars and stuff
         MainWindow = self.MainWindow
@@ -565,7 +547,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
     def load_mod(self, mod_paths=None):
         if not mod_paths:
-            file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory"))
+            file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory",
+                                                                  Glob_Var.start_path))
             if not file:
                 return
             temp = file.split('/')
