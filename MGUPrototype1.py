@@ -26,15 +26,6 @@ import TemplatesPreparation
 
 # TODO evenings - picture viewer
 # TODO add more stuff outside from lists, like sound banks
-# TODO color button in scenese - should check if var colour exists first - done
-# TODO opening to load mod could point in main folder - done
-# TODO functions - play sound effect - dropdown got X to remove options. - default from choice field. - fixed
-# TODO functions - SET attackt - fixed misspelling
-# TODO - saving mod is broken - fixed
-# TODO loading perk data is overwritten and not finished - fixed
-# TODO combat field finish
-# TODO monster>combat field - cannot edit text - fixed
-# TODO adventure>Deck - adding event or monster without changing options - fixed
 # TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
 
