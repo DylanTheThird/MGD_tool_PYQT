@@ -128,9 +128,10 @@ class GlobalVariable:
 
     def get_functions(self, function_name):
         function_data = copy.copy(self.functions_data[function_name])
-        print('retrievieg function data')
-        print(function_data)
+        # print('retrievieg function data')
+        # print(function_data)
         return function_data
+
     def edited_field(self):
         # print('test if edited field - global variable def')
         if self.edit_element:

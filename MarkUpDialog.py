@@ -419,12 +419,14 @@ class MarkUp_Window(QtWidgets.QWidget):
         b_colour_text = SimpleFields.CustomButton(None, 'C TEXT')
         h_lay_3.addWidget(b_colour_text)
         b_colour_example1 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        b_colour_example1.setEnabled(False)
         h_lay_3.addWidget(b_colour_example1)
         b_colour_text.clicked.connect(lambda: self.show_color_picker(b_colour_example1))
         b_colour_example1.clicked.connect(lambda: self.colour_text(b_colour_example1))
         b_colour_outline = SimpleFields.CustomButton(None, 'C OUTLINE')
         h_lay_3.addWidget(b_colour_outline)
         b_colour_example2 = SimpleFields.CustomButton(None, 'EXAMPLE')
+        b_colour_example2.setEnabled(False)
         h_lay_3.addWidget(b_colour_example2)
         b_colour_outline.clicked.connect(lambda: self.show_color_picker(b_colour_example2))
         b_colour_example2.clicked.connect(lambda: self.colour_text(b_colour_example2))
@@ -542,6 +544,7 @@ class MarkUp_Window(QtWidgets.QWidget):
     #     self.area_input.setFocus()
 
     def show_color_picker(self, field_to_colour):
+        field_to_colour.setEnabled(True)
         # Create a color dialog
         color_dialog = QtWidgets.QColorDialog(self)
         # Get the selected color from the dialog
@@ -666,8 +669,9 @@ class MarkUp_Window(QtWidgets.QWidget):
         # self.display_data.clear_tree()
         for field in self.data_fields:
             self.data_fields[field].clear_val()
-    #         TODO cleaning
+
     def switch_to_data(self):
+        """scene data is additiona scene attributes. display data is scene context"""
         if self.flag_data:
             """if true, hide data and display scenes"""
             self.flag_data = False
@@ -684,12 +688,11 @@ class MarkUp_Window(QtWidgets.QWidget):
                 self.functions.treeview_main_game_items.show()
 
     def load_scene_to_display(self, clicked_index=None):
-        """user double cliked on scene in scene lookup. if its parent, clear display, if not, load scene"""
+        """user double clicked on scene in scene lookup. if its parent, clear display, if not, load scene"""
         """clear display"""
         self.display_data.clear_tree()
         # item_data = self.scene_list.selected_element()
         item_data = self.scene_list.transform_index_to_item(clicked_index)
-        # scene_data = []
         if item_data.parent():
             """if it has parent, user clicked on specific scene. otherwise, there is nothing to load"""
             selected_scene_to_load = item_data.text()
@@ -702,7 +705,7 @@ class MarkUp_Window(QtWidgets.QWidget):
                         if data == 'theScene':
                             """now here it should go over all the text and combine functions
                             flag functionazied in temp data is in case user changes scenes several times.
-                            instead of going over it again and again, transform it one, and check flag.
+                            instead of going over it again and again, transform it once, and check flag.
                             Although, now that i think about it, MODVAR also keeps it as a simple list.....
                             so probably need to change how it is saved in MODVAR and later when saving to file"""
                             if selected_scene_to_load in SimpleFields.mod_temp_data.mod_data['events'][SimpleFields.mod_temp_data.current_editing_event]['Functionized']:

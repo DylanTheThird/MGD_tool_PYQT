@@ -24,17 +24,15 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
+# TODO evenings - picture viewer
+# TODO add more stuff outside from lists, like sound banks - NOW
+# TODO scene lookup in main window
+# TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
 
-# TODO colours in markup window - done
 # TODO for scene function there are some used mainly for additions
+# Hard problems
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
 # requiresStance is missing....might be problem with how some write those fields.
-# TODO scene edit - buttons at the bottom move to the left, so DONE is not below functions - fixed
-# TODO when closing main window, scene edit would not close - fixed
-# TODO check when last time mod was edited was checking before temp file for mod was created - fixed
-# TODO can load more than 1 item - fixed
-# TODO cleaning
-# Hard problems
 # TODO multilists in addition does not react to delete key, with few exception - workaround
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO function menu > choice from event. works only on debug
@@ -72,6 +70,7 @@ class ModTreeField(ElementsList):
         else:
             return ''
 
+    # TODO obsolete?
     def get_data1(self, parent_index=None, root_list=None, remove_title=False):
         """temporary solution - overwrite get data"""
         if parent_index:
@@ -198,21 +197,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.tree_mod_elements.flag_edit = False
         self.tree_mod_elements.parent_tag = 'folder'
         self.tree_mod_elements.doubleClicked.connect(self.load_element_data)
-        # self.tree_mod_elements = QtWidgets.QTreeView(self.layoutWidget)
-        # self.tree_mod_elements.setDragEnabled(True)
-        # self.tree_mod_elements.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
-        # self.tree_mod_elements.setHeaderHidden(True)
-        # self.tree_mod_elements.setObjectName("tree_mod_elements")
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # item_1 = QtWidgets.QTreeWidgetItem(item_0)
-        # self.layout_central.addWidget(self.tree_mod_elements)
         self.tree_mod_elements.set_up_widget(self.layout_main)
         # self.layout_main.addStretch(0)
         # self.gridLayout.addWidget(self.tree_mod_elements, 2, 0, 2, 1)
@@ -222,9 +206,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.main_game_elements = Main_MultiList(self.centralwidget, "Game elements")
         self.main_game_elements.main_data.flag_edit = False
         Glob_Var.main_game_field = self.main_game_elements
-        # self.main_game_elements.set_val(Glob_Var.)
         self.main_game_elements.set_up_widget(self.layout_main)
-        # self.gridLayout.addItem(spacerItem, 1, 1, 1, 1)
 
         # all other menus and bars and stuff
         MainWindow = self.MainWindow
@@ -556,7 +538,8 @@ class Ui_MainWindow(QtWidgets.QWidget):
 
     def load_mod(self, mod_paths=None):
         if not mod_paths:
-            file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory"))
+            file = str(QtWidgets.QFileDialog.getExistingDirectory(self.centralwidget, "Select Mod Directory",
+                                                                  Glob_Var.start_path))
             if not file:
                 return
             temp = file.split('/')
@@ -711,14 +694,13 @@ class Ui_MainWindow(QtWidgets.QWidget):
         if self.entry_mod_name.text():
             """first prepare path to save mod"""
             mod_path = Glob_Var.start_path + Glob_Var.mod_main_switch + self.entry_mod_name.text()
-            """elements type will be "adventures", "items", element_items should be [{"adventures":{"folder":...},Events}"""
             mod_files = Mod_Var.mod_display
             for elements_type in mod_files:
-                """if its just string, its empty"""
-                if isinstance(elements_type, str):
-                    continue
-                template_name = list(elements_type.keys())[0]
-                self.create_folder_while_saving_mod(template_name, mod_path + '/' + template_name + '/', elements_type)
+                """changed how mod display is created. now its {item:[]}"""
+                if elements_type == 'Fetishes':
+                    self.templates[elements_type].save_element_in_file(mod_files[elements_type], mod_path + '/' + elements_type + '/')
+                else:
+                    self.create_folder_while_saving_mod(elements_type, mod_path + '/' + elements_type + '/', mod_files[elements_type])
             if self.tree_mod_elements.files_to_remove:
                 remove_files(self.tree_mod_elements.files_to_remove, mod_path, self.entry_mod_name.text())
                 self.tree_mod_elements.files_to_remove.clear()
@@ -740,21 +722,16 @@ class Ui_MainWindow(QtWidgets.QWidget):
                     self.templates[element_type].mark_additional_fields()
 
     def create_folder_while_saving_mod(self, template_name, el_path_start, el_items):
-        """this is dictionary {'Items': [{'Consumables': ['ElvenHerb']}, {'KeyItems': ['JorasLetter']}]}"""
+        """this is dictionary [item1, {'Consumables': ['ElvenHerb']}, {'KeyItems': ['JorasLetter']}]"""
         for item in el_items:
-            """item = Items"""
-            for files in el_items[item]:
-                """files = [0]"""
-                if isinstance(files, dict):
+            """item = Item1 or dictionary consumables"""
+            if isinstance(item, dict):
+                for folder in item:
                     """new dictionary"""
-                    el_path = el_path_start + list(files.keys())[0] + '/'
-                    self.create_folder_while_saving_mod(template_name, el_path, files)
-                else:
-                    if item == 'Fetishes':
-                        self.templates[template_name].save_element_in_file(el_items[item], el_path_start)
-                        break
-                    else:
-                        self.templates[template_name].save_element_in_file(files, el_path_start)
+                    el_path = el_path_start + folder + '/'
+                    self.create_folder_while_saving_mod(template_name, el_path, item[folder])
+            else:
+                self.templates[template_name].save_element_in_file(item, el_path_start)
 
     def update_mod_tree_start(self, new_values):
         self.tree_mod_elements.clear_tree()

@@ -110,8 +110,6 @@ if __name__ == "__main__":
     # window = QtWidgets.QMainWindow()
     prototype = MGUPrototype1.Ui_MainWindow(window)
     prototype.setupUi()
-    # prototype.tree_mod_elements.add_data(data=Mod_Var.mod_display)
-    # prototype.main_game_elements.add_main_game_items()
     # print('load gui')
     # window.setMinimumSize(300, 600)
     # for testing purpos

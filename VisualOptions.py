@@ -107,7 +107,6 @@ class Visual_Dialog(object):
         self.dial.setValue(current_font.pointSize())
         self.display_font_in_label()
 
-
     def retranslateUi(self, dialog):
         _translate = QtCore.QCoreApplication.translate
         dialog.setWindowTitle(_translate("Dialog", "Visual Options"))
@@ -117,6 +116,7 @@ class Visual_Dialog(object):
 
     def test(self):
         print('test')
+
     def mark_field(self, field_no):
         if field_no == 1:
             self.selected_widget = 1
@@ -180,7 +180,7 @@ class Visual_Dialog(object):
                                                         currect_text.family(), currect_text.pointSize()])
         # app.setStyleSheet("QLabel{font-size: 18pt;}") # - different way, but no access to main app from here
         QtWidgets.QApplication.setFont(currect_label, "QLabel")
-        QtWidgets.QApplication.setFont(currect_label, "QTextEdit") # TODO check if this works
+        QtWidgets.QApplication.setFont(currect_label, "QTextEdit")  # TODO check if this works
         """get stances from custom branch and save in temp mod data."""
         custom_index = self.tree_stances.tree_model.index(0, 0)
         stances_list = []

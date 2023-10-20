@@ -1046,8 +1046,10 @@
 				"options":["special"],
 				"steps": "3",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}											
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1056,8 +1058,10 @@
 				"options":["special"],
 				"steps": "4",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1066,8 +1070,10 @@
 				"options":["special"],
 				"steps": "3",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1076,8 +1082,10 @@
 				"options":["special"],
 				"steps": "3",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1086,8 +1094,10 @@
 				"options":["special"],
 				"steps": "3",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1096,8 +1106,10 @@
 				"options":["special"],
 				"steps": "3",
 									"structure":{
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			}
 		],
@@ -1125,8 +1137,10 @@
 												"Events":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Events"]},
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"},
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]},
 												"Current Scenes":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Scenes"]}
@@ -1141,8 +1155,10 @@
 												"Events":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Events"]},
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1155,8 +1171,10 @@
 												"Events":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Events"]},
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},			
 			{
@@ -1169,8 +1187,10 @@
 												"Events":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Events"]},
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox",
+							"options":["delete"]},
+												"choice text":{"type":"combobox",
+							"options":["delete"]}
 												}
 			},
 			{
@@ -1182,8 +1202,8 @@
 												"Events":{"type":"multilist",
 													"options":["single_item", "search"],
 													"choices":["Events"]},
-												"choice no":{"type":"combobox"},
-												"choice text":{"type":"combobox"}
+												"choice no":{"type":"combobox","options":["delete"]},
+												"choice text":{"type":"combobox","options":["delete"]}
 												}
 			}
 		],
@@ -2070,7 +2090,8 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"options":["file"]}
 							}
 			},
 			{				"title": "PlaySoundEffect2",
@@ -2079,7 +2100,8 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"options":["file"]}
 							}
 			},
 			{				"title": "PlaySoundBankOnce",
@@ -2097,7 +2119,9 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
+								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"options":["file"]}
 							}
 			},
 			{				"title":"StopSoundEffectLoop",
@@ -2106,7 +2130,8 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
+								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
 							}
 			},
 			{				"title": "PlayLoopingSoundEffect2",
@@ -2115,16 +2140,19 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
+								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"options":["file"]}
 							}
 			},
 			{				"title": "StopSoundEffectLoop2",
-				"explanation": "StopSOundEffectLoop: Stops the looping sound, looping sounds are separate from one off sounds",
+				"explanation": "StopSoundEffectLoop: Stops the looping sound, looping sounds are separate from one off sounds",
 				"options":["simple"],
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
+								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
 							}
 			}
 		],
@@ -2800,7 +2828,7 @@
 		"Stances": [
 			{				"title": "ApplyStance",
 				"explanation": "Applies the stance to the player and the currently focused monster. Be sure to have a check for stance before this so you don't reapply the stance a second time. Or more.",
-				"options":["special"],
+				"options":["simple"],
 				"steps": "2",
 									"structure":{
 												"Stance":{"type":"multilist",
@@ -2809,12 +2837,13 @@
 												}
 			},
 			{				"title": "SetAttack",
-				"explanation": "Note that out of combat stance calls, as well as Counters and EndOfRound calls need to have the skill manually set for the fetish check. Or else, it may use the players skill for the fetish application to stance durability",
+				"explanation": "Combine with ApplyStance. Note that out of combat stance calls, as well as Counters and EndOfRound calls need to have the skill manually set for the fetish check. Or else, it may use the players skill for the fetish application to stance durability",
+				"options":[],
 				"steps": "2",
 									"structure":{												
 												"Skills":{"type":"multilist",
 												"options":["single_item", "search"],
-												"choices":["Skills", "main/Skills"]}
+												"choices":["Skills"]}
 												}
 			},
 			{				"title": "ApplyStanceToOtherMonster",

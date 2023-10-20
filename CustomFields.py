@@ -1,15 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.Qt import QStandardItemModel, QStandardItem, QAbstractItemView
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.Qt import QStandardItem
+from PyQt5.QtCore import Qt
 from GlobalVariables import Glob_Var
-from otherFunctions import show_message, change_position
+from otherFunctions import show_message
+from ImageViewer_MGD import QImageViewer
 import copy
-
 import SimpleFields
 import MarkUpDialog
-
 # class ExpandDictionaryField:
 #     def __init__(self, master=None, field_name=None, tooltip_text=None,
 #                  fields_data=None, templateName='', mode=1):
@@ -475,11 +472,12 @@ import MarkUpDialog
 class DeckField:
     def __init__(self, master=None, field_data=None):
         self.custom_layout = QtWidgets.QVBoxLayout()
+        # self.custom_layout.setAlignment(Qt.AlignCenter)
         self.title = 'Deck'
         self.type = 'multilist'
         self.selection_type = ''
         self.option_flag = False #for adding monster list. later, is set to 1 if adding monsters, when done, add end tag
-        self.option_list = ["Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
+        self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
                             "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
         self.row_size = 6
 
@@ -487,7 +485,6 @@ class DeckField:
         self.options_selection.set_val(self.option_list)
         self.options_selection.currentTextChanged.connect(self.options_prepare)
         self.label_custom = self.options_selection.label_custom
-        # self.add_button = SimpleFields.SimpleEntry(master, 'test field', class_connector=self)
         self.add_button = SimpleFields.CustomButton(master, '', class_connector=self)
         self.add_button.clicked.connect(self.add_data)
         self.add_button.setMaximumWidth(30)
@@ -497,24 +494,23 @@ class DeckField:
 
         self.field_for_events_and_monsters = SimpleFields.MultiListDisplay(None, '', main_data_treeview=Glob_Var.main_game_field,
                                                                            field_data={'choices': [""], 'options': ["single_item"]})
-        # self.field_for_events_and_monsters.final_data.setAlignment(QtCore.Qt.AlignCenter)
+        # self.field_for_events_and_monsters.final_data.setAlignment(Qt.AlignCenter)
         self.field_for_events_and_monsters.hide()
         self.deck_tree = SimpleFields.ElementsList(master, class_connector=self)
-        # self.custom_layout.addWidget(self.options_selection)
         self.options_selection.set_up_widget(self.custom_layout)
         self.field_for_events_and_monsters.set_up_widget(self.custom_layout)
-        # self.custom_layout.addWidget(self.add_button)
         self.options_selection.custom_layout.addWidget(self.add_button)
         self.custom_layout.addWidget(self.deck_tree)
-        # change_position(self.deck_tree, 'center')
-
         self.addition = True
 
     def set_val(self, values=None):
         # if loading data, values is a list, need to load it all just. but updating also uses set_val, and update
         #  requires more coding, so lets separate these 2 processes
         if isinstance(values, str):
-            self.add_data(values)
+            try:
+                self.add_data(values)
+            except:
+                print('deck field - might as well remove that line above')
         else:
             try:
                 temp_list = []
@@ -543,11 +539,6 @@ class DeckField:
                 print("error adding new branch to treeview in deckfield - setval")
             self.deck_tree.add_data(data=values)
             self.deck_tree.expandAll()
-        return
-        # branch_name = ''
-
-            # self.treeview_optionstochoose.add_branch(branch_name, [fieldList])
-            # print("jest expand")
 
     def get_val(self, temp_dict_container=None):
         final_list = []
@@ -574,54 +565,48 @@ class DeckField:
 
     def add_data(self):
         selected_option = self.options_selection.get_val()
-        new_insert = QStandardItem(selected_option)
-        # adding to monster or event group
-        """if selected option is monster or event take value from designed field
-         then check in data tree if it should be added to correct branch or create new branch"""
-        if selected_option == 'Monster' or selected_option == 'Event':
-            tree_selection = self.deck_tree.selected_element()
-            new_insert.setText(self.field_for_events_and_monsters.get_val())
-            if tree_selection:
-                """if selected item is group, append to that group"""
-                if tree_selection.text() == selected_option:
-                    tree_selection.appendRow(new_insert)
-                    return
-                elif tree_selection.parent():
-                    """if selected item is in group, just insert above it"""
-                    if tree_selection.parent().text() == selected_option:
-                        tree_selection.parent().insertRow(tree_selection.row(), new_insert)
-                        return
-            """if selected group which is not same as selected option. for example, still selected event,
-                while adding monsters, need to add to the end of deck tree, but first check
-                if there is proper group there"""
-            last_item = self.deck_tree.tree_model.item(self.deck_tree.tree_model.rowCount()-1)
-            if last_item.text() == selected_option:
-                last_item.appendRow(new_insert)
-                return
-            new_group = QStandardItem(selected_option)
-            new_group.appendRow(new_insert)
-            self.deck_tree.tree_model.appendRow(new_group)
-        else:
-            tree_selection = self.deck_tree.selected_element()
-            if tree_selection:
-                if tree_selection.parent():
-                    tree_selection = tree_selection.parent()
-                self.deck_tree.tree_model.insertRow(tree_selection.row(), new_insert)
+        if selected_option:
+            new_insert = QStandardItem(selected_option)
+            # adding to monster or event group
+            """if selected option is monster or event take value from designed field
+             then check in data tree if it should be added to correct branch or create new branch"""
+            if selected_option == 'Monster' or selected_option == 'Event':
+                tree_selection = self.deck_tree.selected_element()
+                selected_item = self.field_for_events_and_monsters.get_val()
+                if selected_item:
+                    new_insert.setText(self.field_for_events_and_monsters.get_val())
+                    if tree_selection:
+                        """if selected item is group, append to that group"""
+                        if tree_selection.text() == selected_option:
+                            tree_selection.appendRow(new_insert)
+                            return
+                        elif tree_selection.parent():
+                            """if selected item is in group, just insert above it"""
+                            if tree_selection.parent().text() == selected_option:
+                                tree_selection.parent().insertRow(tree_selection.row(), new_insert)
+                                return
+                    """if selected group which is not same as selected option. for example, still selected event,
+                        while adding monsters, need to add to the end of deck tree, but first check
+                        if there is proper group there"""
+                    last_item = self.deck_tree.tree_model.item(self.deck_tree.tree_model.rowCount()-1)
+                    if last_item:
+                        if last_item.text() == selected_option:
+                            last_item.appendRow(new_insert)
+                            Glob_Var.edited_field()
+                            return
+                    new_group = QStandardItem(selected_option)
+                    new_group.appendRow(new_insert)
+                    self.deck_tree.tree_model.appendRow(new_group)
+                    Glob_Var.edited_field()
             else:
-                self.deck_tree.tree_model.appendRow(new_insert)
-        Glob_Var.edited_field()
-        # else:
-        #     tree_selection = self.deck_tree.selected_element()
-        #     # if selected item is group, append to that group
-        #     if tree_selection:
-        #         if tree_selection.parent():
-        #             insert_row = tree_selection.parent().row()
-        #         else:
-        #             insert_row = tree_selection.row()
-        #         self.deck_tree.tree_model.insertRow(insert_row, new_insert)
-        #     else:
-        #         self.deck_tree.tree_model.appendRow(new_insert)
-        return
+                tree_selection = self.deck_tree.selected_element()
+                if tree_selection:
+                    if tree_selection.parent():
+                        tree_selection = tree_selection.parent()
+                    self.deck_tree.tree_model.insertRow(tree_selection.row(), new_insert)
+                else:
+                    self.deck_tree.tree_model.appendRow(new_insert)
+                Glob_Var.edited_field()
 
     def options_prepare(self, selected_value=None):
         if selected_value in 'Monsters Events':
@@ -634,24 +619,12 @@ class DeckField:
 
     def set_up_widget(self, outside_layer):
         outside_layer.addLayout(self.custom_layout)
-    # def on_double_click_edit_field(self, event):
-    #     if GlobalVariables.flag_addition or GlobalVariables.flag_modify_addition:
-    #         if self.addition:
-    #             flag = True
-    #         else:
-    #             flag = False
-    #     else:
-    #         flag = True
-    #     if flag:
-    #         region = self.deck_tree.treeview.identify("region", event.x, event.y)
-    #         if region == "heading":
-    #             Edit_Data_Window.ElementEditWindow(structure_path='Adventures' + '-' + self.title,
-    #                                                 structure_data=self.get_val(), structure_link=self)
 
-
-class ExpandDictionaryField(QWidget):
+# TODO check if expanddictionaryfield is even used
+class ExpandDictionaryField(QtWidgets.QWidget):
     # this is attempt at adding working shortcuts. Class is derivered from Qwidget
     # changes: added self.setLayout(customlayout) and in setUpWidget is adding self as widget instead of custom layout
+    """purpose of this is to be able to add several times same stuff. Expand dictionary - keep adding dictionaries"""
     def __init__(self, master=None, field_name=None, fields_data=None, templateName='', mode=0):
         super().__init__()
         self.addition = False
@@ -724,6 +697,7 @@ class ExpandDictionaryField(QWidget):
             self.flag_listdict = True
         else:
             self.flag_listdict = False
+
     def set_val(self, values):
         if self.ExpandFlag:
             """just add data to treeview second function should be enough, since it requires already prepared data"""
@@ -896,28 +870,7 @@ class ExpandDictionaryField(QWidget):
             outside_layout.insertWidget(outside_layout.count() - 1, self)
         else:
             outside_layout.addWidget(self)
-        # outside_layout.addWidget(self)
-    # def mod_data_to_treeview(self):
-    #     """change add and delete button. here set modify flag, unset on other buttons"""
-    #     # for field in self.fields_list:
-    #     #     field.clear_val()
-    #     self.modifyFlag = True
-    #     self.buttonADD_controlTreeview['text'] = 'Save'
-    #     self.buttonDEL_controlTreeview['text'] = 'Cancel'
-    #     for fields in self.fields_list:
-    #         fields.clear_val()
-    #
-    #     data_to_modify = self.tree_final_data.selected_item(value='code')
-    #     target_data = self.tree_final_data.find_root_parent(data_to_modify)
-    #     data_to_load = self.gather_data(target_data)
-    #     # it seems to be working for its fields
-    #     for fields, values in zip(self.fields_list, data_to_load.values()):
-    #         fields.set_val(values)
-    #     # for fields in self.current_expanded_data:
-    #     #     if fields[self.name_field] == target_data:
-    #     #         self.set_val(fields)
-    #     #         break
-    #
+
     def add_data_to_treeview(self, insert=False):
         """since speaker field got limit of 12 items, first check if limit reached or not"""
         if self.limit > 0:
@@ -1175,11 +1128,9 @@ class ExpandDictionaryField(QWidget):
 class EDF_forcombatDialogue(ExpandDictionaryField):
     """updated from basic expanddictionaryfield. There are additional stuff, like setMusitTo or something else that
     need custom code"""
-    # (self, master=None, field_name=None, fields_data=None, templateName='', mode=0)
     def __init__(self, master=None, field_name=None, fields_data=None):
         super().__init__(master, field_name, fields_data)
         # connect first field - line triggers - to custom trigger here
-        # self.fields_list[0]
         self.label_custom.change_position('center')
         self.fields_list[0].final_data.textChanged.connect(self.trigger_custom)
         self.tree_final_data.doubleClicked.connect(self.edit_data)
@@ -1203,8 +1154,7 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
             transformed_data.append(temp_dict)
         if temp_dict_container is not None:
             temp_dict_container[self.title] = transformed_data
-        # TODO check how final data here looks
-        # for dict in final_data:
+
     def add_data_to_treeview(self):
         """check trigger and its options. in some cases there are limits"""
         trigger = self.fields_list[0].get_val()
@@ -1274,6 +1224,7 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
 
     def trigger_file(self):
         self.fields_list[1].flag_file = True
+        # TODO finish combat field - when selected music, second field should load file
         """change second field in field list - move - to instead load file"""
 
     def set_val(self, values):
@@ -1318,19 +1269,17 @@ class FunctionField(SimpleFields.ElementsList):
         self.entry_search.hide()
         self.title = view_title
         self.type = 'functionfield'
-        self.row_size = 12  # testing
+        self.row_size = 12
         # print(str(fields_data))
         """each type of scene will have its own frame. in case there is a scene with different setup. 
             Then I just hide or show specific frame instead of all fields"""
         self.field_frame = {}
         self.markup_win = None
         self.label_custom = SimpleFields.CustomLabel(None, 'Scenes')
-        self.layout.insertWidget(0, self.label_custom, alignment=QtCore.Qt.AlignCenter)
-        # self.button_AddData = SimpleFields.CustomButton(None, 'Add Scene')
-        # self.custom_layout.addWidget(self.button_AddData)
-        # self.button_AddData.clicked.connect(lambda: self.modify_scene(flag_for_list_of_functions, add_flag=True))
+        self.layout.insertWidget(0, self.label_custom, alignment=Qt.AlignCenter)
         self.treeview_scenes = self
         self.treeview_scenes.doubleClicked.connect(self.modify_scene)
+        # TODO scene lookup in main window
         # self.area_lookup = SimpleFields.AreaEntry(self, width_i=40)
         # self.area_lookup.field.configure(state='disabled')
         # self.area_lookup.grid(row=rowposition+6, column=colpos, columnspan=1)
@@ -1345,7 +1294,7 @@ class FunctionField(SimpleFields.ElementsList):
 
     def set_val(self, values, event_type=False):
         """event type is needed, since if there are more then 1 function types, instead of making more fields taking
-         more space, i made dummy objects with reference to first function fields. Only first oeperates data,
+         more space, i made dummy objects with reference to first function fields. Only first operates data,
           dummy only sets and gets values. Each field has a title which is field name and main branch in display
           values should be list of dictionaries with nameofthescene:name, scene"scenetext"""
         if not event_type:
@@ -1358,8 +1307,6 @@ class FunctionField(SimpleFields.ElementsList):
             # templist.append(scenes['NameOfScene'])
         for scene_name in self.scene_data_container[event_type]:
             templist.append(scene_name)
-        # self.treeview_scenes.add_leaves(event_type, templist, update_flag=True)
-        # self.treeview_scenes.add_data(templist, event_type, update_flag=True)
         self.treeview_scenes.add_data(templist, event_type, update_flag=False)
         self.treeview_scenes.open_tree()
 
@@ -1388,8 +1335,6 @@ class FunctionField(SimpleFields.ElementsList):
         self.add_data(temp_list)
         for event_type in self.scene_data_container:
             self.scene_data_container[event_type] = {}
-        # if self.button_ModifyData['text'] == 'Cancel':
-        #     self.cancel_scene()
 
     def modify_scene(self, quick_load=None):
         """cant remember what was that for"""
@@ -1397,8 +1342,8 @@ class FunctionField(SimpleFields.ElementsList):
             self.flag_prepare_event_logic_data = True
         """changes approach. this just displayes data. so user double clicks on any row, it opens markup and passes
         model from this tree. in Markup user create and also modified scene list"""
-        scene_name = ''
-        scene_fields_setup = {}
+        # scene_name = ''
+        # scene_fields_setup = {}
         # selected_item = self.treeview_scenes.selected_element()
         # """first check if proper item is selected. for adding - only root works. for edit - only leaf, include root"""
         # if not selected_item.child(0, 0):
@@ -1442,7 +1387,7 @@ class FunctionField(SimpleFields.ElementsList):
         #                               master=self, fields_data=self.field_setup[root_scene_setup_name])
         # if not self.markup_win:
         markup_win = MarkUpDialog.MarkUp_Window(target_field=self.treeview_scenes, scenes_flag=True, current_scene_list=self.scene_data_container,
-                                                         scene_data=self.field_setup, quick_load_scene=quick_load)
+                                                scene_data=self.field_setup, quick_load_scene=quick_load)
         markup_win.show()
     # if i figure out how to use this then ill uncomment it
     # def delete_scene(self):
@@ -1458,6 +1403,7 @@ class FunctionField(SimpleFields.ElementsList):
     #             messagebox.showwarning("STOP RIGHT THERE", 'Whoa, cannot delete root, it is important', parent=self)
 
     def display_scene_text(self, treevieID):
+        # TODO maybe add
         # for now not used but working
         # treevieID is just variable for elementlist, so access treeview in it, get selected item idx or parent idx,
         """expected display - root parent which is event type(event,loss,victory scene) with scenes names as leaves
@@ -1486,89 +1432,82 @@ class FunctionField(SimpleFields.ElementsList):
         #  {eventtext:{name1:{nameofscene:name1, text:sometest},name2:{keyname:valname, keytext:valtext}}}
         #  this way should be easy to add and modify at same spot. index within root children is always the same.
         self.scene_data_container[main_field_name] = {}
-        """change label name to show that it is for more fields."""
-        temp = ''
-        # for event_types in self.scene_data_container:
-        #     temp += event_types + ' '
-        # self.label_custom.update_label(temp)
-        # if label_to_hide:
-        #     label_to_hide.hide()
         """only 1 function field exists. others are dummies that send and get data from main field"""
         self.dict_fields_with_setvals_for_scene_edition[main_field_name] = dummy_field
 
-    def save_scene(self):
-        """previously main display had basic scene data, scene text was kept in scene container. So user had to click
-        'save' to save entire scene data. Now the markup field might as well save scene data"""
-        """this is save scene with eventtext attributes and all scenes included"""
-        temp_dict = {}
-        selected_item_code = self.treeview_scenes.selected_item(value='code')
-        event_type = self.treeview_scenes.treeview.parent(selected_item_code)
-        if event_type:
-            event_type = self.treeview_scenes.treeview.item(event_type)['text']
-        else:
-            event_type = self.treeview_scenes.treeview.item(selected_item_code)['text']
-        if self.field_frame[event_type]['fields']['NameOfScene'].get_val():
-            for fields in self.field_frame[event_type]['fields']:
-                if fields == 'theScene':
-                    value = self.field_frame[event_type]['fields'][fields].list
-                    """since functions are made to be first funt name then list of attributes, and later i need scene
-                     data container to contains only strings, here i need to transform any list in list into strings.
-                    and function window should transform it back on its own, based on function title"""
-                    templist = []
-                    for val in value:
-                        if isinstance(val,list):
-                            for v in val:
-                                templist.append(v)
-                        else:
-                            templist.append(val)
-                    value = templist
-                else:
-                    value = self.field_frame[event_type]['fields'][fields].get_val()
-
-                temp_dict[fields] = value
-                self.field_frame[event_type]['fields'][fields].clear_val()
-            self.scene_data_container[event_type][temp_dict['NameOfScene']] = temp_dict
-            self.treeview_scenes.add_leaves(event_type, [temp_dict['NameOfScene']], update_flag=False)
-            self.button_AddData['text'] = 'Add Scene'
-            self.button_AddData.bind('<Button-1>', lambda e:  self.modify_scene(False, add_flag=True))
-            self.button_ModifyData['text'] = 'Edit Scene'
-            self.button_ModifyData.bind('<Button-1>', lambda e: self.modify_scene(False))
-            for event_type in self.field_frame:
-                self.field_frame[event_type]['frame'].grid_forget()
-        else:
-            messagebox.showwarning('Missing name', 'Please input scene name', parent=self)
-
-    def cancel_scene(self, *args):
-        selected_item_code = self.treeview_scenes.selected_item(value='code')
-        event_type = self.treeview_scenes.treeview.parent(selected_item_code)
-        if event_type:
-            event_type = self.treeview_scenes.treeview.item(event_type)['text']
-        else:
-            event_type = self.treeview_scenes.treeview.item(selected_item_code)['text']
-        # for fields in self.field_frame[event_type]['fields']:
-        #     self.field_frame[event_type]['fields'][fields].clear_val()
-        self.button_AddData['text'] = 'Add Scene'
-        self.button_AddData.bind('<Button-1>', lambda e:  self.modify_scene(False, add_flag=True))
-        self.button_ModifyData['text'] = 'Edit Scene'
-        self.button_ModifyData.bind('<Button-1>', lambda e: self.modify_scene(False))
-        for event_type in self.field_frame:
-            self.field_frame[event_type]['frame'].grid_forget()
-
-    def add_scene_button_obsolete(self, *args):
-        # self.list_scenes
-        # load_data = self.field_frame[main_field_name]['fields']['theScene'].list
-        selected_item_code = self.treeview_scenes.selected_item(value='code')
-        event_type = self.treeview_scenes.treeview.parent(selected_item_code)
-        event_type = self.treeview_scenes.treeview.item(event_type)['text']
-        if self.edition_flag:
-            # selected_item_code = self.list_scenes.selected_item(value='code')
-            # event_type = self.list_scenes.treeview.parent(selected_item_code)
-            # event_type = self.list_scenes.treeview.item(event_type['text'])
-            selected_item = self.treeview_scenes.selected_item()
-            data_to_load = self.scene_data_container[event_type][selected_item]
-        else:
-            data_to_load = ''
-        Window_txt_markup.SceneWindow(source_field=self, scene_data_to_load=data_to_load, event_type=event_type)
+    # def save_scene(self):
+    #     """previously main display had basic scene data, scene text was kept in scene container. So user had to click
+    #     'save' to save entire scene data. Now the markup field might as well save scene data"""
+    #     """this is save scene with eventtext attributes and all scenes included"""
+    #     temp_dict = {}
+    #     selected_item_code = self.treeview_scenes.selected_item(value='code')
+    #     event_type = self.treeview_scenes.treeview.parent(selected_item_code)
+    #     if event_type:
+    #         event_type = self.treeview_scenes.treeview.item(event_type)['text']
+    #     else:
+    #         event_type = self.treeview_scenes.treeview.item(selected_item_code)['text']
+    #     if self.field_frame[event_type]['fields']['NameOfScene'].get_val():
+    #         for fields in self.field_frame[event_type]['fields']:
+    #             if fields == 'theScene':
+    #                 value = self.field_frame[event_type]['fields'][fields].list
+    #                 """since functions are made to be first funt name then list of attributes, and later i need scene
+    #                  data container to contains only strings, here i need to transform any list in list into strings.
+    #                 and function window should transform it back on its own, based on function title"""
+    #                 templist = []
+    #                 for val in value:
+    #                     if isinstance(val,list):
+    #                         for v in val:
+    #                             templist.append(v)
+    #                     else:
+    #                         templist.append(val)
+    #                 value = templist
+    #             else:
+    #                 value = self.field_frame[event_type]['fields'][fields].get_val()
+    #
+    #             temp_dict[fields] = value
+    #             self.field_frame[event_type]['fields'][fields].clear_val()
+    #         self.scene_data_container[event_type][temp_dict['NameOfScene']] = temp_dict
+    #         self.treeview_scenes.add_leaves(event_type, [temp_dict['NameOfScene']], update_flag=False)
+    #         self.button_AddData['text'] = 'Add Scene'
+    #         self.button_AddData.bind('<Button-1>', lambda e:  self.modify_scene(False, add_flag=True))
+    #         self.button_ModifyData['text'] = 'Edit Scene'
+    #         self.button_ModifyData.bind('<Button-1>', lambda e: self.modify_scene(False))
+    #         for event_type in self.field_frame:
+    #             self.field_frame[event_type]['frame'].grid_forget()
+    #     else:
+    #         messagebox.showwarning('Missing name', 'Please input scene name', parent=self)
+    #
+    # def cancel_scene(self, *args):
+    #     selected_item_code = self.treeview_scenes.selected_item(value='code')
+    #     event_type = self.treeview_scenes.treeview.parent(selected_item_code)
+    #     if event_type:
+    #         event_type = self.treeview_scenes.treeview.item(event_type)['text']
+    #     else:
+    #         event_type = self.treeview_scenes.treeview.item(selected_item_code)['text']
+    #     # for fields in self.field_frame[event_type]['fields']:
+    #     #     self.field_frame[event_type]['fields'][fields].clear_val()
+    #     self.button_AddData['text'] = 'Add Scene'
+    #     self.button_AddData.bind('<Button-1>', lambda e:  self.modify_scene(False, add_flag=True))
+    #     self.button_ModifyData['text'] = 'Edit Scene'
+    #     self.button_ModifyData.bind('<Button-1>', lambda e: self.modify_scene(False))
+    #     for event_type in self.field_frame:
+    #         self.field_frame[event_type]['frame'].grid_forget()
+    #
+    # def add_scene_button_obsolete(self, *args):
+    #     # self.list_scenes
+    #     # load_data = self.field_frame[main_field_name]['fields']['theScene'].list
+    #     selected_item_code = self.treeview_scenes.selected_item(value='code')
+    #     event_type = self.treeview_scenes.treeview.parent(selected_item_code)
+    #     event_type = self.treeview_scenes.treeview.item(event_type)['text']
+    #     if self.edition_flag:
+    #         # selected_item_code = self.list_scenes.selected_item(value='code')
+    #         # event_type = self.list_scenes.treeview.parent(selected_item_code)
+    #         # event_type = self.list_scenes.treeview.item(event_type['text'])
+    #         selected_item = self.treeview_scenes.selected_item()
+    #         data_to_load = self.scene_data_container[event_type][selected_item]
+    #     else:
+    #         data_to_load = ''
+    #     Window_txt_markup.SceneWindow(source_field=self, scene_data_to_load=data_to_load, event_type=event_type)
 
 
 class Functional_Dummy:
@@ -1589,8 +1528,6 @@ class Functional_Dummy:
     def clear_val(self):
         return
 
-    def pack(self):
-        return
 
 class CombatTrigger(SimpleFields.ElementsList):
     """this should write data as a list into the current mod
@@ -1601,14 +1538,14 @@ class CombatTrigger(SimpleFields.ElementsList):
     # def __init__(self, master=None,  field_name=None, tooltip_text=None, label_position='U', fields=None):
     #     super().__init__(master=master, label='', tooltip=None, label_pos=None)
     def __init__(self, master=None, field_name='', fields_data=None):
-        super().__init__(master, field_name)
+        super().__init__(master, field_name, all_edit=True, folders=True)
         self.title = field_name
         self.files_container = {}
         self.data = []
         self.row_size = 6
         self.flag_child_editable = True
-        self.flag_folders = False
-        self.add_leaf(['doubleclick to edit'], row_height=40)
+        self.flag_folders = True
+        self.add_leaf(['doubleclick to edit'], editable=True, row_height=40)
         self.doubleClicked.connect(self.on_double_click)
         self.activated.connect(self.edit_selected)
         self.max_text_length = 20
@@ -1644,6 +1581,8 @@ class CombatTrigger(SimpleFields.ElementsList):
                     file_list.append(filename)
                 self.set_val(file_list)
         else:
+            item = self.tree_model.itemFromIndex(index)
+            item.setEditable(True)  #for some reason, its not editable by default
             self.setCurrentIndex(index)
             self.edit(index)
             self.tree_model.itemChanged.connect(self.on_item_changed)
@@ -1797,9 +1736,6 @@ class CombatTrigger(SimpleFields.ElementsList):
 
 class FetishApply:
     def __init__(self, master=None, field_name=None, fields_data=None):
-        # self.custom_layout = QtWidgets.QVBoxLayout()
-        # self.custom_label = SimpleFields.CustomLabel(master, field_name)
-        # self.custom_layout.addWidget(self.custom_label)
         self.title = field_name
         self.fields_set = fields_data['fields']
         self.final_data_tree = SimpleFields.ElementsList(master, "Fetishes", class_connector=self)
@@ -1807,18 +1743,11 @@ class FetishApply:
         header_labels = []
         for field in self.fields_set:
             header_labels.append(field['name'])
-            # print(str(self.fields_set.index(field)))
             # self.final_data_tree.tree_model.setHorizontalHeaderItem(self.fields_set.index(field), QStandardItem(field['name']))
         self.final_data_tree.tree_model.setHorizontalHeaderLabels(header_labels)
         self.final_data_tree.setColumnWidth(1, 3)
         self.final_data_tree.setMaximumHeight(110)
         self.selection_type = 'Fetishes Addictions'
-
-        # self.area_explanation = AreaEntry(master)
-        # self.area_explanation.label.grid_forget()
-        # self.area_explanation.grid(row=5, column=0, columnspan=3)
-        # self.options_tree.treeview.bind("<<TreeviewSelect>>", self.display_info)
-        # self.custom_layout.addWidget(self.final_data_tree)
         self.row_size = 4
 
     def set_val(self, values):
@@ -1832,7 +1761,8 @@ class FetishApply:
                 value_to_enter = value.split('|/|')
             else:
                 value_to_enter = [value, '0']
-            self.final_data_tree.add_leaf(value_to_enter)
+            self.final_data_tree.add_leaf(value_to_enter, editable=True)
+    #         this editable refers to both items and I need 0 to be editable
 
     def get_val(self, temp_dict_container=None):
         list_data = self.final_data_tree.get_data()
@@ -1864,20 +1794,13 @@ class FetishApply:
 
 class MonsterGroups:
     def __init__(self, master=None, view_title=''):
-        """now its not working. add multilist display with single element and button to add.
+        """add multilist display with single element and button to add.
         when nothing selected, adds new group
         when selected root group, add to that group
         when selected row in group, insert above"""
         self.addition = True
-        # self.input_monster = SimpleFields.MultiListDisplay(None, '', {'choices': ['Monsters'],
-        #                                                                             'options': ['unique']}
-        #                                                    ,main_data_treeview=Glob_Var.main_game_field)
-        # self.input_monster.label_custom.hide()
         self.add_button = SimpleFields.CustomButton(master, 'Add Monster or Group', self)
         self.label_custom = self.add_button
-        # self.add_button.setToolTip('Click on field below, then double click on in main view field.\n'
-        #                            'this will add text below, then click this button. If nothing selected: add new group\n'
-        #                            'if group selected, add at the end, if monster selected, add above')
         self.add_button.clicked.connect(self.create_new_group)
         self.add_button.setToolTip('Button to add new group.\n'
                                    'Select group then double click on monster in main view to add')
@@ -1893,7 +1816,6 @@ class MonsterGroups:
         self.selection_type = 'Monsters'
         self.row_size = 3
         self.custom_layout.addWidget(self.add_button)
-        # self.input_monster.set_up_widget(self.custom_layout)
         self.treeview_MonsterFinalList.set_up_widget(self.custom_layout)
 
     def set_val(self, values):
@@ -1932,19 +1854,11 @@ class MonsterGroups:
 
     def clear_val(self):
         self.treeview_MonsterFinalList.clear_tree()
+
     def create_new_group(self):
-        """        when nothing selected, adds new group
-        when selected root group, add to that group
-        when selected row in group, insert above"""
-        # new = self.input_monster.get_val()
-        # selected = self.treeview_MonsterFinalList.selected_element()
-        # if selected:
-        #     if selected.text() == 'Group':
-        #         self.treeview_MonsterFinalList.add_data(new, selected)
-        #     else:
-        #         self.treeview_MonsterFinalList.insert_row([new])
-        # else:
+        """just add new group"""
         self.treeview_MonsterFinalList.add_data(data=['Group'])
+
     def set_up_widget(self, outside_layout):
         outside_layout.addLayout(self.custom_layout)
 
@@ -1955,7 +1869,6 @@ class OptionalFields(SimpleFields.ElementsList):
         """idea is, there will be 1 object for all templates, and when getting, it will get data from this, and when
          setting, if field is not mandatory(not found in template list) it is passed to this object.
          This object will take care of all optional fields, retrieve and set data in them, hide and show.
-
         1 treeview, working similar to perkTypes. Double click lowest item to add it SELECTED VALUES and create field.
          """
         self.title = 'optional'
@@ -1969,7 +1882,7 @@ class OptionalFields(SimpleFields.ElementsList):
         distinguish them"""
         self.template_main_laout = main_layout
         self.optional_field_frame = QtWidgets.QVBoxLayout()
-        self.optional_field_frame.setAlignment(QtCore.Qt.AlignCenter)
+        self.optional_field_frame.setAlignment(Qt.AlignCenter)
         """this will be dictionary of created fields, for which will set and get vals"""
         self.optional_fields_dict = {}
 
@@ -1987,8 +1900,7 @@ class OptionalFields(SimpleFields.ElementsList):
             self.restore_selected()
         # super().keyPressEvent(event)
 
-    def set_up_widget(self, outside_layout):
-        # outside_layout.addLayout(self.template_main_laout)
+    def set_up_widget(self, outside_layout, insert=None):
         self.template_main_laout.addLayout(self.optional_field_frame)
         self.optional_field_frame.addWidget(self)
         self.optional_field_frame.addStretch(1)
@@ -1996,9 +1908,11 @@ class OptionalFields(SimpleFields.ElementsList):
         # temp = SimpleFields.SimpleEntry(None, 'test')
         # self.optional_field_frame.insertWidget(self.optional_field_frame.count()-1, temp)
         #TODO
+
     def get_val(self, temp_dict_container):
         for field in self.optional_fields_dict:
             temp_dict_container[field] = self.optional_fields_dict[field].get_val()
+
     def set_val(self, field, value):
         """field - name of field to activate
         value - value provided for field"""
@@ -2015,7 +1929,6 @@ class OptionalFields(SimpleFields.ElementsList):
             selected = self.tree_model.indexFromItem(selected)
             self.select_element(selected)
             self.restore_selected()
-        # self.selected_values_display_row.removeRows(0, current_row_count)
 
     def load_main_data(self):
         self.all_fields_to_compare = []
@@ -2061,7 +1974,6 @@ class OptionalFields(SimpleFields.ElementsList):
                     restore = QStandardItem(val_to_restore)
                     self.selected_values[val_to_restore]['parent'].insertRow(
                         self.selected_values[val_to_restore]['index'], restore)
-
                     del self.optional_fields_dict[val_to_restore]
 
     def create_field(self, selected_item):
@@ -2072,29 +1984,16 @@ class OptionalFields(SimpleFields.ElementsList):
         field = createField(self.main_widget, selected_item.text(), Glob_Var.optional_fields[parent.text()][selected_item.text()])
         self.optional_fields_dict[selected_item.text()] = field
         field.set_up_widget(self.optional_field_frame, True)
-        # self.optional_field_frame.insertWidget(self.optional_field_frame.count()-1, temp)
-
-        return
-    def remove_field(self):
-        return
-    def find_field_structure(self, field_name):
-        for fields in GlobalVariables.optional_fields['global']:
-            if fields == field_name:
-                return GlobalVariables.optional_fields['global'][fields]
-        for fields in GlobalVariables.optional_fields['skills']:
-            if fields == field_name:
-                return GlobalVariables.optional_fields['skills'][fields]
 
 
 class PerkDoubleList(SimpleFields.ElementsList):
     def __init__(self, master=None, fields_data=None):
         super().__init__(master, '', folders=True)
-
         """this is very similar to fetishapply, but does not use main game items. it could,
          but I want to keep it separated.
          problem is, fetishApply is only 1 field, while this comes in 2 separate fields. first is names, second is vals.
          set_val will have to first add column with names, then add column with values
-
+         
          Too many values for perktypes to put in single list. Well make complex treeview.
          Add first row - "SELECTED VALUES", and after that all perktypes.
          double click on perktype - its hidden and added to selectd values.
@@ -2106,20 +2005,13 @@ class PerkDoubleList(SimpleFields.ElementsList):
          selected values - open load file.
 
         also, block edit and delete for other places besides selected values
-
         """
-
-        # self.custom_layout = QtWidgets.QVBoxLayout(master)
-        # self.custom_label = SimpleFields.CustomLabel(master, '')
         self.files_container = []
         self.flag_folders = False
         self.load_type = ''
         self.title = 'PerksDoubleField'
         self.fields_set = fields_data['fields']
         self.path_cut = '../../'
-        # self.fields_display_row = 0
-        # self.fields_display_column = 0
-
         self.setHeaderHidden(False)
         header_labels = []
         for field in self.fields_set:
@@ -2130,7 +2022,6 @@ class PerkDoubleList(SimpleFields.ElementsList):
         self.setColumnWidth(0, 150)
         self.setColumnWidth(1, 3)
         self.setMaximumHeight(100)
-
         # self.area_explanation = AreaEntry(master)
         # self.area_explanation.label.grid_forget()
         # self.area_explanation.grid(row=5, column=0, columnspan=3)
@@ -2141,19 +2032,15 @@ class PerkDoubleList(SimpleFields.ElementsList):
         if 'Perk' in self.fields_set[0]['name']:
             self.load_type = 'PerkType'
             self.load_data = 'EffectPower'
-            # self.custom_label.update_label('PerkType')
         elif 'Stat' in self.fields_set[0]['name']:
             self.load_type = 'StatReq'
             self.load_data = 'StatReqAmount'
-            # self.custom_label.update_label('StatReq')
         else:
             print('Unknown data to load. - Adding new row in perk double list class')
             return
-
         """"""
         if self.load_type == 'PerkType':
-            self.area_explanation = SimpleFields.AreaEntry(self)
-            # TODO align area explanation to center
+            self.area_explanation = SimpleFields.AreaEntry(self, edit=False)
             self.area_explanation.change_size(200, 100)
             self.area_explanation.set_up_widget(self.layout)
             self.clicked.connect(self.display_explanations)
@@ -2175,14 +2062,14 @@ class PerkDoubleList(SimpleFields.ElementsList):
                 self.area_explanation.set_val(explanation)
         return
 
-    # TODO
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         if event.key() == Qt.Key_Delete:
             self.restore_selected()
 
     def set_val(self, names, values):
         """this is used when loading new element. Problem is that it is 2 fields in file. So when it load data
-         it takes data from both fields and passes here."""
+         it takes data from both fields and passes here. For that reason, there is separate loading for skill template
+         which takes data from 2 fields and loads here"""
         for name, val in zip(names, values):
             if name == 'StatusIcon':
                 temp = val.split('/')
@@ -2227,7 +2114,6 @@ class PerkDoubleList(SimpleFields.ElementsList):
     def select_data(self):
         """just adds selected value from perk types to SELECTED VALUES then remove selected value and nothing else"""
         selected_value = self.selected_element()
-        # if selected element
         if selected_value:
             # if selected multiple elements. just in case, select only 1
             if isinstance(selected_value, list):
@@ -2273,15 +2159,151 @@ class PerkDoubleList(SimpleFields.ElementsList):
                     restore = QStandardItem(val_to_restore)
                     self.selected_values[val_to_restore]['parent'].insertRow(self.selected_values[val_to_restore]['index'], restore)
 
-    # todo
-    def add_other_fields(self, field):
-        self.other_fields.append(field)
+    # # todo
+    # def add_other_fields(self, field):
+    #     self.other_fields.append(field)
 
     # def set_up_widget(self, outside_layout):
     #     outside_layout.addWidget(self)
 
 
-def createField(parent_widget, fieldname, fieldData, mode=1, template_name=None):
+class Pictures:
+    def __init__(self, field_name, field_data):
+        """first a button to open picture viewer"""
+        self.custom_layout = QtWidgets.QVBoxLayout()
+        button_open_viewer = SimpleFields.CustomButton(None, 'Pictures')
+        self.label_custom = button_open_viewer
+        self.label_custom.clicked.connect(self.show_viewer)
+        self.custom_layout.addWidget(self.label_custom)
+        """and element tree to display pictures for quick look"""
+        self.final_data = SimpleFields.ElementsList(None)
+        self.final_data.set_up_widget(self.custom_layout)
+
+        self.row_size = 5
+
+    def set_up_widget(self, outside_layout):
+        outside_layout.addLayout(self.custom_layout)
+
+    def set_val(self, data=[], node=None, insert_row=False, data_info=''):
+        """experimental - for values in dictionaries it should add in 2 columns instead of one.
+        will also need to change how to get values then"""
+        # top level,  gather data into list. this way, if need to insert, just provide row number
+        final_items_to_add = []
+        if not node:
+            node = self.final_data.tree_model
+        else:
+            if isinstance(node, str):
+                node = self.final_data.find_node(node)
+                node = self.final_data.tree_model.itemFromIndex(node)
+        if isinstance(data, list):
+            for values in data:
+                if isinstance(values, dict):
+                    for key in values:
+                        parent_row = QStandardItem()
+                        final_items_to_add.append(parent_row)
+                        parent_row.setText(key)
+                        self.set_val(parent_row, values[key])
+                else:
+                    bottom_row = QStandardItem()
+                    bottom_row.setText(values)
+                    final_items_to_add.append(bottom_row)
+                    # if not self.flag_child_editable:
+                    #     bottom_row.setEditable(False)
+        elif isinstance(data, dict):
+            for key in data:
+                parent_row = QStandardItem()
+                parent_row.setText(key)
+                final_items_to_add.append(parent_row)
+                parent_row.setEditable(False)
+                self.set_val(parent_row, data[key])
+        else:
+            """if data is just string"""
+            bottom_row = QStandardItem()
+            bottom_row.setText(data)
+            if data_info:
+                bottom_row.setWhatsThis(data_info)
+            # if not self.flag_child_editable:
+            bottom_row.setEditable(False)
+            final_items_to_add.append(bottom_row)
+
+        for items in (final_items_to_add):
+            node.appendRow(items)
+        # current_row_count = self.final_data.tree_model.rowCount()
+        # for idx in range(current_row_count):
+        #     item = self.final_data.tree_model.item(idx)
+        #     if item.hasChildren():
+        #         for idx in range(item.rowCount()):
+        #             self.final_data.expand(self.final_data.tree_model.indexFromItem(item.child(idx)))
+        return
+    def get_val(self):
+        return
+    def clear_val(self):
+        self.final_data.clear_val()
+
+    def show_viewer(self):
+        self.image_viewer = QImageViewer()
+        self.image_viewer.show()
+
+
+def createField(parent_widget, fieldname, fieldData, template_name=None):
+    #   master_layout - layout where it should go,
+    # fieldname - what should be displayd in label and also in field title, for inside recognition
+    # fielddata - data from file about field attributed
+    tempfield = ''
+    if fieldData["type"] in "text int singlelist filePath":
+        if fieldData["type"] == "text":
+            tempfield = SimpleFields.SimpleEntry(master_widget=parent_widget, field_name=fieldname,
+                                                 field_data=fieldData, main_data_treeview=Glob_Var.main_game_field)
+        elif fieldData["type"] == "int":
+            tempfield = SimpleFields.NumericEntry(master=parent_widget, wid=4, field_name=fieldname,
+                                                  field_data=fieldData)
+        elif fieldData["type"] == "singlelist":
+            tempfield = SimpleFields.SingleList(parent_widget, fieldname, fieldData)
+        elif fieldData["type"] == "filePath":
+            tempfield = SimpleFields.FileField(parent_widget, fieldname, field_data=fieldData)
+    elif fieldData["type"] in 'multilist area requirement combattext':
+        if fieldData["type"] == 'area':
+            # TODO
+            # if 'options' in fieldData:
+            #     if 'function' in fieldData["options"]:
+            #         temp = Text_With_Function(masterName, fieldname, tooltip, 'U', 'F')
+            #         field_area = temp.area_text
+            #         field_area.bind("<Tab>", otherFunctions.focus_next_window)
+            #     else:
+            #         field_area = SimpleFields.AreaEntry(masterName, fieldname, tooltip, 'U')
+            #         field_area.bind("<Tab>", otherFunctions.focus_next_window)
+            # else:
+            tempfield = SimpleFields.AreaEntry(parent_widget, fieldname)
+            # field_area.bind("<Tab>", otherFunctions.focus_next_window)
+        elif fieldData["type"] == 'multilist':
+            tempfield = SimpleFields.MultiListDisplay(parent_widget, fieldname, fieldData, main_data_treeview=Glob_Var.main_game_field)
+        elif fieldData["type"] in 'combattext':
+            tempfield = CombatTrigger(parent_widget, fieldname, fieldData['fields'])
+    else:
+        if fieldData["type"] == 'dictionary':
+            tempfield = ExpandDictionaryField(parent_widget, fieldname, fields_data=fieldData)
+        elif fieldData["type"] == 'combatDialogue':
+            tempfield = EDF_forcombatDialogue(parent_widget, fieldname, fields_data=fieldData)
+        elif fieldData["type"] in 'listDict':
+            # tempfield = ListDict(masterName, fieldname, fields_data=fieldData)
+            tempfield = ExpandDictionaryField(parent_widget, fieldname, fields_data=fieldData)
+        elif fieldData["type"] in 'deck':
+            tempfield = DeckField(parent_widget, fieldData)
+        elif fieldData["type"] in 'monstergroups':
+            tempfield = MonsterGroups(parent_widget, fieldname)
+        # elif fieldData["type"] in 'speaker':
+        #     tempfield = Speaker(parent_widget, fieldData)
+        elif fieldData["type"] in 'FetishApply':
+            tempfield = FetishApply(parent_widget, fieldname, fieldData)
+        elif fieldData["type"] in 'Pictures':
+            tempfield = Pictures(fieldname, fieldData)
+        elif fieldData["type"] in 'PairFields':
+            tempfield = PerkDoubleList(parent_widget, fieldData)
+        elif fieldData['type'] in 'functionfield':
+            tempfield = Functional_Dummy(None, fieldname)
+    return tempfield
+
+def createField_workingBackup(parent_widget, fieldname, fieldData, mode=1, template_name=None):
     #   master_layout - layout where it should go,
     # fieldname - what should be displayd in label and also in field title, for inside recognition
     # fielddata - data from file about field attributed
@@ -2356,6 +2378,8 @@ def createField(parent_widget, fieldname, fieldData, mode=1, template_name=None)
             #     tempfield = Speaker(parent_widget, fieldData)
             elif fieldData["type"] in 'FetishApply':
                 tempfield = FetishApply(parent_widget, fieldname, fieldData)
+            elif fieldData["type"] in 'Pictures':
+                tempfield = Pictures(fieldname, fieldData)
             elif fieldData["type"] in 'PairFields':
                 advance_field = PerkDoubleList(parent_widget, fieldData)
                 tempfield = advance_field
@@ -2364,7 +2388,7 @@ def createField(parent_widget, fieldname, fieldData, mode=1, template_name=None)
                 #     # field_ready['name'] = connected_field
                 #     advance_field.add_other_fields(connected_field)
                 # return [advance_field, connected_field]
-            #TODO
+
             elif fieldData['type'] in 'functionfield':
                 tempfield = Functional_Dummy(None, fieldname)
     # else:
