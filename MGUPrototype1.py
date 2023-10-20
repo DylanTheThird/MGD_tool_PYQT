@@ -25,7 +25,7 @@ import TemplatesPreparation
 # global Mod_Var
 
 # TODO evenings - picture viewer
-# TODO add more stuff outside from lists, like sound banks
+# TODO add more stuff outside from lists, like sound banks - NOW
 # TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
 
