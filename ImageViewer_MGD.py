@@ -117,57 +117,60 @@ class SimpleEntry(QtWidgets.QLineEdit):
     # def focusOutEvent(self, event):
     #     print('event-focus-out:', self.objectName())
     #     super().focusOutEvent(event)
-class CheckBox(QtWidgets.QCheckBox):
-    def __init__(self, master_window, field_name, return_value):
-        super().__init__(parent=master_window)
-        self.return_value = return_value
-        self.setText(field_name)
-        # self.custom_widget = QtWidgets.QWidget()
-        # cl = QtWidgets.QHBoxLayout()
-        # self.custom_widget.setLayout(cl)
-        # cl.addWidget(self)
-        # self.stateChanged.connect(self.test)
 
-    def test(self):
-        print('checkbox clicked')
-        print(str(self.isChecked()))
+# class CheckBoxDelegate(QtGui.QStyledItemDelegate):
+#     def __init__(self, parent = None):
+#         QtGui.QStyledItemDelegate.__init__(self, parent)
+#     def createEditor(self, parent, option, index):
+#         return None
+#     def paint(self, painter, option, index):
+#         checked = bool(index.model().data(index, QtCore.Qt.DisplayRole))
+#         check_box_style_option = QtGui.QStyleOptionButton()
+#         if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
+#             check_box_style_option.state |= QtGui.QStyle.State_Enabled
+#         else:
+#             check_box_style_option.state |= QtGui.QStyle.State_ReadOnly
+#         if checked:
+#             check_box_style_option.state |= QtGui.QStyle.State_On
+#         else:
+#             check_box_style_option.state |= QtGui.QStyle.State_Off
+#         check_box_style_option.rect = self.getCheckBoxRect(option)
+#         QtGui.QApplication.style().drawControl(QtGui.QStyle.CE_CheckBox, check_box_style_option, painter)
+#     def editorEvent(self, event, model, option, index):
+#         if not (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
+#             return False
+#         # Do not change the checkbox-state
+#         if event.type() == QtCore.QEvent.MouseButtonRelease or event.type() == QtCore.QEvent.MouseButtonDblClick:
+#             if event.button() != QtCore.Qt.LeftButton or not self.getCheckBoxRect(option).contains(event.pos()):
+#                 return False
+#             if event.type() == QtCore.QEvent.MouseButtonDblClick:
+#                 return True
+#         elif event.type() == QtCore.QEvent.KeyPress:
+#             if event.key() != QtCore.Qt.Key_Space and event.key() != QtCore.Qt.Key_Select:
+#                 return False
+#         else:
+#             return False
+#         # Change the checkbox-state
+#         self.setModelData(None, model, index)
+#         return True
+#     def setModelData (self, editor, model, index):
+#         newValue = not bool(index.model().data(index, QtCore.Qt.DisplayRole))
+#         model.setData(index, newValue, QtCore.Qt.EditRole)
+#     def getCheckBoxRect(self, option):
+#         check_box_style_option = QtGui.QStyleOptionButton()
+#         check_box_rect = QtGui.QApplication.style().subElementRect(QtGui.QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
+#         check_box_point = QtCore.QPoint (option.rect.x() +
+#                              option.rect.width() / 2 -
+#                              check_box_rect.width() / 2,
+#                              option.rect.y() +
+#                              option.rect.height() / 2 -
+#                              check_box_rect.height() / 2)
+#         return QtCore.QRect(check_box_point, check_box_rect.size())
 
-    def get_val(self):
-        if self.isChecked():
-            return self.return_value
-        else:
-            return ''
-
-    def set_val(self, value=None):
-        if value:
-            self.setChecked(True)
-
-    def clear_val(self):
-        self.setChecked(False)
-
-    def change_f(self, new_function):
-        self.stateChanged.connect(new_function)
-
-    def change_label(self, new_label):
-        self.setText(new_label)
-
-    def set_up_widget(self, outside_layout):
-        outside_layout.addWidget(self)
-        # outside_layout.addWidget(self.custom_widget)
-    def destroy(self):
-        self.deleteLater()
-    # def focusInEvent(self, event):
-    #     if self.connector_to_outside_complex_class:
-    #         GlobalVariables.Glob_Var.main_game_field.connect_multilist(self.connector_to_outside_complex_class)
-    #     else:
-    #         GlobalVariables.Glob_Var.main_game_field.disconnect_multilist()
-    #     super().focusInEvent(event)
-
-    # def pack(self):
-    #     self.pack(side=tk.LEFT)
-    #
-    # def destroy(self):
-    #     self.destroy()
+# later
+#PUT THE CHECKBOX IN COLUMN 2
+# myDelegate = CheckBoxDelegate()
+# treeView.setItemDelegateForColumn(2, myDelegate)
 
 class ElementsList(QtWidgets.QTreeView):
     def __init__(self, masterWun, listTitle=None, search_field=False, folders=False, all_edit=False, treeview_height=5,
@@ -1335,12 +1338,14 @@ class QImageViewer(QMainWindow):
         main_set = QStandardItem('placeholder')
         main_set.setEditable(False)
         temp_a = QStandardItem('Name')
-        temp_a.setEnabled(False)
+        temp_a.setEditable(False)
         temp_b = QStandardItem('Set')
         temp_b.setEnabled(False)
         main_set.appendRow([temp_a, QStandardItem('placeholder')])
+        main_set.child(0, 1).setWhatsThis('name')
         main_set.appendRow([temp_b, QStandardItem()])
-        self.pictures_model.appendRow(main_set)
+        self.pictures_model.appendRow([main_set, QStandardItem()])
+        # self.pictures_model.appendRow([main_set, temp_a])
 
     def add_pictures(self):
         main_set = QStandardItem('placeholder')
@@ -1361,6 +1366,7 @@ class QImageViewer(QMainWindow):
                 temp[1].setText('')
                 temp[1].setCheckable(True)
             main_set.appendRow([temp[0], temp[1]])
+        main_set.child(0, 1).setWhatsThis('name')
         temp_a = QStandardItem('Images')
         temp_a.setEditable(False)
         main_set.appendRow([temp_a, QStandardItem('')])
@@ -1377,17 +1383,34 @@ class QImageViewer(QMainWindow):
             self.pictures_model.appendRow(main_set)
 
     def add_images(self):
+        # temp = self.tree_pictures.selected_element()
+        # try:
+        #     print(temp.data())
+        # except:
+        #     print('not data')
+        # try:
+        #     print(temp.text())
+        # except:
+        #     print('not text')
+        # try:
+        #     if temp.isCheckable():
+        #         print(temp.checkState())
+        # except:
+        #     print('not text')
+        # return
         file_path = self.image_fields['File'].text()
         if not file_path or file_path == 'missing':
             self.image_fields['File'].setText('missing')
             return
         selected = self.tree_pictures.selected_element()
         if selected:
+            """images only to images row"""
             if isinstance(selected, list):
                 selected = selected[0]
             if selected.text() == 'Images':
                 image_title = self.image_fields['Name'].text()
-                main = QStandardItem(image_title)
+                images_parent_row = QStandardItem(image_title)
+                images_parent_row.setEditable(False)
                 for field in self.image_fields:
                     temp_a = QStandardItem(field)
                     temp_a.setEnabled(False)
@@ -1396,8 +1419,9 @@ class QImageViewer(QMainWindow):
                         temp_b.setWhatsThis(self.image_fields[field].text())
                         temp = self.image_fields[field].text().split('/')[-1]
                         temp_b.setText(temp)
-                    main.appendRow([temp_a, temp_b])
-                selected.appendRow(main)
+                    images_parent_row.appendRow([temp_a, temp_b])
+                images_parent_row.child(0, 1).setWhatsThis('name')
+                selected.appendRow(images_parent_row)
             else:
                 return
                 # TODO show warning
