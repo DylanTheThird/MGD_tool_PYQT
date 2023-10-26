@@ -218,7 +218,7 @@
                 },
 				"options":["addition"]},			
 	"pictures":		{
-						"type":"dictionary",
+						"type":"Pictures",
 						"tooltip":"array of objects, each representing a functional layer of images for the character. For example, one object for the body layer, and another for the expressions, would be a basic setup",
 						"expand":"false",
 						"optional":"true",
