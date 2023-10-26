@@ -24,7 +24,7 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO evenings - picture viewer
+# TODO picture viewer - Done
 # TODO add more stuff outside from lists, like sound banks - NOW
 # TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
@@ -485,9 +485,6 @@ class Ui_MainWindow(QtWidgets.QWidget):
         self.scroll_area.hide()
 
         mod_temp_data.templates_access = Glob_Var.access_templates
-        temp = self.templates['Monsters'].frame_fields['pictures'].label_custom.font()
-        temp.setStrikeOut(True)
-        self.templates['Monsters'].frame_fields['pictures'].label_custom.setFont(temp)
 
     # might be changed to checking focus on each widget instead of here
     @QtCore.pyqtSlot("QWidget*", "QWidget*")

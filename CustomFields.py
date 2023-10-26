@@ -2167,55 +2167,106 @@ class PerkDoubleList(SimpleFields.ElementsList):
     #     outside_layout.addWidget(self)
 
 
-class Pictures:
-    def __init__(self, field_name, field_data):
+class Pictures(SimpleFields.ElementsList):
+    def __init__(self, field_name='Pictures', field_data=None):
+        super().__init__(None)
         """first a button to open picture viewer"""
-        self.custom_layout = QtWidgets.QVBoxLayout()
-        button_open_viewer = SimpleFields.CustomButton(None, 'Pictures')
+        self.title = 'Pictures'
+        button_open_viewer = SimpleFields.CustomButton(None, field_name)
         self.label_custom = button_open_viewer
         self.label_custom.clicked.connect(self.show_viewer)
-        self.custom_layout.addWidget(self.label_custom)
-        """and element tree to display pictures for quick look"""
-        self.final_data = SimpleFields.ElementsList(None)
-        self.final_data.set_up_widget(self.custom_layout)
-
+        self.layout.insertWidget(0, self.label_custom)
+        self.final_data = self
+        self.final_data.shortcut_restore = None
+        self.final_data.change_selection('S')
+        self.final_data.tree_model.setHorizontalHeaderLabels(['', ''])
+        self.final_data.setColumnWidth(0, 180)
+        self.setMinimumWidth(200)
+        self.final_data.tree_model.itemChanged.connect(self.final_data.edit_selected)
         self.row_size = 5
 
-    def set_up_widget(self, outside_layout):
-        outside_layout.addLayout(self.custom_layout)
+    def set_val(self, data=[], node=None, data_info=''):
+        """this goes into custom treeview for pictures"""
+        # self.doubleClicked.connect(self.edit_selected)
+        # self.activated.connect(self.edit_selected)
 
-    def set_val(self, data=[], node=None, insert_row=False, data_info=''):
         """experimental - for values in dictionaries it should add in 2 columns instead of one.
         will also need to change how to get values then"""
-        # top level,  gather data into list. this way, if need to insert, just provide row number
+        empty_field = QStandardItem()
+        empty_field.setEditable(False)
         final_items_to_add = []
         if not node:
-            node = self.final_data.tree_model
+            node = self.final_data.model()
         else:
             if isinstance(node, str):
-                node = self.final_data.find_node(node)
-                node = self.final_data.tree_model.itemFromIndex(node)
+                temp = self.final_data.find_node(node)
+                node = self.final_data.model()
+                node.itemFromIndex(temp)
         if isinstance(data, list):
             for values in data:
                 if isinstance(values, dict):
+                    """first item will be title for dictionary"""
+                    parent_title = list(values.values())[0]
+                    parent_row = QStandardItem(parent_title)
+                    parent_row.setEditable(False)
                     for key in values:
-                        parent_row = QStandardItem()
-                        final_items_to_add.append(parent_row)
-                        parent_row.setText(key)
-                        self.set_val(parent_row, values[key])
+                        if not isinstance(values[key], str):
+                            parent_row_a = QStandardItem(key)
+                            if key == 'Images' or key == 'Set':
+                                parent_row_a.setEditable(False)
+                            parent_row.appendRow([parent_row_a, empty_field])
+                            """if its not just key:text, then need to go over it again"""
+                            self.set_val(values[key], parent_row_a)
+                            continue
+                        cola = QStandardItem(key)
+                        # cola.setEditable(False)
+                        cola.setEnabled(False)
+                        colb = QStandardItem()
+                        temp = values[key]
+                        if len(temp) == 1:
+                            colb.setCheckable(True)
+                            if temp == '1':
+                                colb.setCheckState(Qt.Checked)
+                            temp = ''
+                        if key == 'File':
+                            colb.setWhatsThis(temp)
+                            temp = temp.split('/')[-1]
+                        colb.setText(temp)
+                        if key == 'Name':
+                            colb.setWhatsThis('name')
+                        parent_row.appendRow([cola, colb])
+                    final_items_to_add.append([parent_row, empty_field])
                 else:
                     bottom_row = QStandardItem()
                     bottom_row.setText(values)
                     final_items_to_add.append(bottom_row)
-                    # if not self.flag_child_editable:
-                    #     bottom_row.setEditable(False)
         elif isinstance(data, dict):
+            parent_title = list(data.values())[0]
+            parent_row = QStandardItem(parent_title)
+            parent_row.setEditable(False)
             for key in data:
-                parent_row = QStandardItem()
-                parent_row.setText(key)
-                final_items_to_add.append(parent_row)
-                parent_row.setEditable(False)
-                self.set_val(parent_row, data[key])
+                if not isinstance(data[key], str):
+                    """if its not just key:text, then need to go over it again"""
+                    self.set_val(data[key], parent_row)
+                    continue
+                cola = QStandardItem(key)
+                cola.setEnabled(False)
+                # cola.setEditable(False)
+                colb = QStandardItem()
+                temp = data[key]
+                if len(temp) == 1:
+                    colb.setCheckable(True)
+                    if temp == '1':
+                        colb.setCheckState(Qt.Checked)
+                    temp = ''
+                if key == 'File':
+                    colb.setWhatsThis(temp)
+                    temp = temp.split('/')[-1]
+                colb.setText(temp)
+                if key == 'Name':
+                    colb.setWhatsThis('name')
+                parent_row.appendRow([cola, colb])
+            final_items_to_add.append([parent_row, empty_field])
         else:
             """if data is just string"""
             bottom_row = QStandardItem()
@@ -2225,24 +2276,158 @@ class Pictures:
             # if not self.flag_child_editable:
             bottom_row.setEditable(False)
             final_items_to_add.append(bottom_row)
-
         for items in (final_items_to_add):
             node.appendRow(items)
-        # current_row_count = self.final_data.tree_model.rowCount()
-        # for idx in range(current_row_count):
-        #     item = self.final_data.tree_model.item(idx)
-        #     if item.hasChildren():
-        #         for idx in range(item.rowCount()):
-        #             self.final_data.expand(self.final_data.tree_model.indexFromItem(item.child(idx)))
+
+    def get_val(self, temp_dict_container=None):
+
+        list_data = []
+        self.get_data(root_list=list_data)
+        if temp_dict_container is not None:
+            temp_dict_container[self.title] = list_data
+        else:
+            return list_data
         return
-    def get_val(self):
-        return
-    def clear_val(self):
-        self.final_data.clear_val()
+
+    # def clear_val(self):
+    #     self.final_data.clear_val()
+
+    def get_data(self, parent_index=None, root_list=None):
+        """lets start again. This is specific for pictures setup, but might work elsewhere if treeview should have 2 col
+        But there are hardcoded limitations if row_a_index.data() in ['Images', 'Set']
+        I'd have to change how title rows are created, for example with setWhatsThis 'title' and check for that.
+        """
+        if parent_index:
+            if isinstance(parent_index, QStandardItem):
+                parent_index = self.final_data.tree_model.indexFromItem(parent_index)
+            row_range = self.final_data.tree_model.rowCount(parent_index)
+        else:
+            row_range = self.final_data.tree_model.rowCount()
+        row_dict = {}
+        for i in range(row_range):
+            if parent_index:
+                row_a_index = self.final_data.tree_model.index(i, 0, parent_index)
+                row_b_index = self.final_data.tree_model.index(i, 1, parent_index)
+            else:
+                row_a_index = self.final_data.tree_model.index(i, 0)
+                row_b_index = self.final_data.tree_model.index(i, 1)
+            # print(row_a_index.data())
+            # print(row_b_index.data())
+            if row_b_index.data() is None:
+                row_a_child = self.final_data.tree_model.itemFromIndex(row_a_index.child(0, 0))
+                """index always have a parent and child, so need to check if index is pointing to anything"""
+                if row_a_child:
+                    """specific to pictures"""
+                    if row_a_index.data() in ['Images', 'Set']:
+                        sub_list = []
+                    else:
+                        sub_list = root_list
+                    self.get_data(row_a_index, sub_list)
+                    if row_b_index.data() is None and row_a_index.data() in ['Images', 'Set']:
+                        row_dict[row_a_index.data()] = sub_list
+                    continue
+            """additional check for row B. as it could be checkbox"""
+            row_b_data = row_b_index.data()
+            if row_b_data == '':
+                temp = self.final_data.tree_model.itemFromIndex(row_b_index)
+                if temp.isCheckable():
+                    row_b_data = temp.checkState()
+                    if row_b_data == 2:
+                        # for some reason, there are 3 states. checked is number 2
+                        row_b_data = 1
+            row_a_data = row_a_index.data()
+            if row_a_index.data() == 'File':
+                """to make it more visible, path from file is hidden in whatsthis and only filename is displayed."""
+                temp = self.final_data.tree_model.itemFromIndex(row_b_index)
+                row_a_data = temp.whatsThis()
+            row_dict[row_a_data] = row_b_data
+        if parent_index:
+            if row_dict:
+                root_list.append(row_dict)
+        else:
+            return row_dict
 
     def show_viewer(self):
-        self.image_viewer = QImageViewer()
+        self.image_viewer = QImageViewer(self.final_data.tree_model, Glob_Var.start_path)
+        # self.image_viewer = QImageViewer()
         self.image_viewer.show()
+
+    def edit_selected(self, *args):
+        """using signal itemChanged it passes QStandartItem of modified element.
+        set val of pictures adds WhatIsThis 'name' to items. Check it and based on it, update parent"""
+        # print(args[0].whatsThis())
+        if args[0].whatsThis() == 'name':
+            args[0].parent().setText(args[0].text())
+
+    def delete_with_backup(self):
+        # this is list of indexes for selected items
+        items_to_delete = self.selectedIndexes()
+        """for picture, only entire sets and images can be removed"""
+        """simple workaroung"""
+        if len(items_to_delete) == 1:
+            """keys are disabled. only parent items are enabled. if key is disabled, it cannot be selected
+            so selected indexes return only 1 index instead of 2"""
+            return
+        # for items in items_to_delete:
+        #     print(str(items.column()))
+        #     if items.column() == 1:
+        #         return
+        #     else:
+        #         print(str(items.data()))
+        #         if items.data() is not None:
+        #             return
+        """selectedindexes should return list of items. problem is when its several rows.
+        Best way probably is to create list for items in 1 row, go over each item and check column.
+        if same, add to that list, if new, create new list and add to it.
+        Later, when restore, it should first prepare entire rows of items and then add it"""
+        items_list = []
+        row_no = -1
+        for aa in items_to_delete:
+            leaves_data = []
+            item = self.tree_model.itemFromIndex(aa)
+            if item.row() != row_no:
+                # new_row = []
+                items_list.append([])
+                row_no = item.row()
+            if item.child(0, 0):
+                self.get_data(item, leaves_data)
+            delete_element_data = {'index': item.row(), 'parent': item.parent(),
+                                   'text': item.text(), 'info': item.whatsThis(), 'leaves': leaves_data}
+            # this wont work in case it does not start with first column :(.
+            items_list[-1].append(delete_element_data)
+        self.delete_leaf(items_to_delete)
+        if items_list:
+            if len(self.back_up_deleted) > 10:
+                self.back_up_deleted.pop(0)
+            self.back_up_deleted.append(items_list)
+        return
+
+    def restore_deleted(self, paste=False):
+        """specific for pictures. but not working. Seems for some reason, shortcuts are broken, and this is quite hard
+        backup deleted is a matrix. [0] - list of items in row, [0][0] - first item in first row"""
+        if self.back_up_deleted:
+            items_to_restore = self.back_up_deleted.pop(-1)
+            """pop last list of rows"""
+            for item in items_to_restore:
+                if paste:
+                    branch_to_insert = self.tree_model.itemFromIndex(self.currentIndex())
+                    item['index'] = 0
+                    if not branch_to_insert.isEditable():
+                        # if not editable, then its a file, cannot paste into file.
+                        branch_to_insert = self.tree_model.itemFromIndex(self.currentIndex().parent())
+                        if not branch_to_insert.parent():
+                            # if there is no parent, its root item.
+                            branch_to_insert = self.tree_model
+                else:
+                    branch_to_insert = self.tree_model.itemFromIndex(item['parent'])
+                new_item = QStandardItem()
+                new_item.setText(item['text'])
+                new_item.setEditable(False)
+                if not branch_to_insert:
+                    branch_to_insert = self.tree_model
+                branch_to_insert.insertRow(item['index'], new_item)
+                if item['leaves']:
+                    self.add_data(item['leaves'], new_item)
 
 
 def createField(parent_widget, fieldname, fieldData, template_name=None):

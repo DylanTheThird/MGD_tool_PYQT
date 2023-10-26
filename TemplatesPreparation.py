@@ -161,7 +161,12 @@ class Templates:
                     if self.json_templates[field]["type"] in 'optional':
                         field_value = OptionalFields(self.main_widget, self.json_templates[field], self.main_template_layout)
                         self.optional_class_worker = field_value
-                field_value.set_up_widget(layout_template)
+                try:
+                    field_value.set_up_widget(layout_template)
+                except:
+                    print('something wrong with set up widget')
+                    print(field_value)
+                    print(field)
                 """set aside info if field is in addition"""
                 if 'options' in self.json_templates[field]:
                     if 'addition' in self.json_templates[field]['options']:

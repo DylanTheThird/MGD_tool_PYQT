@@ -118,7 +118,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
             if 'options' in field_data:
                 if 'addition' in field_data['options']:
                     self.addition = True
-        self.shortcuts = []
+        # self.shortcuts = []
         self.setObjectName('entry')
         if edit:
             self.field_modified_check()
@@ -1225,6 +1225,14 @@ class ElementsList(QtWidgets.QTreeView):
         else:
             item.setBackground(QBrush(QColor("#ff8080")))
 
+    def change_selection(self, selection='S/M'):
+        if selection == 'S':
+            self.setSelectionMode(QAbstractItemView.SingleSelection)
+        elif selection == 'M':
+            self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+    #         I think there is at least 1 more type, but its not used anywhere
+
+
     def update_leaf(self, new_text):
         """just change displayed text"""
         selected_item = self.tree_model.itemFromIndex(self.currentIndex())
@@ -1286,9 +1294,10 @@ class ElementsList(QtWidgets.QTreeView):
             if leaves_to_delete_by_text:
                 if leaves_to_delete_by_text[-1].row() == leaf.row():
                     continue
-            leaves_to_delete_by_text.append(self.tree_model.itemFromIndex(leaf))
-        for leaf in leaves_to_delete_by_text:
-            item = self.tree_model.indexFromItem(leaf)
+            # leaves_to_delete_by_text.append(self.tree_model.itemFromIndex(leaf))
+            leaves_to_delete_by_text.append(leaf)
+        for item in leaves_to_delete_by_text:
+            # item = self.tree_model.indexFromItem(leaf)
             # item_in_sort = self.sorting.mapToSource(item)
             self.tree_model.removeRow(item.row(), item.parent())
             # self.sorting.removeRow(item_in_sort.row(),item_in_sort.parent())
