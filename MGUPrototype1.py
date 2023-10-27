@@ -24,7 +24,8 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO picture viewer - Done
+# TODO picture viewer - adjust for other load files fields where pictures are loaded - done
+# TODO adjust function editor for fields with markups - done
 # TODO add more stuff outside from lists, like sound banks - NOW
 # TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key

@@ -616,60 +616,63 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.area_input.flag_update = True
 
     def save_data(self):
-        """first, check if scene name is defined"""
-        scene_title = self.data_fields['NameOfScene'].get_val()
-        if not scene_title:
-            show_message('Missing scene title', 'Please provide scene title', 'MissMandatory')
-            return
-        current_selection = self.scene_list.selected_element()
-        if not current_selection:
-            """if nothing selected. events scenes are 'EventText' while for monsters its 'loss or vistory scene'"""
-            show_message('Missing scene type', 'Please select scene type from scene list(top item)', 'MisMandatory')
-            return
-        scene_data = {}
-        """go over display data manually, whatever is nested need to be put top level.
-        In the end, scene is a list of values"""
-        scene_text = self.display_data.get_data()
-        final_text = []
-        for text in scene_text:
-            if isinstance(text, dict):
-                for i in text:
-                    final_text.append(i)
-                    for ii in text[i]:
-                        final_text.append(ii)
+        if self.scene_list:
+            """first, check if scene name is defined"""
+            scene_title = self.data_fields['NameOfScene'].get_val()
+            if not scene_title:
+                show_message('Missing scene title', 'Please provide scene title', 'MissMandatory')
+                return
+            current_selection = self.scene_list.selected_element()
+            if not current_selection:
+                """if nothing selected. events scenes are 'EventText' while for monsters its 'loss or vistory scene'"""
+                show_message('Missing scene type', 'Please select scene type from scene list(top item)', 'MisMandatory')
+                return
+            scene_data = {}
+            """go over display data manually, whatever is nested need to be put top level.
+            In the end, scene is a list of values"""
+            scene_text = self.display_data.get_data()
+            final_text = []
+            for text in scene_text:
+                if isinstance(text, dict):
+                    for i in text:
+                        final_text.append(i)
+                        for ii in text[i]:
+                            final_text.append(ii)
+                else:
+                    final_text.append(text)
+            for fields in self.data_fields:
+                # in case of theScene, getdata gathers it into dictionary, but should be a simple list - "finalText"
+                if fields == 'theScene':
+                    scene_data[fields] = final_text
+                else:
+                    scene_data[fields] = self.data_fields[fields].get_val()
+            """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
+            so check what is selected and take its parent"""
+            """now, how to save scene in scenelist"""
+            insert_row = -1
+            if current_selection.parent():
+                """selected scene, not scene type, add above"""
+                temp = current_selection.parent()
+                scene_type = temp.text()
+                insert_row = current_selection.row()
             else:
-                final_text.append(text)
-        for fields in self.data_fields:
-            # in case of theScene, getdata gathers it into dictionary, but should be a simple list - "finalText"
-            if fields == 'theScene':
-                scene_data[fields] = final_text
-            else:
-                scene_data[fields] = self.data_fields[fields].get_val()
-        """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
-        so check what is selected and take its parent"""
-        """now, how to save scene in scenelist"""
-        insert_row = -1
-        if current_selection.parent():
-            """selected scene, not scene type, add above"""
-            temp = current_selection.parent()
-            scene_type = temp.text()
-            insert_row = current_selection.row()
+                """if no parent, selected scene type, add to it"""
+                scene_type = current_selection.text()
+            if scene_title not in list(self.current_scenes[scene_type].keys()):
+                """if title already exists, then user is updating, no need to change, otherwise, insert or add new scene"""
+                if insert_row > -1:
+                    """user selected scene, insert new scene above selection"""
+                    self.scene_list.insert_row([scene_title])
+                else:
+                    """user selected parent"""
+                    self.scene_list.add_data([scene_title], current_selection)
+            self.current_scenes[scene_type][scene_title] = scene_data
+            # self.display_data.clear_tree()
+            for field in self.data_fields:
+                self.data_fields[field].clear_val()
         else:
-            """if no parent, selected scene type, add to it"""
-            scene_type = current_selection.text()
-        if scene_title not in list(self.current_scenes[scene_type].keys()):
-            """if title already exists, then user is updating, no need to change, otherwise, insert or add new scene"""
-            if insert_row > -1:
-                """user selected scene, insert new scene above selection"""
-                self.scene_list.insert_row([scene_title])
-            else:
-                """user selected parent"""
-                self.scene_list.add_data([scene_title], current_selection)
-        self.current_scenes[scene_type][scene_title] = scene_data
-        # self.display_data.clear_tree()
-        for field in self.data_fields:
-            self.data_fields[field].clear_val()
-
+            self.target_field.set_val(self.area_input.get_val())
+            self.close()
     def switch_to_data(self):
         """scene data is additiona scene attributes. display data is scene context"""
         if self.flag_data:

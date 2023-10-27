@@ -144,11 +144,13 @@
 			},
     "outcome": {
 				"type":"text",
-				"tooltip":"Triggers on the skill successfully landing."
+				"tooltip":"Triggers on the skill successfully landing.",
+				"options":["function"]
 			},
     "miss": {
 				"type":"text",
-				"tooltip":"Triggers on the skill missing."
+				"tooltip":"Triggers on the skill missing.",
+				"options":["function"]
 			},
     "restraintStruggle": {
 				"type":"text",

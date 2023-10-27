@@ -118,6 +118,11 @@ class SimpleEntry(QtWidgets.QLineEdit):
             if 'options' in field_data:
                 if 'addition' in field_data['options']:
                     self.addition = True
+                if 'function' in field_data['options']:
+                    but_markup = CustomButton(None, 'F')
+                    but_markup.setMaximumWidth(20)
+                    but_markup.clicked.connect(self.open_text_editor)
+                    self.custom_layout.addWidget(but_markup)
         # self.shortcuts = []
         self.setObjectName('entry')
         if edit:
@@ -185,7 +190,10 @@ class SimpleEntry(QtWidgets.QLineEdit):
     # def focusOutEvent(self, event):
     #     print('event-focus-out:', self.objectName())
     #     super().focusOutEvent(event)
-
+    def open_text_editor(self):
+        import MarkUpDialog
+        markup_win = MarkUpDialog.MarkUp_Window(target_field=self, scenes_flag=False)
+        markup_win.show()
 
 class SimpleEntryDisplay(SimpleEntry):
     # TODO might be obsolete
