@@ -195,6 +195,8 @@ class SimpleEntry(QtWidgets.QLineEdit):
         markup_win = MarkUpDialog.MarkUp_Window(target_field=self, scenes_flag=False)
         markup_win.show()
 
+
+
 class SimpleEntryDisplay(SimpleEntry):
     # TODO might be obsolete
     doubleClicked = pyqtSignal()
@@ -613,6 +615,7 @@ class UniqueView(QtWidgets.QListView):
             self.treeview_with_main_and_mod_data.disconnect_multilist()
         super().focusInEvent(event)
 
+
 """complicated fields contains more widgers, display fields should only have 1 to display,
  so here create inherits from display"""
 class ElementsList(QtWidgets.QTreeView):
@@ -622,6 +625,7 @@ class ElementsList(QtWidgets.QTreeView):
         # TODO ctrl up or down - move rows. Probably cut tthem out and insert
         super().__init__(parent=masterWun)
         self.layout = QtWidgets.QVBoxLayout(masterWun)
+        self.layout.setAlignment()
         self.title = listTitle
         self.type = 'element_list'
         self.flag_folders = folders
