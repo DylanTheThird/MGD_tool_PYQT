@@ -625,7 +625,7 @@ class ElementsList(QtWidgets.QTreeView):
         # TODO ctrl up or down - move rows. Probably cut tthem out and insert
         super().__init__(parent=masterWun)
         self.layout = QtWidgets.QVBoxLayout(masterWun)
-        self.layout.setAlignment()
+        # self.layout.setAlignment()
         self.title = listTitle
         self.type = 'element_list'
         self.flag_folders = folders

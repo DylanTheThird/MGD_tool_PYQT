@@ -477,8 +477,9 @@ class DeckField:
         self.type = 'multilist'
         self.selection_type = ''
         self.option_flag = False #for adding monster list. later, is set to 1 if adding monsters, when done, add end tag
-        self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
-                            "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
+        # self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
+        #                     "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
+        self.option_list = Glob_Var.drop_down_options['Deck']
         self.row_size = 6
 
         self.options_selection = SimpleFields.SingleList(master, 'Deck', edit=False)
@@ -1262,7 +1263,7 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
 
 class FunctionField(SimpleFields.ElementsList):
     def __init__(self, flag_for_list_of_functions=False, master=None, view_title="Scenes"):
-        super().__init__(masterWun=master, listTitle=view_title, search_field=False, folders=False)
+        super().__init__(masterWun=master, listTitle=view_title, search_field=True, folders=False)
         """this is just container for scenes. Most of stuff will be done by MarkUpWindow.
         Basically, its just element list. Double click on root - eventText, to open Markup.
         Doubleclick on bottom element - load scene to edit"""
@@ -1407,8 +1408,9 @@ class FunctionField(SimpleFields.ElementsList):
         """expected display - root parent which is event type(event,loss,victory scene) with scenes names as leaves
             if user selected root - do nothing. So user selected leaf. Check branch for even type and display theScene
             from scene data container. Keys should be same as scene name"""
-        tree_model = self.model()
-        selected = tree_model.itemFromIndex(item_index)
+        # tree_model = self.model()
+        # selected = tree_model.itemFromIndex(item_index)
+        selected = self.selected_element()
         scene_type = selected.parent()
         if scene_type is not None:
             scene_text = self.scene_data_container[scene_type.text()][selected.text()]['theScene']

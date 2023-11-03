@@ -262,12 +262,12 @@ def load_perks_and_stats():
     Glob_Var.perks_and_stats['StatReq'] = file_data
 
 
-def load_status_effect():
-    with open('files/_statuseffects.json') as file:
-        file_data = json.load(file, object_hook=OrderedDict)
-        # TODO check if this works intended or should go back
-        Glob_Var.game_hard_data['statusEffects'] = file_data
-    # Glob_Var.game_hard_data['statusEffects'] = file_data
+# def load_status_effect():
+#     with open('files/_statuseffects.json') as file:
+#         file_data = json.load(file, object_hook=OrderedDict)
+#         # TODO check if this works intended or should go back
+#         Glob_Var.game_hard_data['statusEffects'] = file_data
+#     # Glob_Var.game_hard_data['statusEffects'] = file_data
 
 
 def load_functions():
@@ -307,9 +307,9 @@ def load_functions():
                         Glob_Var.functions_data[function_title] = data[root_function][function_type][idx]
 
 
-def load_stances():
-    with open('files/_stances.json') as file:
-        Glob_Var.stances = json.load(file, object_hook=OrderedDict)
+# def load_stances():
+#     with open('files/_stances.json') as file:
+#         Glob_Var.stances = json.load(file, object_hook=OrderedDict)
 
 
 def load_line_triggers():
@@ -339,6 +339,13 @@ def load_main_game_addition(main_path='game/json', folder=None, main_tree=None):
         if file[0] != '_':
             main_tree.add_leaf([file[:-5]], None, folder, additional_data=main_path + '/' + file, editable=False)
 
+
+def load_drop_down_options():
+    with open('files/_dropDownOptions.json') as file:
+        Glob_Var.drop_down_options = json.load(file, object_hook=OrderedDict)
+    Glob_Var.stances = Glob_Var.drop_down_options['Stances']
+    Glob_Var.game_hard_data['statusEffects'] = [Glob_Var.drop_down_options['Buffs and Debuffs'],
+                                                Glob_Var.drop_down_options['Status Effects']]
 
 def remove_files(files_dict, mod_path, mod_name):
     for file in files_dict:

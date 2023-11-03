@@ -1,0 +1,20 @@
+{
+"Buffs and Debuffs":["Crit","Damage","Defence","Power","Technique","Intelligence","Allure","Willpower","Luck","%Power","%Technique","%Intelligence","%Allure","%Willpower","%Luck"],
+"Deck":["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure", "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"
+],
+"ItemTypes":["Consumable","CombatConsumable","NotCombatConsumable","DissonantConsumable","Loot","Rune","Accessory","Key"
+],
+"Stances":{
+	"Custom":[],
+    "Global": ["Any","None"],
+	"Player and Monster":["Sex","Anal","Making Out","Penetration"],
+	"Monster":["Blowjob","Titfuck","Tailjob","Tail Fuck","Tail Pegging","Face Sit","Footjob","Breast Smother","Nursing","Thighjob","Thigh Grinding"],
+	"Specialty":["Cuddle","Slimed","Slimed 50%","Slimed 100%"]
+},
+"Status Effects":["Surrender","Defend","Aphrodisiac","Charm","Drowsy","Sleep","Restrain","Hypnotized","Paralysis","Paralyzed","Stun","Trance"],
+"SoundBanks":["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"],
+"VisualEffects":["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"
+],
+"MotionEffects":["Bounce", "BounceSlow", "BounceFast", "BounceOnce", "Sway", "SwaySlow", "SwayFast", "SwayOnce", "Pump", "PumpSlow", "PumpFast", "Ride", "RideSlow", "RideFast", "Vibrate", "Realign","Explosion","LongExplosion","Crash", "Quake","ScreenBounce","SlowScreenBounce","ScreenSway"],
+"CustomMotionEffects":["Bounce", "Sway", "Pump", "Ride","Vibrate", "blank"]
+}

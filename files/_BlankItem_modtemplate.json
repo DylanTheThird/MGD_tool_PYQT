@@ -10,7 +10,7 @@
     "itemType": {
 						"type":"singlelist",
 						"tooltip":"type of item",
-						"choices":["file-files/healingItemTypes.txt"]
+						"choices":["_ItemTypes"]
 						},
 	"cost": { "type":"int",
 						"tooltip":""},
