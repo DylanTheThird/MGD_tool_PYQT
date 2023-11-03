@@ -1421,8 +1421,10 @@ class Function_Gui:
         self.buttonADD_function.clicked.connect(self.add_function_fields)
         h_lay_checkboxes.addWidget(self.buttonADD_function)
         self.checkbox_text = SimpleFields.CheckBox(self.parent_widget, 'TEXT', 't')
+        # self.checkbox_text.set_val(True)
         self.checkbox_text.set_up_widget(h_lay_checkboxes)
         self.checkbox_event = SimpleFields.CheckBox(self.parent_widget, 'EVENT', 'e')
+        self.checkbox_event.set_val(True)
         self.checkbox_event.set_up_widget(h_lay_checkboxes)
         self.buttonPREPARE_function = SimpleFields.CustomButton(None, 'Prep')
         self.buttonPREPARE_function.setMaximumWidth(40)
@@ -1431,15 +1433,15 @@ class Function_Gui:
         self.button_group = QtWidgets.QButtonGroup()
         self.button_group.addButton(self.checkbox_text)
         self.button_group.addButton(self.checkbox_event)
-        self.button_group.buttonToggled.connect(self.on_checkbox_toggled)
         """flag function will be list. first its a 0/1, second, target field"""
         self.flag_function_target_type = []
         self.adding_config = adding_config
         if not adding_config[0]:
             # if 0, only text, disable event adding
+            self.checkbox_text.set_val(1)
             self.checkbox_event.setEnabled(False)
-            self.checkbox_text.set_val(True)
             self.checkbox_text.setEnabled(False)
+        self.button_group.buttonToggled.connect(self.on_checkbox_toggled)
         h_lay_checkboxes.setAlignment(QtCore.Qt.AlignCenter)
         self.custom_layout.addLayout(h_lay_checkboxes)
 

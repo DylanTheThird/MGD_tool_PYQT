@@ -477,8 +477,9 @@ class DeckField:
         self.type = 'multilist'
         self.selection_type = ''
         self.option_flag = False #for adding monster list. later, is set to 1 if adding monsters, when done, add end tag
-        self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
-                            "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
+        # self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
+        #                     "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
+        self.option_list = Glob_Var.drop_down_options['Deck']
         self.row_size = 6
 
         self.options_selection = SimpleFields.SingleList(master, 'Deck', edit=False)
@@ -1264,9 +1265,9 @@ class FunctionField(SimpleFields.ElementsList):
     def __init__(self, flag_for_list_of_functions=False, master=None, view_title="Scenes"):
         super().__init__(masterWun=master, listTitle=view_title, search_field=True, folders=False)
         """this is just container for scenes. Most of stuff will be done by MarkUpWindow.
-        Basicly, its just element list. Double click on root - eventText, to open Markup with no data.
+        Basically, its just element list. Double click on root - eventText, to open Markup.
         Doubleclick on bottom element - load scene to edit"""
-        self.entry_search.hide()
+        # self.entry_search.hide()
         self.title = view_title
         self.type = 'functionfield'
         self.row_size = 12
@@ -1279,10 +1280,10 @@ class FunctionField(SimpleFields.ElementsList):
         self.layout.insertWidget(0, self.label_custom, alignment=Qt.AlignCenter)
         self.treeview_scenes = self
         self.treeview_scenes.doubleClicked.connect(self.modify_scene)
-        # TODO scene lookup in main window
-        # self.area_lookup = SimpleFields.AreaEntry(self, width_i=40)
-        # self.area_lookup.field.configure(state='disabled')
-        # self.area_lookup.grid(row=rowposition+6, column=colpos, columnspan=1)
+        self.area_lookup = SimpleFields.AreaEntry(self)
+        # self.area_lookup.setMinimumHeight(300)
+        # self.area_lookup.setEnabled(False)
+        self.area_lookup.set_up_widget(self.layout)
         # self.list_scenes.treeview.bind("<<TreeviewSelect>>", lambda e: self.display_scene_text(self.list_scenes))
         """fields setup - eventtext:{keys:values,fields:{keys:values}}"""
         self.field_setup = {}
@@ -1291,6 +1292,7 @@ class FunctionField(SimpleFields.ElementsList):
         self.dict_fields_with_setvals_for_scene_edition = {}
 
         self.flag_prepare_event_logic_data = False
+        self.clicked.connect(self.display_scene_text)
 
     def set_val(self, values, event_type=False):
         """event type is needed, since if there are more then 1 function types, instead of making more fields taking
@@ -1402,28 +1404,23 @@ class FunctionField(SimpleFields.ElementsList):
     #         else:
     #             messagebox.showwarning("STOP RIGHT THERE", 'Whoa, cannot delete root, it is important', parent=self)
 
-    def display_scene_text(self, treevieID):
-        # TODO maybe add
-        # for now not used but working
-        # treevieID is just variable for elementlist, so access treeview in it, get selected item idx or parent idx,
+    def display_scene_text(self, item_index):
         """expected display - root parent which is event type(event,loss,victory scene) with scenes names as leaves
             if user selected root - do nothing. So user selected leaf. Check branch for even type and display theScene
             from scene data container. Keys should be same as scene name"""
-        curItem = treevieID.treeview.focus()
-        scene_type = treevieID.treeview.parent(curItem)
-        curItem = treevieID.selected_item()
-        explanation_text = ''
-        if scene_type:
-            for texts in self.scene_data_container[scene_type][curItem]['theScene']:
+        # tree_model = self.model()
+        # selected = tree_model.itemFromIndex(item_index)
+        selected = self.selected_element()
+        scene_type = selected.parent()
+        if scene_type is not None:
+            scene_text = self.scene_data_container[scene_type.text()][selected.text()]['theScene']
+            explanation_text = ''
+            for texts in scene_text:
                 # if isinstance(texts,dict):
                 #     texts = list(texts.keys())[0]
                 explanation_text += texts + '\n'
-        else:
-            return
-        self.area_lookup.field.configure(state='normal')
-        self.area_lookup.field.delete(1.0, tk.END)
-        self.area_lookup.field.insert(1.0, explanation_text)
-        self.area_lookup.field.configure(state='disabled')
+            self.area_lookup.clear_val()
+            self.area_lookup.set_val(explanation_text)
 
     def add_new_field(self, fields_data, main_field_name, label_to_hide=None, dummy_field=None):
         self.treeview_scenes.add_data(main_field_name)
@@ -2448,16 +2445,6 @@ def createField(parent_widget, fieldname, fieldData, template_name=None):
             tempfield = SimpleFields.FileField(parent_widget, fieldname, field_data=fieldData)
     elif fieldData["type"] in 'multilist area requirement combattext':
         if fieldData["type"] == 'area':
-            # TODO
-            # if 'options' in fieldData:
-            #     if 'function' in fieldData["options"]:
-            #         temp = Text_With_Function(masterName, fieldname, tooltip, 'U', 'F')
-            #         field_area = temp.area_text
-            #         field_area.bind("<Tab>", otherFunctions.focus_next_window)
-            #     else:
-            #         field_area = SimpleFields.AreaEntry(masterName, fieldname, tooltip, 'U')
-            #         field_area.bind("<Tab>", otherFunctions.focus_next_window)
-            # else:
             tempfield = SimpleFields.AreaEntry(parent_widget, fieldname)
             # field_area.bind("<Tab>", otherFunctions.focus_next_window)
         elif fieldData["type"] == 'multilist':
@@ -2489,6 +2476,8 @@ def createField(parent_widget, fieldname, fieldData, template_name=None):
     return tempfield
 
 def createField_workingBackup(parent_widget, fieldname, fieldData, mode=1, template_name=None):
+    # previous version, with mode - either made fields editable or not, just to display text.
+    # just to display were simpler.
     #   master_layout - layout where it should go,
     # fieldname - what should be displayd in label and also in field title, for inside recognition
     # fielddata - data from file about field attributed

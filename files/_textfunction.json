@@ -2090,7 +2090,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"choices": ["_SoundBanks", "file"],
 							"options":["file"]}
 							}
 			},
@@ -2100,7 +2100,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"choices": ["_SoundBanks", "file"],
 							"options":["file"]}
 							}
 			},
@@ -2110,7 +2110,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"singlelist",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking","BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							"choices": ["_SoundBanks"]}
 							}
 			},
 			{				"title": "PlayLoopingSoundEffect",
@@ -2119,8 +2119,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
-								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"choices": ["_SoundBanks", "file"],
 							"options":["file"]}
 							}
 			},
@@ -2130,8 +2129,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
-								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							"choices": ["_SoundBanks"]}
 							}
 			},
 			{				"title": "PlayLoopingSoundEffect2",
@@ -2140,8 +2138,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
-								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong", "file"],
+							"choices": ["_SoundBanks", "file"],
 							"options":["file"]}
 							}
 			},
@@ -2151,8 +2148,7 @@
 				"steps":"2",
 				"structure":{
 							"Options":{"type":"combobox",
-							"choices": ["QuickKiss","LongKiss","MakeOut","BlowjobLicking","BlowjobSucking",
-								"BlowjobDeepSuction","BlowjobVigorous","Ejaculation","EjaculationLong"]}
+							"choices": ["_SoundBanks"]}
 							}
 			}
 		],
@@ -2163,7 +2159,7 @@
 				"steps":"3",
 				"structure":{
 							"Effect":{"type":"singlelist",
-							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"choices": ["_VisualEffects"]},
 							"Image":{"type":"filePath",
 								"options":[]}
 								}
@@ -2174,7 +2170,7 @@
 				"steps":"3",
 				"structure":{
 							"Effect":{"type":"singlelist",
-							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"choices": ["_VisualEffects"]},
 							"Image":{"type":"filePath",
 								"options":[]}
 								}
@@ -2185,7 +2181,7 @@
 				"steps":"3",
 				"structure":{
 							"Effect":{"type":"singlelist",
-							"choices": ["StartHaze","GrowingHaze","IncreasingHaze","DecreasingHaze","FadingHaze","SuddenHaze","BlackOut","ScreenPulse","TriplePulse","RepeatingPulse","ScreenFlash","EjaculationLong","BlindingFlash","OrgasmPulse","PlayKiss","PlayKissingBarrage","EndKissingBarrage","PlayKissingBarrageOnce","PlayBlackOut","EndBlackOut"]},
+							"choices": ["_VisualEffects"]},
 							"Image":{"type":"filePath",
 								"options":[]}
 								}
@@ -2297,7 +2293,7 @@
 				"steps": "2",
 									"structure":{
 												"Effect":{"type":"singlelist",
-												"choices":["Bounce", "BounceSlow", "BounceFast", "BounceOnce", "Sway", "SwaySlow", "SwayFast", "SwayOnce", "Pump", "PumpSlow", "PumpFast", "Ride", "RideSlow", "RideFast", "Vibrate", "Realign","Explosion","LongExplosion","Crash", "Quake","ScreenBounce","SlowScreenBounce","ScreenSway"]}
+												"choices":["_MotionEffects"]}
 												}
 			},
 			{				"title": "PlayMotionEffectLoop",
@@ -2306,7 +2302,7 @@
 				"steps": "2",
 									"structure":{
 												"Effect":{"type":"singlelist",
-												"choices":["Bounce", "BounceSlow", "BounceFast", "BounceOnce", "Sway", "SwaySlow", "SwayFast", "SwayOnce", "Pump", "PumpSlow", "PumpFast", "Ride", "RideSlow", "RideFast", "Vibrate", "Realign","Explosion","LongExplosion","Crash", "Quake","ScreenBounce","SlowScreenBounce","ScreenSway"]}
+												"choices":["_MotionEffects"]}
 												}
 			},
 			{				"title": "PlayMotionEffectCustom",
@@ -2315,7 +2311,7 @@
 				"steps": "check",
 									"structure":{
 												"Effect":{"type":"singlelist",
-													"choices":["Bounce", "Sway", "Pump", "Ride","Vibrate", "blank"]},
+													"choices":["_CustomMotionEffects"]},
 												"Target":{"type":"singlelist",
 													"choices":["Characters", "Character", "Bodypart"]},
 												"Speed":{"type":"int", "default":"1"},

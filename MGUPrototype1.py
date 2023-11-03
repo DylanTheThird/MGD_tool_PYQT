@@ -24,9 +24,7 @@ from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 # global Mod_Var
 
-# TODO picture viewer - Done
 # TODO add more stuff outside from lists, like sound banks - NOW
-# TODO scene lookup in main window
 # TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
 
 # TODO for scene function there are some used mainly for additions

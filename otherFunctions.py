@@ -67,9 +67,6 @@ def getListOptions(field_data, list_type):
         # print(field_data)
         listTemp = []
         for values in list_values:
-            #  class. if currentelement(with correct field name) in choices, then bind field list with other functions,
-            #  which could accept field list and the other field data. but it would be best to update when other field
-            #  is changed, not everytime user open list. So first I need a way for all fields send info if it was updated.
             if 'dir' in values or 'file' in values:
                 name_pos = 0
                 while name_pos < len(values) and values.find('/', name_pos+1) > 0:
@@ -102,8 +99,6 @@ def getListOptions(field_data, list_type):
                 else:
                     end_val_index = values.find('/')
                 # templist[values[7:end_val_index]] = []
-
-
                 branch_name = values[7:end_val_index]
                 templist[branch_name] = []
                 item_name = values[11:end_val_index]
@@ -208,6 +203,9 @@ def getListOptions(field_data, list_type):
                 temp = temp.split('-')
                 for val in Glob_Var.game_hard_data[temp[0]][temp[1]]:
                     listTemp.append(val)
+            elif '_' in values:
+                """get data from global var from dropdown options"""
+                listTemp = Glob_Var.drop_down_options[values[1:]]
             else:
                 listTemp.append(values)
         if listTemp:

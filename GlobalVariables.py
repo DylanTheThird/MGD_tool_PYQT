@@ -39,6 +39,7 @@ class GlobalVariable:
         self.cancel_element_action = None
         self.file_log = False
         self.test_flag = False
+        self.drop_down_options = None
         self.functions_display = {}
         self.functions_data = {}
         self.game_hard_data = {'statusEffects':{},

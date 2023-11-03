@@ -118,6 +118,11 @@ class SimpleEntry(QtWidgets.QLineEdit):
             if 'options' in field_data:
                 if 'addition' in field_data['options']:
                     self.addition = True
+                if 'function' in field_data['options']:
+                    but_markup = CustomButton(None, 'F')
+                    but_markup.setMaximumWidth(20)
+                    but_markup.clicked.connect(self.open_text_editor)
+                    self.custom_layout.addWidget(but_markup)
         # self.shortcuts = []
         self.setObjectName('entry')
         if edit:
@@ -185,6 +190,11 @@ class SimpleEntry(QtWidgets.QLineEdit):
     # def focusOutEvent(self, event):
     #     print('event-focus-out:', self.objectName())
     #     super().focusOutEvent(event)
+    def open_text_editor(self):
+        import MarkUpDialog
+        markup_win = MarkUpDialog.MarkUp_Window(target_field=self, scenes_flag=False)
+        markup_win.show()
+
 
 
 class SimpleEntryDisplay(SimpleEntry):
@@ -605,6 +615,7 @@ class UniqueView(QtWidgets.QListView):
             self.treeview_with_main_and_mod_data.disconnect_multilist()
         super().focusInEvent(event)
 
+
 """complicated fields contains more widgers, display fields should only have 1 to display,
  so here create inherits from display"""
 class ElementsList(QtWidgets.QTreeView):
@@ -614,6 +625,7 @@ class ElementsList(QtWidgets.QTreeView):
         # TODO ctrl up or down - move rows. Probably cut tthem out and insert
         super().__init__(parent=masterWun)
         self.layout = QtWidgets.QVBoxLayout(masterWun)
+        # self.layout.setAlignment()
         self.title = listTitle
         self.type = 'element_list'
         self.flag_folders = folders
