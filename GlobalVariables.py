@@ -3,11 +3,6 @@ import copy
 from PyQt5.QtCore import QSortFilterProxyModel
 from PyQt5.Qt import QStandardItemModel
 
-# TODO there will be problem with functions loading for:
-# ChangeImageLayer
-# 'AddMonsterToEncounter'
-#
-#
 
 elements = {
     "Adventures": {},
@@ -19,9 +14,8 @@ elements = {
     "Perks": {},
     "Skills": {}
 }
-# start_path = ''
-# main_modification_date = ''
 
+# TODO if nothing breaks, currentselecteditem is not used
 currentSelectedItem = {}
 currentSelectedItem['text'] = ''
 currentSelectedItem['type'] = ''
@@ -33,22 +27,23 @@ modified_flag = False
 class GlobalVariable:
     def __init__(self):
         self.access_templates = None
-        self.edit_element = False
-        self.edit_status_icon = None
-        self.save_element_action = None
+        # in some places, usually functions, need to access some fields from templates.
+        self.edit_element = False  # if user is editing element
+        self.edit_status_icon = None  # I think this is icon red/green
+        self.save_element_action = None  # this and below is about buttons save/cancel in main window
         self.cancel_element_action = None
-        self.file_log = False
         self.test_flag = False
-        self.drop_down_options = None
-        self.functions_display = {}
-        self.functions_data = {}
+        self.file_log = False  # probably if write errors in logs, but there is not much of that.
+        self.drop_down_options = None  # data for dropdown fields
+        self.functions_display = {}  # dictionary of functions to display in treeview
+        self.functions_data = {}  # functions data without tree
         self.game_hard_data = {'statusEffects':{},
                                'core stats':{
                                    'simple': ['Power', 'Technique', 'Intelligence', 'Allure', 'Willpower', 'Luck'],
                                    'percente': ['%Power', '%Technique', '%Intelligence', '%Allure', '%Willpower', '%Luck'],
                                    'sensitivity': ["Sex", "Ass", "Breasts", "Mouth", "Seduction", "Magic", "Pain",
                                                    "Energy", "Holy", "Unholy"]}}
-        self.line_trigger_display_data = {}
+        self.line_trigger_display_data = {}  # similar to functions, separate vars for display and data
         self.lineTriggers = {}
         """mainGameItems is expected to be: 
         "Adventures": {files:[]},
@@ -62,8 +57,8 @@ class GlobalVariable:
                                              'Addiction': {}}
                                 }
         self.main_game_field = None
-        self.main_game_data = {'Girls': {}, 'Items': {}, "Perks": {}, "Skills": {}}
-        self.main_game_additions = ['Events', 'Monsters', 'Skills']
+        self.main_game_data = {'Girls': {}, 'Items': {}, "Perks": {}, "Skills": {}}  # monster have feelings too
+        self.main_game_additions = ['Events', 'Monsters', 'Skills']  # list of type of items used as additions
         """main game tree model. it's used in main window and function window, essentialy should have same data"""
         self.main_game_tree_model = QStandardItemModel()
         self.main_game_sorting = QSortFilterProxyModel()
@@ -71,63 +66,33 @@ class GlobalVariable:
         self.main_game_sorting.setRecursiveFilteringEnabled(True)
         self.display_elements_game_and_mod = {}  # its this one for main game display. each main game have its own list separate, so same model tree does not make sense
         """"""
-        self.main_modification_date = '0'
-        self.mod_main_switch = 'game/Mods/'
+        self.main_modification_date = '0'  # for checking if game was updated
+        self.mod_main_switch = 'game/Mods/'  # i dont know why its called switch
         self.perks_and_stats = {'PerkType': {},
-                                'StatReq': {}}
-        self.skill_type_fields = {}
-        self.skills_single_target = []
+                                'StatReq': {}}  #for 2 fields in skills, it takes by field name
+        # self.skill_type_fields = {}
+        # self.skills_single_target = []
         self.stances = {}
         self.start_path = ''
-        # self.status_effects2 = {}
         self.optional_fields = {}
-        self.optional_frame = None
-        self.optional_field = None
-
+        # self.optional_frame = None
+        # self.optional_field = None
+        # below is for fonts
         self.current_label_font_type = 'Ariel'
         self.current_label_font_size = 14
         self.current_text_font_type = 'Ariel'
         self.current_text_font_size = 14
 
-        self.flag_skip_functions = False
+        self.flag_skip_functions = False  # only for testing to limit how many functions are loaded
         """flag addition - used when clicking button to display maingame files. then, when clicking to modify fields,
          it checks global flag. if no, will not allow to edit fields that does not have flag addition"""
         self.flag_addition = False
         self.flag_modify_addition = False
         self.flag_window_edit_data = False
-
-
-
-        # self.List_buttons = []
-        # self.list_elementlists = []
-        self.list_dataFrames = {}
-        # self.current_mod = {
-        #     "Adventures": {},
-        #     "Events": {},
-        #     "Fetishes": {},
-        #     "Items": {'test123': {'name': 'test123', 'descrip': '123123', 'itemType': 'Rune'},
-        #               'testKey': {'name': 'testKey', 'descrip': '123123', 'itemType': 'Key'}},
-        #     # "Items": {},
-        #     "Locations": {},
-        #     "Monsters": {},
-        #     "Perks": {},
-        #     "Skills": {}
-        # }
-
-        # load line triggers
-        # temp = load_json_data('files/_lineTriggers.json')
-        # for val1 in temp:
-        #     temp_list = list(temp[val1].keys())
-        #     self.line_trigger_display_data[val1] = temp_list
-            # for val2 in temp[val1]:
-            #     self.lineTriggers[val2] = temp[val1][val2]
-        # load stances
-        # temp = load_json_data('files/_stances.json')
-        # self.stances = temp
-
-        #
+        # self.list_dataFrames = {}
 
     def get_functions(self, function_name):
+        """retrieves functions data"""
         function_data = copy.copy(self.functions_data[function_name])
         # print('retrievieg function data')
         # print(function_data)
@@ -161,38 +126,10 @@ class GlobalVariable:
                 return int(self.functions_data[function_name]['steps']) - 1
         """if function not found, return 0"""
         return 0
-    # def load_functions(self):
-    #     file_data = load_json_data('files/_textfunction_all_2.json')
-    #     if self.flag_skip_functions:
-    #         temp = file_data.copy()
-    #         for lvl1 in list(file_data.keys()):
-    #             for lvl2 in list(file_data[lvl1].keys()):
-    #                 temp_list = []
-    #                 if '-done' in lvl2:
-    #                     temp[lvl1].pop(lvl2)
-    #                 else:
-    #                     for lvl3 in file_data[lvl1][lvl2]:
-    #                         if '-done' in lvl3['title']:
-    #                             # temp[lvl1][lvl2].pop(data[lvl1][lvl2].index(lvl3))
-    #                             # temp[lvl1][lvl2].remove(lvl3)
-    #                             temp_list.append(file_data[lvl1][lvl2].index(lvl3))
-    #                 if len(temp_list)>0:
-    #                     temp_list.reverse()
-    #                     for titles in temp_list:
-    #                         temp[lvl1][lvl2].pop(titles)
-    #         self.functions_data = temp
-    #     else:
-    #         for root_function in file_data:
-    #             self.functions_display[root_function] = {}
-    #             for function_type in file_data[root_function]:
-    #                 self.functions_display[root_function][function_type] = []
-    #                 for idx in range(function_type.length()):
-    #                     function_title = file_data[root_function][function_type][idx].title
-    #                     self.functions_display[root_function][function_type].append(function_title)
-    #                     self.functions_data[function_title] = file_data[root_function][function_type][idx]
 
 
 Glob_Var = GlobalVariable()
+
 
 # class for holding mod data. Here it will load files data into mod variable as dictionary with filename as keys.
 # each filename must be unique. Folders are just for visibility, so as in other aspects, keep it separate in display var
@@ -221,20 +158,8 @@ class ModVariable(object):
                 "Monsters": [],
                 "Perks": [],
                 "Skills": []}
-        # self.mod_display = {
-        #         "Adventures": {},
-        #         "Events": {},
-        #         "Fetishes": {},
-        #         "Items": [{'folder 1':['file a','file b']}, {'folder 2':['file c','file d']}, 'test123', 'testKey'],
-                # "Items": {},
-                # "Locations": {},
-                # "Monsters": {},
-                # "Perks": {},
-                # "Skills": {}
-            # }
 
     def clear_mod(self):
-        # for element in self.mod_data:
         self.mod_data = copy.copy(self.clear_mod)
         self.mod_display = {
                 "Adventures": [],
@@ -296,6 +221,7 @@ class ModVariable(object):
         #                     break
         #             # GlobalVariables.list_elementlists[list_No].clear_tree()
         #             load_item(mod_path + '/' + element + '/', element, list_number=list_No)
+
 
 Mod_Var = ModVariable()
 # Mod_Var.clear_mod()

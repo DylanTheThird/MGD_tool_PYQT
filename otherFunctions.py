@@ -5,7 +5,6 @@ import re
 from time import time, ctime
 from os.path import join, isfile, isdir, getmtime
 from os import access, F_OK, mkdir, makedirs, listdir
-from tkinter import filedialog
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 from GlobalVariables import Glob_Var, Mod_Var
@@ -30,9 +29,14 @@ def change_position(widget, position):
         widget.setAlignment(Qt.AlignRight)
 
 
-def check_if_folder_exists(path='files/modsTempData'):
+def check_if_folder_exists(path='files/modsTempData', create=True):
     if not access(path, F_OK):
-        mkdir(path)
+        if create:
+            mkdir(path)
+            return True
+        return False
+    else:
+        return True
 
 
 def check_if_file_exists(file_path):
@@ -40,7 +44,7 @@ def check_if_file_exists(file_path):
 
 
 def write_json_data(file_path, data):
-    with open(file_path, 'w') as fileData:
+    with open(file_path, 'w', encoding='utf-8') as fileData:
         json.dump(data, fileData)
 
 
@@ -56,7 +60,6 @@ def clean_text(original_text):
     return cleaned_text
 
 
-# TODO check this list options, some stuff still are loaded from file and there like, 10 items at most
 def getListOptions(field_data, list_type):
     # get list of options for field with dropdown
     # its OPTIONS field in file, if it starts  with dir - list all files in directory, if start with file, read file
@@ -556,21 +559,6 @@ def wrap(string, length=20, row_len=39):
     return '\n'.join(textwrap.wrap(string, length))
 
 
-# def display_element_list(listNumber, buttonnewelement, elementtext):
-#     # print(str(event))
-#     # print(str(listNumber))
-#     for index in range(len(GlobalVariables.list_elementlists)):
-#         if index == listNumber:
-#             GlobalVariables.list_elementlists[index].show_tree()
-#         else:
-#             GlobalVariables.list_elementlists[index].hide_tree()
-#     # print(elementtext[-2:])
-#     # if elementtext[-2:] =='es':
-#     #     buttonnewelement['text'] = 'NEW ' + elementtext[:-2]
-#     # else:
-#     buttonnewelement['text'] = 'NEW ' + elementtext
-
-
 def error_log(log_data):
     if GlobalVariables.file_log:
         with open('error_logs.txt', 'a', encoding='utf-8-sig') as error_file:
@@ -610,7 +598,7 @@ def find_current_displayed_characters(event_type=None, current_scene_field=None)
     return display_characters_list
 
 
-def FindMonsterSkills(girl_id):
+def find_monster_skills(girl_id):
     """returns girls skill list"""
     if girl_id in Mod_Var.mod_data['Monsters']:
         skill_list = Mod_Var.mod_data['Monsters'][girl_id]['skillList']
@@ -719,7 +707,7 @@ def findSkillTags(skill_name):
 
 
 def load_recent_mods():
-    file_data= {}
+    file_data = {}
     if access('recent_mods.json', F_OK):
         with open('recent_mods.json', encoding='utf-8') as file:
             file_data = json.load(file, object_hook=OrderedDict)

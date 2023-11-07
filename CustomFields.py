@@ -480,8 +480,7 @@ class DeckField:
         # self.option_list = ["", "Event", "Monster", "RandomEvent", "RandomMonsters", "RandomTreasure", "CommonTreasure",
         #                     "UncommonTreasure", "RareTreasure", "BreakSpot", "Unrepeatable"]
         self.option_list = Glob_Var.drop_down_options['Deck']
-        self.row_size = 6
-
+        self.row_size = 6  # for fitting fields in vertical layouts, so it does not become too tall
         self.options_selection = SimpleFields.SingleList(master, 'Deck', edit=False)
         self.options_selection.set_val(self.option_list)
         self.options_selection.currentTextChanged.connect(self.options_prepare)
@@ -505,8 +504,6 @@ class DeckField:
         self.addition = True
 
     def set_val(self, values=None):
-        # if loading data, values is a list, need to load it all just. but updating also uses set_val, and update
-        #  requires more coding, so lets separate these 2 processes
         if isinstance(values, str):
             try:
                 self.add_data(values)
@@ -516,7 +513,7 @@ class DeckField:
             try:
                 temp_list = []
                 i = 0
-                """since i need to skip and gather some card, i need to use while. For loop has separate index"""
+                """go over list of values. monster and events gather into dictionaries to display nice"""
                 while i < len(values):
                     if values[i] == 'Monster':
                         monster_spot = i
@@ -568,7 +565,6 @@ class DeckField:
         selected_option = self.options_selection.get_val()
         if selected_option:
             new_insert = QStandardItem(selected_option)
-            # adding to monster or event group
             """if selected option is monster or event take value from designed field
              then check in data tree if it should be added to correct branch or create new branch"""
             if selected_option == 'Monster' or selected_option == 'Event':
@@ -610,7 +606,7 @@ class DeckField:
                 Glob_Var.edited_field()
 
     def options_prepare(self, selected_value=None):
-        if selected_value in 'Monsters Events':
+        if selected_value in ['Monsters', 'Events']:
             self.field_for_events_and_monsters.show()
             self.field_for_events_and_monsters.clear_val()
             self.field_for_events_and_monsters.selection_type = selected_value + 's'
@@ -621,9 +617,8 @@ class DeckField:
     def set_up_widget(self, outside_layer):
         outside_layer.addLayout(self.custom_layout)
 
-# TODO check if expanddictionaryfield is even used
+
 class ExpandDictionaryField(QtWidgets.QWidget):
-    # this is attempt at adding working shortcuts. Class is derivered from Qwidget
     # changes: added self.setLayout(customlayout) and in setUpWidget is adding self as widget instead of custom layout
     """purpose of this is to be able to add several times same stuff. Expand dictionary - keep adding dictionaries"""
     def __init__(self, master=None, field_name=None, fields_data=None, templateName='', mode=0):
@@ -664,14 +659,6 @@ class ExpandDictionaryField(QtWidgets.QWidget):
                     self.addition = True
                 if 'tooltip' in fields_data:
                     self.label_custom.setToolTip(fields_data['tooltip'])
-        # else:
-        #     print('expand dictionary in customer fields - missing options tags in field ' + field_name)
-        # print(self.fieldsNames)
-        # if templateName:
-        #     field_address = templateName + '-' + self.title
-        # else:
-        #     field_address = ''
-        # if not self.ExpandFlag or mode:
         for field_name in fields_data['fields']:
             field = createField(master, field_name, fields_data['fields'][field_name])
             self.fields_list.append(field)
@@ -680,6 +667,7 @@ class ExpandDictionaryField(QtWidgets.QWidget):
             # rowposition += 3
         # print('expand dictionary row size - ' + str(self.row_size))
         if self.ExpandFlag:
+            """expand flag is for nested dictionaries. each dictionary would have its own fields and final data"""
             temp_button = SimpleFields.CustomButton(master, 'V V', self)
             self.custom_layout.addWidget(temp_button)
             temp_button.clicked.connect(self.add_data_to_treeview)
@@ -856,10 +844,6 @@ class ExpandDictionaryField(QtWidgets.QWidget):
                 print('cool')
             else:
                 self.tree_final_data.clear_tree()
-                # for Parent in self.tree_final_data.treeview.get_children():
-                #     self.tree_final_data.treeview.delete(Parent)
-                # for data in self.current_expanded_data:
-                #     self.current_expanded_data.remove(data)
 
     def destroy(self):
         self.to_delete_outside_layout.removeWidget(self)
@@ -1125,7 +1109,7 @@ class ExpandDictionaryField(QtWidgets.QWidget):
     # def show_field(self):
     #     self.field_frame.pack()
 
-
+# TODO combat with set music to
 class EDF_forcombatDialogue(ExpandDictionaryField):
     """updated from basic expanddictionaryfield. There are additional stuff, like setMusitTo or something else that
     need custom code"""
@@ -1193,14 +1177,12 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
         if not selected_value.child(0, 0):
             self.edit_insert_row = self.tree_final_data.find_root_parent(selected_value).row()
             self.edit_flag = True
-            # problem here, if setting first value, should probably give list for second values
-            # TODO getData
             temp = []
             data_to_edit = self.tree_final_data.get_data(self.tree_final_data.find_root_parent(selected_value), temp)
             # this make temp like this [dict[key-root:[{linetrigger:[value]},{move:[value]},]]
             # so need to remake this list of dictionaries of lists into proper structure
             temp_list_2 = []
-            restructirized = ['lineTrigger-singlevalue','move-list','Text-list']
+            restructirized = ['lineTrigger-singlevalue', 'move-list', 'Text-list']
             for root_dict in temp:
                 for root_name in root_dict:
                     for field_val_pair_dict in root_dict[root_name]:
@@ -1260,6 +1242,7 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
             for fields in self.fields_list:
                 fields.clear_val()
         super().keyPressEvent(event)
+
 
 class FunctionField(SimpleFields.ElementsList):
     def __init__(self, flag_for_list_of_functions=False, master=None, view_title="Scenes"):
@@ -1509,6 +1492,8 @@ class FunctionField(SimpleFields.ElementsList):
 
 class Functional_Dummy:
     def __init__(self, main_functional_field, view_title=''):
+        """in case of monster card, there are events for lose and victory, and both works the same.
+        This dummy is so there is 1 field, and dummy is connected to main field and gets and sets value only"""
         self.main_field = main_functional_field
         self.title = view_title
         self.row_size = 6
@@ -1532,8 +1517,6 @@ class CombatTrigger(SimpleFields.ElementsList):
     check user if clicked 'enter' then check if last row is as above. if now, add new row
      double click to edit and write text.
      change get, set val to include new rows"""
-    # def __init__(self, master=None,  field_name=None, tooltip_text=None, label_position='U', fields=None):
-    #     super().__init__(master=master, label='', tooltip=None, label_pos=None)
     def __init__(self, master=None, field_name='', fields_data=None):
         super().__init__(master, field_name, all_edit=True, folders=True)
         self.title = field_name
@@ -1598,6 +1581,7 @@ class CombatTrigger(SimpleFields.ElementsList):
         if item.row() == self.tree_model.rowCount() - 1:
             if item.text() != "doubleclick to edit":
                 self.add_leaf(["doubleclick to edit"], row_height=40)
+
     def set_val(self, values):
         # TODO how to deal with values here
         self.clear_tree()
@@ -1733,6 +1717,7 @@ class CombatTrigger(SimpleFields.ElementsList):
 
 class FetishApply:
     def __init__(self, master=None, field_name=None, fields_data=None):
+        """has specific way of applying data. as a key or key/value"""
         self.title = field_name
         self.fields_set = fields_data['fields']
         self.final_data_tree = SimpleFields.ElementsList(master, "Fetishes", class_connector=self)
@@ -1759,7 +1744,7 @@ class FetishApply:
             else:
                 value_to_enter = [value, '0']
             self.final_data_tree.add_leaf(value_to_enter, editable=True)
-    #         this editable refers to both items and I need 0 to be editable
+    #         this editable parameter refers to both items and I need 0 to be editable
 
     def get_val(self, temp_dict_container=None):
         list_data = self.final_data_tree.get_data()
@@ -1774,7 +1759,6 @@ class FetishApply:
                     final_data.append(values[0] + '|/|' + values[1])
             else:
                 final_data.append(values)
-
         if not final_data:
             final_data = ['']
         if temp_dict_container is not None:
@@ -1882,7 +1866,6 @@ class OptionalFields(SimpleFields.ElementsList):
         self.optional_field_frame.setAlignment(Qt.AlignCenter)
         """this will be dictionary of created fields, for which will set and get vals"""
         self.optional_fields_dict = {}
-
         self.selected_values_display_row = QStandardItem('SELECTED VALUES')
         self.selected_values_display_row.setEditable(False)
         self.tree_model.appendRow(self.selected_values_display_row)
@@ -2019,11 +2002,6 @@ class PerkDoubleList(SimpleFields.ElementsList):
         self.setColumnWidth(0, 150)
         self.setColumnWidth(1, 3)
         self.setMaximumHeight(100)
-        # self.area_explanation = AreaEntry(master)
-        # self.area_explanation.label.grid_forget()
-        # self.area_explanation.grid(row=5, column=0, columnspan=3)
-        # self.options_tree.treeview.bind("<<TreeviewSelect>>", self.display_info)
-        # self.custom_layout.addWidget(self.final_data_tree)
         self.row_size = 6
 
         if 'Perk' in self.fields_set[0]['name']:
@@ -2035,7 +2013,6 @@ class PerkDoubleList(SimpleFields.ElementsList):
         else:
             print('Unknown data to load. - Adding new row in perk double list class')
             return
-        """"""
         if self.load_type == 'PerkType':
             self.area_explanation = SimpleFields.AreaEntry(self, edit=False)
             self.area_explanation.change_size(200, 100)
@@ -2156,13 +2133,6 @@ class PerkDoubleList(SimpleFields.ElementsList):
                     restore = QStandardItem(val_to_restore)
                     self.selected_values[val_to_restore]['parent'].insertRow(self.selected_values[val_to_restore]['index'], restore)
 
-    # # todo
-    # def add_other_fields(self, field):
-    #     self.other_fields.append(field)
-
-    # def set_up_widget(self, outside_layout):
-    #     outside_layout.addWidget(self)
-
 
 class Pictures(SimpleFields.ElementsList):
     def __init__(self, field_name='Pictures', field_data=None):
@@ -2277,7 +2247,6 @@ class Pictures(SimpleFields.ElementsList):
             node.appendRow(items)
 
     def get_val(self, temp_dict_container=None):
-
         list_data = []
         self.get_data(root_list=list_data)
         if temp_dict_container is not None:
@@ -2285,9 +2254,6 @@ class Pictures(SimpleFields.ElementsList):
         else:
             return list_data
         return
-
-    # def clear_val(self):
-    #     self.final_data.clear_val()
 
     def get_data(self, parent_index=None, root_list=None):
         """lets start again. This is specific for pictures setup, but might work elsewhere if treeview should have 2 col
@@ -2428,7 +2394,7 @@ class Pictures(SimpleFields.ElementsList):
 
 
 def createField(parent_widget, fieldname, fieldData, template_name=None):
-    #   master_layout - layout where it should go,
+    """creates fields based on data in fieldData"""
     # fieldname - what should be displayd in label and also in field title, for inside recognition
     # fielddata - data from file about field attributed
     tempfield = ''
