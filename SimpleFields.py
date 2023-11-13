@@ -1,4 +1,3 @@
-from os.path import isfile
 import copy
 import GlobalVariables
 import otherFunctions
@@ -6,12 +5,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.Qt import QStandardItemModel, QStandardItem, QAbstractItemView, QSize, QBrush, QColor
 from PyQt5.QtCore import Qt, pyqtSignal
 
-
 """pyqt widges"""
 """simple fields contains mostly 1 widget"""
 
-
 class CustomWidget:
+    """this is experimentl, used in 1 or 2 places"""
     def __init__(self, master_widget=None, field_name=None, label_pos='H'):
         super().__init__()
         if label_pos == 'H':
@@ -107,7 +105,7 @@ class SimpleEntry(QtWidgets.QLineEdit):
         self.setMaximumWidth(220)
         self.row_size = 1
         """this is for multilist display. in case multilist class accepts only 1 value, no points in making entire tree.
-        so instead, just make simple text field, which is created in another class"""
+        so instead, just make simple text field"""
         self.connector_to_outside_complex_class = class_connector
         self.treeview_with_main_and_mod_data = main_data_treeview
         if field_data:
@@ -133,7 +131,6 @@ class SimpleEntry(QtWidgets.QLineEdit):
 
     def cancel(self):
         self.setReadOnly(True)
-        return
 
     def get_val(self, temp_dict_container=None):
         return_val = self.text()
@@ -190,11 +187,11 @@ class SimpleEntry(QtWidgets.QLineEdit):
     # def focusOutEvent(self, event):
     #     print('event-focus-out:', self.objectName())
     #     super().focusOutEvent(event)
+
     def open_text_editor(self):
         import MarkUpDialog
         markup_win = MarkUpDialog.MarkUp_Window(target_field=self, scenes_flag=False)
         markup_win.show()
-
 
 
 class SimpleEntryDisplay(SimpleEntry):
@@ -299,8 +296,6 @@ class AreaEntry(QtWidgets.QTextEdit):
         self.setToolTip(tooltip)
         self.old_value = ''
         self.row_size = 4
-        # Font_tuple = ("Comic Sans MS", 8)
-        # self.field.configure(font=Font_tuple)
         self.addition = False
         if field_data:
             if 'options' in field_data:
@@ -390,7 +385,6 @@ class SingleList(QtWidgets.QComboBox):
                     self.addition = True
         if edit:
             self.field_modified_check()
-        # self.currentIndexChanged.connect(self.test)
 
     def get_val(self, temp_dict_container=None):
         if temp_dict_container:
@@ -432,6 +426,7 @@ class SingleList(QtWidgets.QComboBox):
             temp.widget().deleteLater()
 
     def add_items_to_skip_sort(self, items=list):
+        """adds item after list was sorted. Now it's not sorting, but just in case lets leave it"""
         self.list += items
         self.addItems(items)
 
@@ -444,7 +439,8 @@ class SingleList(QtWidgets.QComboBox):
             self.list = otherFunctions.getListOptions(options_list, "single")
             self.set_val(self.list)
             # TODO dropdown display adjust
-            """below should limit rectangle box that appeares when clicking dropdown, probably for choices, but otherwise limits view"""
+            """below should limit rectangle box that appeares when clicking dropdown, probably for choices,
+             but otherwise limits view"""
             # w = self.fontMetrics().boundingRect(max(self.list, key=len)).width()
             # self.view().setFixedWidth(w + 20)
         else:
@@ -616,7 +612,7 @@ class UniqueView(QtWidgets.QListView):
         super().focusInEvent(event)
 
 
-"""complicated fields contains more widgers, display fields should only have 1 to display,
+"""complicated fields contains more widgert, display fields should only have 1 to display,
  so here create inherits from display"""
 class ElementsList(QtWidgets.QTreeView):
     def __init__(self, masterWun, listTitle=None, search_field=False, folders=False, all_edit=False, treeview_height=5,
@@ -679,6 +675,7 @@ class ElementsList(QtWidgets.QTreeView):
         self.back_up_deleted = []
         self.flag_delete = delete_flag
 
+        # TODO these should be working, but right now they dont
         self.shortcut_restore = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+z'), self)
         self.shortcut_restore.activated.connect(self.restore_deleted)
         self.shortcut_cut = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+x'), self)
@@ -719,7 +716,8 @@ class ElementsList(QtWidgets.QTreeView):
             self.entry_search.show()
         super().show()
 
-    def add_data(self, data=[], node=None, update_flag=False, insert_row=False, data_info = ''):
+    def add_data(self, data=[], node=None, update_flag=False, insert_row=False, data_info=''):
+        """updating is not finished. Technicaly I can skip this and just use addDataToDisplay"""
         if update_flag:
             if isinstance(node, str):
                 selected_branch = self.find_node(node)
@@ -733,11 +731,6 @@ class ElementsList(QtWidgets.QTreeView):
 
         # else:
         self.add_data_to_display(data, node, insert_row, data_info)
-    #     self.add_data_to_var()
-    # def add_data_to_var(self, node=None, data=[], update_flag=False):
-    #     if not node:
-    #         self.tree_data.append(data)
-    #     # else:
 
     def add_data_to_display_new_need_adjustment(self, data=[], node=None, insert_row=False):
         """now it either add at the end or add to the node. it would be good if there was separate for
@@ -1076,12 +1069,15 @@ class ElementsList(QtWidgets.QTreeView):
                 row_count = self.tree_model.rowCount()
                 for idx in range(row_count):
                     if self.tree_model.index(idx,0) != element_index:
-                        self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
+                        self.selectionModel().select(self.tree_model.index(idx, 0), QtCore.QItemSelectionModel.Select)
             else:
                 self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
+            return True
+        else:
+            return None
 
     def new_prep_data_to_add(self, data=[], return_val=[]):
-        """turn data, list of dictionaries and strings, into list of standard items with nexted items"""
+        """turn data, list of dictionaries and strings, into list of standard items with nested items"""
         if not isinstance(data, list):
             data = [data]
         for values in data:
@@ -1212,7 +1208,8 @@ class ElementsList(QtWidgets.QTreeView):
                 self.tree_model.insertRow(row, new_leaves)
             else:
                 self.tree_model.appendRow(new_leaves)
-        """used to add single leaves with specific id, to be able to delete later without searching"""
+        return new_leaves
+        """return added leaf to customize"""
 
     def change_row_height(self, new_height, child=None):
         if child is None:
@@ -1244,12 +1241,10 @@ class ElementsList(QtWidgets.QTreeView):
             self.setSelectionMode(QAbstractItemView.ExtendedSelection)
     #         I think there is at least 1 more type, but its not used anywhere
 
-
     def update_leaf(self, new_text):
         """just change displayed text"""
         selected_item = self.tree_model.itemFromIndex(self.currentIndex())
         selected_item.setText(new_text)
-        return
 
     #
     # def update_branch(self, new_data):
@@ -1260,35 +1255,6 @@ class ElementsList(QtWidgets.QTreeView):
     #             self.treeview.delete(items)
     #         for values in new_data:
     #             self.treeview.insert(item, 'end', text=values)
-    #
-    #
-    # def on_tv_select(self, event):
-    #     # curItem = self.treeview.focus()  # element, który otrzymał fokus
-    #     # curItem = self.treeview.item(curItem)["text"]
-    #     # print(curItem)
-    #     # print(self.treeview.item(curItem)["text"])  # wyświetlanie w konsoli tekstu z klikniętego elementu drzewa
-    #     # global currentSelectedItem
-    #     #        problem is, there is more then 1 tree in app, so if not main tree is clicked, global is overwritten with
-    #     #        data from some other tree and button details will return error. need to check if this tree is from global pool
-    #     if self.treeview.heading('#0')['text'] in ["Adventures", "Events", "Fetishes", "Items", "Locations", "Monsters",
-    #                                                "Perks", "Skills", "Main Game"]:
-    #         # if self.treeview.parent(self.treeview.focus()):
-    #         #     curItem = self.treeview.item(self.treeview.parent(self.treeview.focus()))['text']
-    #         if self.treeview.heading('#0')['text'] == 'Main Game':
-    #             GlobalVariables.currentSelectedItem['type'] = self.treeview.item(self.find_root_parent(self.treeview.focus()))['text'] + '-addition'
-    #         else:
-    #             GlobalVariables.currentSelectedItem['type'] = self.treeview.heading('#0')['text']
-    #         # GlobalVariables.currentSelectedItem['data'] = self.treeview.focus()
-    #         GlobalVariables.currentSelectedItem['text'] = self.treeview.item(self.treeview.focus())["text"]
-    #         GlobalVariables.currentSelectedItem['id'] = self.treeview.focus()
-    #         GlobalVariables.currentSelectedItem['tags'] = self.treeview.item(self.treeview.focus())["tags"]
-    #         # GlobalVariables.currentSelectedItem = self.treeview.heading('#0')['text'] + '_' + curItem
-    #
-    #     # msb.showinfo("Info", self.treeview.item(curItem)["text"])
-    #     # print(self.treeview.selection())
-    #     # if len(self.treeview.selection()) > 0:
-    #     #     self.treeview.selection_remove(self.treeview.selection()[0])
-    #     #     print(self.treeview.selection())
     #
     def delete_leaf(self, branch=None):
         # if branch is a string, need to find the item, if a list, will have compare by texts and remove
@@ -1329,7 +1295,7 @@ class ElementsList(QtWidgets.QTreeView):
                 self.get_data(item, leaves_data)
                 leaves_data = leaves_data[0][item.data()]
             delete_element_data = {'index': item.row(), 'parent': item.parent(),
-                                   'text': item.data(), 'leaves':leaves_data}
+                                   'text': item.data(), 'leaves': leaves_data}
             items_list.append(delete_element_data)
         self.delete_leaf(items_to_delete)
         if items_list:
@@ -1547,8 +1513,8 @@ class MultiListDisplay:
                 current_count = self.final_data.tree_model.rowCount()
                 if self.limit:
                     if current_count > self.limit:
-                        otherFunctions.show_message('Warning',' Reached limit. Please remove some before adding more'
-                                                    ,'Warning')
+                        otherFunctions.show_message('Warning', ' Reached limit. Please remove some before adding more'
+                                                    , 'Warning')
                         return
                 current_values = []
                 for idx in range(current_count):
@@ -1557,7 +1523,7 @@ class MultiListDisplay:
                 for value in values:
                     if value not in current_values:
                         # self.final_data.addItem(value)
-                        self.final_data.add_data('',[value])
+                        self.final_data.add_data('', [value])
             #             TODO maybe add warning?
             else:
                 self.final_data.add_data(data=[values])
@@ -1595,7 +1561,6 @@ class MultiListDisplay:
             self.label_custom.show()
 
     def destroy(self):
-        # self.custom_layout.deleteLater()
         for idx in range(self.custom_layout.count()):
             temp = self.custom_layout.takeAt(0)
             self.custom_layout.removeWidget(temp.widget())
@@ -1758,7 +1723,6 @@ class Main_MultiList:
                         mod_data = GlobalVariables.Mod_Var.mod_data['Skills'][check_skill]
                         if mod_data['targetType'] == 'single':
                             skills_to_display.append(check_skill)
-
             self.main_data.add_data(skills_to_display)
         else:
             for element in self.data_for_display:
@@ -1870,8 +1834,7 @@ class Main_MultiList:
         self.data_for_display['Stances']['Custom'] = []
 
     def update_with_mod_item(self, mod_tree_copy):
-        """new approach - spread it to appropiate branches"""
-        """remake list of dictionaries into dictionary"""
+        """should trigger when creating new item"""
         temp_dict = {}
         for mod_item in mod_tree_copy:
             if isinstance(mod_item, str):
@@ -1956,7 +1919,6 @@ class Main_MultiList:
         return temp_data
 
     def add_folder(self, parent_text, folder_name):
-        # mod_item = self.main_data.tree_model.item(0, 0)
         node = self.main_data.find_node(parent_text, self.main_data.tree_model.index(0, 0))
         if node == None:
             node = self.main_data.tree_model.item(0, 0)
@@ -2302,7 +2264,7 @@ class ModTempData:
         # if isfile(data_filename):
         if otherFunctions.check_if_file_exists(data_filename):
             """first check if mod folder was updated. this is in case user load same mod from 2 different places"""
-            # TODO move to to if rewrite flag else after cleaning. no point in loading if need to rewrite after
+            # TODO move to if rewrite flag else after cleaning. no point in loading if need to rewrite after
             self.mod_data = otherFunctions.load_json_data(data_filename)
             mod_folder_time_date = otherFunctions.get_file_time_modification(data_filename)
             if 'last_update' in list(self.mod_data.keys()):

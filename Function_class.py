@@ -1872,7 +1872,7 @@ class Function_Gui:
         if target_data == 'select options' or target_data == '':
             return
         """first prepare that temp_data. since this def is used to damage from monster and should use all girls from game"""
-        skills = otherFunctions.FindMonsterSkills(target_data)
+        skills = otherFunctions.find_monster_skills(target_data)
         temp_dict = {target_data:{}}
         for skill in skills:
             temp_dict[target_data][skill] = {}
@@ -1906,7 +1906,7 @@ class Function_Gui:
             return
         """first prepare that temp_data.
          since this def is used to 'damage from monster' and should use all girls from game"""
-        skills = otherFunctions.FindMonsterSkills(target_data)
+        skills = otherFunctions.find_monster_skills(target_data)
         self.function_fields_list[1].reload_options(skills)
 
     # TODO if choices are working, remove below(later)

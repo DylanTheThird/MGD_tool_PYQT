@@ -8,7 +8,7 @@ from otherFunctions import wrap
 
 
 def check_if_mod_exists(mod_path):
-    """check if mod exists. Made here cause it only file that imports access and fok"""
+    """check if mod exists. Made here cause it only file that imports access and f_ok"""
     if access(mod_path, F_OK):
         return True
     else:
@@ -43,7 +43,6 @@ def load_item(mod_path, element_type='', depth=0, list_parent=None):
     """goes over files in mod directories, read file and put data into mod variables"""
     # list_parent should be ModVar.mod_display
     # read all items from mod path and load json data into current mod
-    # also, load data display var which later will be inserted into main treeview
     if not access(mod_path, F_OK):
         return
     mod_files = [f for f in listdir(mod_path) if isfile(join(mod_path, f))]
@@ -78,86 +77,9 @@ def new_mod():
         Mod_Var.mod_display[element] = []
         Mod_Var.mod_file_names[element] = {}
 
-# def load_item(mod_path, element_type='', current_mod='', list_number=0, depth=0, list_parent=''):
-#     # print('')
-#     # read all items from mod path and load  json data into current mod
-#     # also, load data into the list along with directories
-#     mod_files = [f for f in listdir(mod_path) if isfile(join(mod_path, f))]
-#     mod_directories = [f for f in listdir(mod_path) if isdir(join(mod_path, f))]
-#     for element in mod_directories:
-#         if depth == 0:
-#             # get list index number. need to  check columns name  with elelemtn
-#             for index in range(len(GlobalVariables.list_elementlists)):
-#                 # get list heading and thus number in order of visible list
-#                 listName = GlobalVariables.list_elementlists[index].treeview.heading('#0')['text']
-#                 if listName == element:
-#                     list_number = index
-#                     break
-#         # if depth is 0 -  we are at root, cant add root to root
-#         # if depth = 1, then we are scanning directories in root folders, but list is already in root folder.
-#         # if deeper, add folder and pass that folder recursively
-#         if depth:
-#             if depth > 1:
-#                 new_parent = GlobalVariables.list_elementlists[list_number].treeview.insert(list_parent, 'end', [element], text=element)
-#             else:
-#                 new_parent = GlobalVariables.list_elementlists[list_number].treeview.insert('', 'end', [element], text=element)
-#         else:
-#             new_parent = ''
-#         if mod_path.count('/') <= 2:
-#             element_type = element
-#         load_item(mod_path + '/' + element, element_type, current_mod, list_number, depth + 1, new_parent)
-#     if mod_files:
-#         for index in range(len(mod_files)-1, -1, -1):
-#             if mod_files[index][0] == '_':
-#                 mod_files.pop(index)
-#         for files in mod_files:
-#             # print(files)
-#             # now it names stuff in current mod var with filename, but it might be different then element name
-#             # lets change to take name of element and that will be the key in currentModVar.
-#             with open(mod_path+'/'+files) as file:
-#                 file_data = json.load(file, object_hook=OrderedDict)
-#                 # current_mod[element_type][files[:-5]] = file_data
-#                 name = file_data['name']
-#                 current_mod[element_type][name] = file_data
-#                 # if depth>1:
-#                 GlobalVariables.list_elementlists[list_number].treeview.insert(list_parent, 'end', [name], text=name)
-#                 # else:
-#                 #     GlobalVariables.list_elementlists[list_number].treeview.insert('', 'end', [name], text=name)
-#
-#
-# def check_if_folder_exists(listNO, folders, curr_folder_iid=''):
-#     """get list of children, for each leaf check if it has folder tag. if yes, check if its name is same as
-#     the on in filepath. lets hope they wont repeat. if same, delete if from folder list, since we found it,
-#      check if it was last folder, if not, enter and repeat. if yes, return"""
-#     leaves = GlobalVariables.list_elementlists[listNO].treeview.get_children(curr_folder_iid)
-#     for leaf in leaves:
-#         if 'folder' in GlobalVariables.list_elementlists[listNO].treeview.item(leaf)['tags']:
-#             if folders[0] == GlobalVariables.list_elementlists[listNO].treeview.item(leaf)['text']:
-#                 folders.pop(0)
-#                 if len(folders)==0:
-#                     return leaf
-#                 curr_folder_iid = check_if_folder_exists(listNO, folders, leaf)
-#                 return curr_folder_iid
-#     return curr_folder_iid
-#
-# def prepare_folders(list_no, files_path):
-#     """divide files path into seperate folders. value should be /folder1/folder2/ so also delete first and last element"""
-#     folders = files_path.split('/')
-#     folders.pop(0)
-#     # folders.pop(-1)
-#     curr_folder = check_if_folder_exists(list_no, folders)
-#     """for each folder, add that folder to list. then add folder to previous folder.
-#         But do so only if folder does not exists."""
-#     for folder in folders:
-#             curr_folder = GlobalVariables.list_elementlists[list_no].treeview.insert(curr_folder, 'end', [folder+'_'+curr_folder], text=folder)
-#             GlobalVariables.list_elementlists[list_no].treeview.item(curr_folder, tags='folder')
-#
-#     return curr_folder
-
 
 # obsolete?
-
-def load_main_game_item_2(main_path='./../json', element_type='', main_var=None):
+def load_main_game_item(main_path='./../json', element_type='', main_var=None):
     """ this should load main game data into global variable, to use later in other fields where you choose items """
     mod_directories = [f for f in listdir(main_path) if isdir(join(main_path, f))]
     # print(mod_files)
@@ -166,7 +88,7 @@ def load_main_game_item_2(main_path='./../json', element_type='', main_var=None)
     for element in mod_directories:
         temp_dict = {element: []}
         main_var.append(temp_dict)
-        load_main_game_item_2(main_path + '/' + element, element_type, main_var[-1][element])
+        load_main_game_item(main_path + '/' + element, element_type, main_var[-1][element])
     mod_files = [f for f in listdir(main_path) if isfile(join(main_path, f))]
     for file in mod_files:
         if file[0] != '_':
@@ -177,7 +99,7 @@ def load_main_game_item_2(main_path='./../json', element_type='', main_var=None)
 def load_main_game_files_data(file_path=''):
     mod_files = [f for f in listdir(file_path) if isfile(join(file_path, f))]
     """open each file. usually only need name from file, but in some cases also need scene text or maybe something else.
-    so final list usually is list of file names or dictionaries with file name and more stuff inside  to choose from """
+    so final list usually is list of file names or dictionaries with file name and more stuff inside to choose from """
     for file_data in mod_files:
         if file_data[0] == '_':
             continue
@@ -225,12 +147,12 @@ def load_main_game_files_data(file_path=''):
     # print('something  wrong with ' + files)
     return
 
-
-def load_main_skill_types():
-    with open('files/_skilltypefields.json', encoding='utf-8') as file:
-        file_data = json.load(file, object_hook=OrderedDict)
-        for field in file_data:
-            Glob_Var.skill_type_fields[field] = file_data[field]
+# TODO if nothing breaks, this is not needed
+# def load_main_skill_types():
+#     with open('files/_skilltypefields.json', encoding='utf-8') as file:
+#         file_data = json.load(file, object_hook=OrderedDict)
+#         for field in file_data:
+#             Glob_Var.skill_type_fields[field] = file_data[field]
 
 
 def load_fetishes():
@@ -276,7 +198,8 @@ def load_functions():
     else:
         functions_path = 'files/_textfunction.json'
     with open(functions_path) as file:
-        # testing
+        """during tests I added -done to functions that were working so could be skipped.
+        This, this function is terrible"""
         data = json.load(file, object_hook=OrderedDict)
         if Glob_Var.flag_skip_functions:
             temp = data.copy()
@@ -291,7 +214,7 @@ def load_functions():
                                 # temp[lvl1][lvl2].pop(data[lvl1][lvl2].index(lvl3))
                                 # temp[lvl1][lvl2].remove(lvl3)
                                 temp_list.append(data[lvl1][lvl2].index(lvl3))
-                    if len(temp_list)>0:
+                    if len(temp_list) > 0:
                         temp_list.reverse()
                         for titles in temp_list:
                             temp[lvl1][lvl2].pop(titles)
@@ -305,11 +228,6 @@ def load_functions():
                         function_title = data[root_function][function_type][idx]['title']
                         Glob_Var.functions_display[root_function][function_type].append(function_title)
                         Glob_Var.functions_data[function_title] = data[root_function][function_type][idx]
-
-
-# def load_stances():
-#     with open('files/_stances.json') as file:
-#         Glob_Var.stances = json.load(file, object_hook=OrderedDict)
 
 
 def load_line_triggers():
@@ -346,6 +264,7 @@ def load_drop_down_options():
     Glob_Var.stances = Glob_Var.drop_down_options['Stances']
     Glob_Var.game_hard_data['statusEffects'] = [Glob_Var.drop_down_options['Buffs and Debuffs'],
                                                 Glob_Var.drop_down_options['Status Effects']]
+
 
 def remove_files(files_dict, mod_path, mod_name):
     for file in files_dict:

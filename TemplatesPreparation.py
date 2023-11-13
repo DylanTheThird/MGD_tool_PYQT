@@ -6,7 +6,7 @@ from collections import OrderedDict
 from SimpleFields import SimpleEntry, mod_temp_data
 from CustomFields import createField, OptionalFields, FunctionField, Functional_Dummy
     # , OptionalFields, FunctionField,
-from otherFunctions import error_log, show_message
+from otherFunctions import error_log, show_message, clean_text
 import GlobalVariables
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPalette
@@ -79,6 +79,7 @@ class Templates:
             self.frame_fields[field].label_custom.clear_color()
 
     def custom_fields_functionality(self):
+        """used somewhere"""
         return
 
     def load_element_data(self, element_name, element_data=None):
@@ -124,8 +125,8 @@ class Templates:
 
     def prepItemGui(self):
         functional_field_repeat = None
-        row_max_size=15
-        currect_size = 0
+        row_max_size = 15
+        current_size = 0
         col_place = 1
         # self.layout_template = QtWidgets.QVBoxLayout()
         # self.main_template_layout.addLayout(self.layout_template)
@@ -172,9 +173,9 @@ class Templates:
                     if 'addition' in self.json_templates[field]['options']:
                         self.field_used_in_additions.append(field)
                 """now check if there are too many fields. each field has some size"""
-                currect_size += field_value.row_size
-                if currect_size >= 15:
-                    currect_size = 0
+                current_size += field_value.row_size
+                if current_size >= row_max_size:
+                    current_size = 0
                     col_place += 1
                     layout_template.addStretch(1)
                     layout_template = QtWidgets.QVBoxLayout()
@@ -188,12 +189,14 @@ class Templates:
         # save element data into the current mod dictionary and add it into the lists.
         item_temp = OrderedDict()
         error_flag = False
-        if 'name' in list(self.frame_fields.keys()):
-            unique_field = 'name'
-        elif self.element_type == 'Monsters':
-            unique_field = 'IDname'
-        else:
-            unique_field = 'Name'
+        # if 'name' in list(self.frame_fields.keys()):
+        #     unique_field = 'name'
+        # elif self.element_type == 'Monsters':
+        #     unique_field = 'IDname'
+        # else:
+        #     unique_field = 'Name'
+        # # instead, just take title of first field in list. Had to reorder fields in monster template
+        unique_field = list(self.frame_fields.keys())[0]
         file_name = self.input_filename.get_val()
         if not file_name and self.element_type != 'Fetishes':
             show_message('File name', 'Please provide', 'Error 1')
@@ -223,18 +226,19 @@ class Templates:
     def save_element_in_file(self, element_name, file_path):
         file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][element_name]
         file_name = GlobalVariables.Mod_Var.mod_file_names[self.element_type][element_name]
-        elementPath = file_path
-        if not access(elementPath, F_OK):
-            makedirs(elementPath)
-            # print(elementPath)
+        element_path = file_path
+        if not access(element_path, F_OK):
+            makedirs(element_path)
         # file_name = item_file_name
-        file_name = re.sub('[^A-Za-z0-9]+', '', file_name)
-        with open(elementPath + file_name + '.json', 'w') as objectF:
+        # file_name = re.sub('[^A-Za-z0-9]+', '', file_name)
+        file_name = clean_text(file_name)
+        with open(element_path + file_name + '.json', 'w') as objectF:
             objectF.write(json.dumps(file_data, indent='\t'))
 
 
 class AdventureTemplate(Templates):
     def __init__(self, master=None):
+        # below was used in testing
         # super().__init__('files/_fields.json', 'Adventures', master=master)
         super().__init__('files/_BlankAdventure_modtemplate.json', 'Adventures', master=master)
         self.size = [800, 620]
@@ -249,6 +253,7 @@ class EventsTemplate(Templates):
 
     def load_element_data(self, element_name, element_data=None):
         mod_temp_data.current_editing_event = element_name
+        # for functions to getting current editing event
         super().load_element_data(element_name, element_data)
 
     def save_element_details_in_current_mod(self, current_mod):
@@ -265,10 +270,10 @@ class FetishesTemplate(Templates):
 
     def prep_template(self):
         self.input_filename.setEnabled(False)
+    #     fetishes are saved in specific files
 
     def save_element_in_file(self, fetish_list, file_path):
         """filename for fetishes is a list of all fetishes"""
-        # file_data = GlobalVariables.Mod_Var.mod_data[self.element_type][file_name]
         """fetish list is a one item dictionary of  list of dictionaries of fetishes
             create a template for fetish and saving in list, but as mod saving all to one file
             file data is dictionary of ordered dictionaries, so"""
@@ -308,119 +313,6 @@ class MonsterTemplate(Templates):
     def __init__(self, master=None):
         super().__init__('files/_BlankMonster_modtemplate.json', 'Monsters', master=master)
         self.size = [800, 620]
-
-    def prepItemGui_old_separate_tabs(self, mode=1):
-        # if mode:
-        #     self.frame_gui = self.frame_create_data
-        #     self.frame_fields = self.fields_for_create_frame
-        # else:
-        #     self.frame_gui = self.frame_display_data
-        #     self.frame_fields = self.fields_for_display_frame
-        functional_field_repeat = None
-        frame_advance_fields_1 = tk.Frame(self.frame_gui)
-        frame_advance_fields_1.grid(row=1, column=1, columnspan=2)
-        frame_advance_fields_2 = tk.Frame(self.frame_gui)
-        frame_optional_fields = tk.Frame(master=self.frame_gui, bg='purple')
-        button_frame1 = tk.Button(self.frame_gui, text='Part 1', command=lambda:self.switch_frames(frame_advance_fields_1, frame_advance_fields_2))
-        button_frame2 = tk.Button(self.frame_gui, text='Part 2',
-                                  command=lambda: self.switch_frames(frame_advance_fields_2, frame_advance_fields_1))
-        button_frame1.grid(row=0, column=1)
-        button_frame2.grid(row=0, column=2)
-
-
-        ref_frame = frame_advance_fields_1
-        row_max_size=15
-        currect_size = 0
-        column_max = 3
-        col_place = 1
-        # visibility_frame = tk.Frame(frame_advance_fields_1)
-        # visibility_frame.grid(row=0, column=0)
-        # for idx in range(25):
-        #     templabel = tk.Label(visibility_frame, text='row ' + str(idx))
-        #     templabel.grid(row=idx)
-        element_frame = tk.Frame(master=frame_advance_fields_1)
-        element_frame.grid(row=0, column=col_place)
-        # if mode:
-        self.input_filename = SimpleEntry(element_frame, 'File name', 'Provide name for file. If empty,'
-                                                                       ' name without spaces will become file name.', 'L')
-        # else:
-        #     self.input_filename = SimpleEntryDisplay(element_frame, 'File name', 'Provide name for file. If empty,'
-        #                                                                   ' name without spaces will become file name.',
-        #                                       'L', None, None, self.element_type)
-        # self.input_filename = SimpleEntry(element_frame, 'File name', 'Provide name for file. If empty,'
-        #                                                                ' name without spaces will become file name.', 'L')
-        self.input_filename.pack(fill='both')
-        flag_switch = 1
-        for field in self.json_templates:
-            # GuiFieldName = element_name + field
-            # try:
-            #     if self.json_templates[field]["type"] in "text singlelist int filePath multilist area requirement":
-            #         element_frame = temp_frame
-            #     else:
-            #         element_frame = temp_frame
-                # field_value = createField(element_frame, field, self.json_templates[field])
-                field_value = createField(element_frame, field, self.json_templates[field], template_name=self.element_type, mode=mode)
-                # if field_value == '':
-                #     continue
-                # field_value.update_label('gird r-' + str(row_place) + ',col-'+str(col_place) + 'span-'+str(field_value.row_size))
-                if self.json_templates[field]["type"] in 'functionfield':
-                    functionflag = ''
-                    """similar to perk double list, there are dummy objects of function field. They have reference
-                     to main fields and their task to to set and get vals, by calling first function field"""
-                    if functional_field_repeat:
-                        # functional_field_repeat.add_new_field(self.json_templates[element_type][field]['fields'],
-                        #                                       field)
-                        field_value.main_field = functional_field_repeat
-                        self.frame_fields[field] = field_value
-                        # label_field.destroy()
-                    else:
-                        functional_field_repeat = FunctionField(functionflag, master=element_frame, view_title=field)
-                        # advance_field.add_new_field(self.json_templates[element_type][field]['fields'], field)
-                        # self.frame_fields[field] = functional_field_repeat
-                        field_value = Functional_Dummy(functional_field_repeat, field)
-                        self.frame_fields[field] = field_value
-                    functional_field_repeat.add_new_field(self.json_templates[field]['fields'], field
-                                              , dummy_field=field_value)
-                    field_value = functional_field_repeat
-                if field_value == '':
-                    if self.json_templates[field]["type"] in 'optional' and mode == 1:
-                        field_value = OptionalFields(self.frame_gui, self.json_templates[field])
-                    else:
-                        field_value = OptionalFields(self.frame_gui)
-                    self.optional_class_worker = field_value
-                    # continue
-
-                #     if self.json_templates[field]["type"] == 'optional':
-                #         field_value = OptionalFields(self.json_templates[field], element_frame, self.dict_optional_fields,
-                #                                        frame_optional_fields)
-                #         self.optional_work = field_value
-                #         # advance_field.optional_fields_interface.pack()
-                #     # print(advance_field.title + ' ' + str(advance_field.row_size))
-
-                if isinstance(field_value, list):
-                    self.frame_fields[field] = field_value[0]
-                    self.frame_fields[field_value[1].title] = field_value[1]
-                    field_value = field_value[0]
-                else:
-                    # if not self.json_templates[field]["type"] == 'optional' or self.json_templates[field]["type"] in 'functionfield':
-                    if not self.json_templates[field]["type"] in 'functionfield optional':
-                        self.frame_fields[field] = field_value
-                # print(field_value.title + ' ' + str(field_value.row_size))
-                field_value.pack(fill=tk.BOTH)
-                currect_size += field_value.row_size
-                if currect_size > 15:
-                    currect_size = 0
-                    col_place += 1
-                    if col_place > column_max:
-                        col_place = 0
-                        ref_frame = frame_advance_fields_2
-                    element_frame = tk.Frame(master=ref_frame)
-                    element_frame.grid(row=0, column=col_place)
-            # self.frame_fields[field] = field_value
-
-    def switch_frames(self, frame_on, frame_off):
-        frame_off.grid_forget()
-        frame_on.grid(row=1, column=1, columnspan=2)
 
 
 class PerkTemplate(Templates):
@@ -475,16 +367,18 @@ class SkillsTemplate(Templates):
                 if not self.frame_fields[field].get_val():
                     missing_data += '\n' + 'missing ' + field
         if missing_data:
-            show_message('Missing mandatory',"You missed a few spots, didn't you?" + missing_data,'Mandatory error')
+            show_message('Missing mandatory', "You missed a few spots, didn't you?" + missing_data, 'Mandatory error')
             return
         # self.save_data_in_current_mod(current_mod, flag_addition)
         return super().save_data_in_current_mod(current_mod, flag_addition)
-        # return True
 
     def custom_fields_functionality(self):
         for field in self.frame_fields:
                 if field in 'skillType statusEffect':
-                    self.frame_fields[field].currentTextChanged.connect(lambda *args, arg1=field, arg2=self.frame_fields[field]: self.mark_mandatories(field_name=arg1, field_data=arg2))
+                    self.frame_fields[field].currentTextChanged.connect(lambda *args, arg1=field,
+                                                                               arg2=self.frame_fields[field]:
+                                                                        self.mark_mandatories(field_name=arg1,
+                                                                                              field_data=arg2))
                     self.frame_fields[field].set_val('Healing')
 
     def mark_mandatories(self, field_name, field_data):

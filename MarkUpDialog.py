@@ -65,7 +65,7 @@ class MarkUp_Window(QtWidgets.QWidget):
                  scene_data=None, quick_load_scene=None):
         super().__init__()
         """target field - either treeview for scenes or text field for some fields that allow markups
-        scenes_flag - if textfied is target, no need to display treeview for scenes
+        scenes_flag - if textfield is target, no need to display treeview for scenes
         data for functions - ...hmm..probably it should pass info whenever it should display all function or only txt"""
         self.setWindowTitle('Events')
         # Dialog.resize(310, 299)
@@ -84,26 +84,18 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.mark_up_buttons_background_text = QtWidgets.QWidget()
         """all the buttons for markups here"""
         self.prepare_markup_buttons()
-        """below are placeholder to test sizes"""
-        # placeholder_buttons = SimpleFields.CustomButton(self, 'placeholder width')
-        # # placeholder_buttons.clicked.connect(lambda: self.change_size(1))
-        # placeholder_buttons.clicked.connect(self.test)
-        # placeholder_buttons2 = SimpleFields.CustomButton(self, 'placeholder2 heigh')
-        # placeholder_buttons2.clicked.connect(lambda: self.change_size(2))
-        # h_layout_buttons.addWidget(placeholder_buttons)
-        # h_layout_buttons.addWidget(placeholder_buttons2)
-        # self.v_main_layout.addLayout(v_layout_buttons)
         self.v_main_layout.addWidget(self.mark_up_buttons_background_player)
         self.v_main_layout.addWidget(self.mark_up_buttons_background_text)
         """Area text for input and later treeview for display,
         treeview for functions and functions creation on right"""
+
         """first, vertical, contains area text and treeview"""
         self.area_input = area_mark_up()
         self.area_input.setMaximumSize(800, 100)
         self.area_input.set_up_widget(self.v_main_layout)
         """now, display data on the left and on the right functions gui"""
-        """on the left is treeview for data from input, hidden scene list and hidden scene data.
-        on the right area with explanation, treeview with functions and 2 buttons"""
+
+        """on the left is treeview for data from input, hidden scene list and hidden scene data."""
         h_layout_display_f_gui = QtWidgets.QHBoxLayout()
         v_layout_left_side = QtWidgets.QVBoxLayout()
         """target field is field from which user entered. 
@@ -111,22 +103,27 @@ class MarkUp_Window(QtWidgets.QWidget):
         self.target_field = target_field
         if current_scene_list:
             self.current_scenes = current_scene_list
+            """this list is same as in the main window"""
             self.functions_list = list(GlobalVariables.Glob_Var.functions_data.keys())
         else:
             self.current_scenes = None
         if scenes_flag:
-            """first horizontal to put buttons at the top"""
+            """first horizontal to put buttons at the top.
+            I think that buttons don't need self. prefix as they should not be used anywhere else"""
             h_lay_scene_buttons = QtWidgets.QHBoxLayout()
             self.button_display_scenes = SimpleFields.CustomButton(None, 'Scenes')
+            """shows scene list. it should be same treeview as in main window"""
             self.button_display_scenes.setMaximumWidth(100)
             self.button_display_scenes.clicked.connect(self.display_scene_list)
             h_lay_scene_buttons.addWidget(self.button_display_scenes)
             self.button_display_scenes_data = SimpleFields.CustomButton(None, 'Data')
+            """display data for current scene. in case of monster card it requires more than just title"""
             self.button_display_scenes_data.setMaximumWidth(100)
             self.button_display_scenes_data.clicked.connect(self.switch_to_data)
             self.flag_data = False
             h_lay_scene_buttons.addWidget(self.button_display_scenes_data)
             self.button_load_function = SimpleFields.CustomButton(None, '>>')
+            """load data into functions"""
             self.button_load_function.setMaximumWidth(100)
             self.button_load_function.clicked.connect(self.load_function)
             h_lay_scene_buttons.addWidget(self.button_load_function)
@@ -144,8 +141,8 @@ class MarkUp_Window(QtWidgets.QWidget):
             h_layout_display.addWidget(self.display_scene_widget_background)
             # v_layout_display.addLayout(h_layout_display)
             self.scene_list = SimpleFields.ElementsList(self, search_field=True)
-            """since this scene list is basicly same as in function field in main view, instead to duplicatind
-            data and after done making a copy, I passed tree models and assigned them here.
+            """since this scene list is basicaly same as in function field in main view, instead to duplicating
+            data, I passed tree models and assigned them here.
             This way any changes should be reflected in both treeviews.
             added if for testing"""
             if target_field:
@@ -170,11 +167,11 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.scene_data_widget_background.setLayout(v_layout_display_scene_data)
             h_layout_display.addWidget(self.scene_data_widget_background)
             """first, clean it to make it easier"""
-            self.data_fields = []
+            # self.data_fields = []
             self.data_fields = {}
             self.flag_main_data = False
-            """creating fields for scene data moved later, after function gui is created. to save space
-            for monster, some fields are connected to fields created in functions gui"""
+            """creating fields for scene data moved later, after function gui is created.
+             in case of monster cards, some fields require data from main tree, which is in functions gui"""
             # if scene_data:
             #     for data_field in scene_data:
             #         for field in scene_data[data_field]:
@@ -207,7 +204,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             #         # v_layout_display_scene_data.addWidget(tempfield)
             self.scene_data_widget_background.hide()
             # h_layout_display.addWidget(self.scene_data_widget_background)
-            """here is display data. is where iines and functions for scene are displayed and can be modified"""
+            """here is display data. is where lines and functions for scene are displayed and can be modified"""
             self.display_data = SimpleFields.ElementsList(self, "Event text")
             # self.display_data.setMaximumSize(600, 350)
             self.display_data.parent_tag = 'function'
@@ -237,6 +234,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             config_list = [1, self.area_input, self.display_data]
         else:
             config_list = [0, self.area_input, None]
+            """ on the right area with explanation, treeview with functions and 2 buttons"""
         self.functions = Function_Gui(None, None, self, fields_lay=self.v_layout_function_fields,
                                       adding_config=config_list, scene_list=current_scene_list)
         self.functions.set_up_widget(v_layout_right_side)
@@ -598,6 +596,7 @@ class MarkUp_Window(QtWidgets.QWidget):
             self.scene_list.show()
 
     def change_size(self, param):
+        """testing function to see how size is changes"""
         self.adjustSize()
         # value = int(self.text_test.get_val())
         # if param == 1:
@@ -648,7 +647,6 @@ class MarkUp_Window(QtWidgets.QWidget):
                     scene_data[fields] = self.data_fields[fields].get_val()
             """now, put it in correct plane in scene container. in case of girls scenes, it might be win or lose
             so check what is selected and take its parent"""
-            """now, how to save scene in scenelist"""
             insert_row = -1
             if current_selection.parent():
                 """selected scene, not scene type, add above"""
@@ -673,8 +671,10 @@ class MarkUp_Window(QtWidgets.QWidget):
         else:
             self.target_field.set_val(self.area_input.get_val())
             self.close()
+
     def switch_to_data(self):
-        """scene data is additiona scene attributes. display data is scene context"""
+        """'scene data' is additional scene attributes, like title or move.
+        display data is scene context"""
         if self.flag_data:
             """if true, hide data and display scenes"""
             self.flag_data = False
@@ -694,7 +694,6 @@ class MarkUp_Window(QtWidgets.QWidget):
         """user double clicked on scene in scene lookup. if its parent, clear display, if not, load scene"""
         """clear display"""
         self.display_data.clear_tree()
-        # item_data = self.scene_list.selected_element()
         item_data = self.scene_list.transform_index_to_item(clicked_index)
         if item_data.parent():
             """if it has parent, user clicked on specific scene. otherwise, there is nothing to load"""
