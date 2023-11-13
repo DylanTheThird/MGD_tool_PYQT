@@ -560,7 +560,7 @@ def wrap(string, length=20, row_len=39):
 
 
 def error_log(log_data):
-    if GlobalVariables.file_log:
+    if Glob_Var.file_log:
         with open('error_logs.txt', 'a', encoding='utf-8-sig') as error_file:
             error_file.write('time of error - ' + str(ctime(time())))
             error_file.write(str(log_data) + '\n')

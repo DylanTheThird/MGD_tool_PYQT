@@ -189,12 +189,14 @@ class Templates:
         # save element data into the current mod dictionary and add it into the lists.
         item_temp = OrderedDict()
         error_flag = False
-        if 'name' in list(self.frame_fields.keys()):
-            unique_field = 'name'
-        elif self.element_type == 'Monsters':
-            unique_field = 'IDname'
-        else:
-            unique_field = 'Name'
+        # if 'name' in list(self.frame_fields.keys()):
+        #     unique_field = 'name'
+        # elif self.element_type == 'Monsters':
+        #     unique_field = 'IDname'
+        # else:
+        #     unique_field = 'Name'
+        # # instead, just take title of first field in list. Had to reorder fields in monster template
+        unique_field = list(self.frame_fields.keys())[0]
         file_name = self.input_filename.get_val()
         if not file_name and self.element_type != 'Fetishes':
             show_message('File name', 'Please provide', 'Error 1')

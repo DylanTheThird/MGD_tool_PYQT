@@ -1117,7 +1117,10 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
         super().__init__(master, field_name, fields_data)
         # connect first field - line triggers - to custom trigger here
         self.label_custom.change_position('center')
+        # self.file_container = {}
         self.fields_list[0].final_data.textChanged.connect(self.trigger_custom)
+        self.files_container = self.fields_list[2].files_container
+        # self.fields_list[2].file_container = self.file_container
         self.tree_final_data.doubleClicked.connect(self.edit_data)
         self.edit_flag = False
     """probably, double click on anything, check root, take all data from root parent and put in proper fields"""
@@ -1131,46 +1134,59 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
                 temp_dict = {}
                 """data_dictionary[key] is a list of final dictionary variables"""
                 for correct_records in data_dictionary[key]:
-                    """here is correct data. also, all values are lists, but in case it's len is 1, change to string"""
-                    for correct_key in correct_records:
-                        if len(correct_records[correct_key]) == 1 and correct_key != 'theText':
-                            correct_records[correct_key] = correct_records[correct_key][0]
-                        temp_dict[correct_key] = correct_records[correct_key]
+                    """here is correct data. also, all values are lists, but in case it's len is 1, change to string.
+                    also, move might be empty and so will be a string, not a dictionary with empty value"""
+                    if isinstance(correct_records, str):
+                        temp_dict[correct_records] = ''
+                    else:
+                        for correct_key in correct_records:
+                            if len(correct_records[correct_key]) == 1 and correct_key != 'theText':
+                                correct_records[correct_key] = correct_records[correct_key][0]
+                            temp_dict[correct_key] = correct_records[correct_key]
             transformed_data.append(temp_dict)
+        """custom for combat triggers - replace filename from display with file path"""
+        for search_music in transformed_data:
+            if search_music['lineTrigger'] == 'SetMusicTo':
+                temp = []
+                for aa in search_music['theText']:
+                    temp.append(self.files_container[aa])
+                search_music['theText'] = temp
         if temp_dict_container is not None:
             temp_dict_container[self.title] = transformed_data
+        self.files_container.clear()
 
     def add_data_to_treeview(self):
         """check trigger and its options. in some cases there are limits"""
         trigger = self.fields_list[0].get_val()
-        options = Glob_Var.lineTriggers[trigger]['move']
-        if 'empty' in options:
-            """it means field MOVE should be left empty"""
-            self.fields_list[1].clear_val()
-        if 'limit' in options:
-            """if limit-10, specific trigger should appear withing first 10 rows.
-            first check if rows is selected - check which rows it is to insert.
-            if nothing is selected, check amount of current rows in list"""
-            limitNO = Glob_Var.lineTriggers[trigger]['limit']
-            selected_row = self.tree_final_data.selected_element()
-            if selected_row:
-                if selected_row.row() > int(limitNO):
-                    show_message('Start entry', 'this trigger must be place \n within first 10 records','Starter Trigger')
+        if trigger:
+            options = Glob_Var.lineTriggers[trigger]['move']
+            if 'empty' in options:
+                """it means field MOVE should be left empty"""
+                self.fields_list[1].clear_val()
+            if 'limit' in options:
+                """if limit-10, specific trigger should appear withing first 10 rows.
+                first check if rows is selected - check which rows it is to insert.
+                if nothing is selected, check amount of current rows in list"""
+                limitNO = Glob_Var.lineTriggers[trigger]['limit']
+                selected_row = self.tree_final_data.selected_element()
+                if selected_row:
+                    if selected_row.row() > int(limitNO):
+                        show_message('Start entry', 'this trigger must be place \n within first 10 records','Starter Trigger')
+                        return
+                else:
+                    if self.tree_final_data.tree_model.rowCount() > int(limitNO):
+                        show_message('Start entry', 'this trigger must be place \n within first 10 records','Starter Trigger')
+                        return
+            if 'mandatory' in options:
+                if not self.fields_list[1].get_val():
+                    self.fields_list[1].label_custom.change_background_color()
                     return
-            else:
-                if self.tree_final_data.tree_model.rowCount() > int(limitNO):
-                    show_message('Start entry', 'this trigger must be place \n within first 10 records','Starter Trigger')
-                    return
-        if 'mandatory' in options:
-            if not self.fields_list[1].get_val():
-                self.fields_list[1].label_custom.change_background_color()
+            self.fields_list[1].label_custom.clear_color()
+            if self.edit_flag:
+                self.edit_flag = False
+                super().add_data_to_treeview(insert=self.edit_insert_row)
                 return
-        self.fields_list[1].label_custom.clear_color()
-        if self.edit_flag:
-            self.edit_flag = False
-            super().add_data_to_treeview(insert=self.edit_insert_row)
-            return
-        super().add_data_to_treeview()
+            super().add_data_to_treeview()
 
     def edit_data(self):
         selected_value = self.tree_final_data.selected_element()
@@ -1178,7 +1194,8 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
             self.edit_insert_row = self.tree_final_data.find_root_parent(selected_value).row()
             self.edit_flag = True
             temp = []
-            data_to_edit = self.tree_final_data.get_data(self.tree_final_data.find_root_parent(selected_value), temp)
+            # get data modified temp variable from above, does not return anything
+            self.tree_final_data.get_data(self.tree_final_data.find_root_parent(selected_value), temp)
             # this make temp like this [dict[key-root:[{linetrigger:[value]},{move:[value]},]]
             # so need to remake this list of dictionaries of lists into proper structure
             temp_list_2 = []
@@ -1186,15 +1203,21 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
             for root_dict in temp:
                 for root_name in root_dict:
                     for field_val_pair_dict in root_dict[root_name]:
-                        for value_in_field in field_val_pair_dict:
-                            temp_list_2.append(field_val_pair_dict[value_in_field])
+                        if isinstance(field_val_pair_dict, dict):
+                            for value_in_field in field_val_pair_dict:
+                                temp_list_2.append(field_val_pair_dict[value_in_field])
+                        else:
+                            temp_list_2.append('')
             restructirized[0] = temp_list_2[0][0]
             restructirized[1] = temp_list_2[1]
             restructirized[2] = temp_list_2[2]
             # not put restructurized value in fieldlist
             for idx in range(len(self.fields_list)):
-                self.fields_list[idx].clear_val()
-                self.fields_list[idx].set_val(restructirized[idx])
+                if restructirized[idx]:
+                    """in case of empty move field, it would insert empty list,
+                    later getting list withing list, so need to skip no value to set"""
+                    self.fields_list[idx].clear_val()
+                    self.fields_list[idx].set_val(restructirized[idx])
 
     def trigger_custom(self):
         trigger = self.fields_list[0].get_val()
@@ -1205,10 +1228,9 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
         else:
             self.fields_list[2].flag_file = False
 
-    def trigger_file(self):
-        self.fields_list[1].flag_file = True
-        # TODO finish combat field - when selected music, second field should load file
-        """change second field in field list - move - to instead load file"""
+    def clear_val(self):
+        self.files_container.clear()
+        super().clear_val()
 
     def set_val(self, values):
         """this should be list of dictionaries,
@@ -1220,18 +1242,23 @@ class EDF_forcombatDialogue(ExpandDictionaryField):
                 "And free your mouth from the Nereid's wet smooches!"
             ]
         }]
-        so make 'linetrigger + move' as key of this dictionary"""
+        so make 'linetrigger + move' as key of this dictionary.
+        Also, if trigger is SetMusicTo, need to transform filepaths and store them.
+         filename to display, path to file_container"""
         final_data_to_insert = []
         for fields in values:
             new_key = fields['lineTrigger']
             if new_key == 'SetMusicTo':
-                for files in fields['move']:
+                for files in fields['theText']:
                     temp = files.split('/')
                     filename = temp[-1]
-                    self.fields_list[2].files_container[filename] = files
-                    files = filename
-            if isinstance(fields['move'], str):
-                new_key += '-' + fields['move']
+                    self.files_container[filename] = files
+                    temp = fields['theText'].index(files)
+                    fields['theText'].pop(temp)
+                    fields['theText'].insert(temp, filename)
+            # below should combine trigger with move, to make it easier to find, if users want
+            # if isinstance(fields['move'], str):
+            #     new_key += '-' + fields['move']
             temp_value = {new_key: fields}
             final_data_to_insert.append(temp_value)
         self.tree_final_data.add_data(data=final_data_to_insert)
@@ -1519,6 +1546,7 @@ class CombatTrigger(SimpleFields.ElementsList):
      change get, set val to include new rows"""
     def __init__(self, master=None, field_name='', fields_data=None):
         super().__init__(master, field_name, all_edit=True, folders=True)
+        """text field in combat trigger in monster card. where you provide text for specfic combat moves."""
         self.title = field_name
         self.files_container = {}
         self.data = []
@@ -1568,6 +1596,7 @@ class CombatTrigger(SimpleFields.ElementsList):
             self.tree_model.itemChanged.connect(self.on_item_changed)
 
     def on_item_changed(self, item):
+        """when typing text, if its too long, mark it as red and maybe even show where is limit"""
         self.tree_model.itemChanged.disconnect()
         if len(item.text()) > self.max_text_length:
             self.change_row_color(item, 'bad')
@@ -1583,19 +1612,38 @@ class CombatTrigger(SimpleFields.ElementsList):
                 self.add_leaf(["doubleclick to edit"], row_height=40)
 
     def set_val(self, values):
-        # TODO how to deal with values here
         self.clear_tree()
+        """if first value is a list, it should be similar to get val - [list, list]
+        then loop lists, first are paths, second are names"""
+        if isinstance(values[0], list):
+            for path, name in zip(values[0], values[1]):
+                self.files_container[name] = path
+            values = values[1]
+        # for aa in values:
+        #     if '/' in aa:
+        #         print('its file name in cobat triiger')
+        #         return
         self.add_data(data=values)
         self.change_row_height(40)
         self.add_leaf(["doubleclick to edit"], row_height=40)
 
     def get_val(self, temp_dict_container=None):
-        if self.flag_file:
-            final_data = list(self.files_container.values())
-            self.files_container.clear()
-        else:
-            final_data = self.get_data()
-            final_data.pop(-1)
+        """customized for combat trigger. for file, return list [file paths, file names].
+        Main field will check if trigger is music, then take correct values"""
+        # if self.flag_file:
+            # new_temp = self.get_data()
+            # new_temp.pop(-1)
+            # old_temp = list(self.files_container.keys())
+            # old_temp = list(set(old_temp) - set(new_temp))
+            # for aa in old_temp:
+            #     del self.files_container[aa]
+            # final_data = copy.copy(self.files_container)
+            # self.files_container.clear()
+            # final_data = [list(self.files_container.values()), temp]
+            # self.files_container.clear()
+        # else:
+        final_data = self.get_data()
+        final_data.pop(-1)
         if temp_dict_container is not None:
             temp_dict_container[self.title] = final_data
         else:
@@ -1604,6 +1652,8 @@ class CombatTrigger(SimpleFields.ElementsList):
     def clear_val(self):
         self.clear_tree()
         self.add_leaf(["doubleclick to edit"], row_height=40)
+        # self.files_container.clear()
+
    #
     # def load_line_triggers(self):
     #     tempdic = {}
@@ -1897,9 +1947,10 @@ class OptionalFields(SimpleFields.ElementsList):
         """field - name of field to activate
         value - value provided for field"""
         if field in self.all_fields_to_compare:
-            self.select_element(field)
-            self.adds_selected()
-            self.optional_fields_dict[field].set_val(value)
+            temp = self.select_element(field)
+            if temp is not None:
+                self.adds_selected()
+                self.optional_fields_dict[field].set_val(value)
         return
 
     def clear_val(self):
@@ -1920,7 +1971,8 @@ class OptionalFields(SimpleFields.ElementsList):
         self.add_data(data=data_to_load)
 
     def adds_selected(self):
-        """just adds selected value from available to SELECTED VALUES then remove selected value"""
+        """adds selected value from available to SELECTED VALUES then remove selected value
+        also, remember some data of removed item to restore it later"""
         selected_value = self.selected_element()
         if selected_value:
             # if selected multiple elements. just in case, select only 1. In case of optional, should always be one
@@ -1933,10 +1985,10 @@ class OptionalFields(SimpleFields.ElementsList):
                 if selected_value.parent().text() != 'SELECTED VALUES':
                     delete_element_data = {'index': selected_value.row(), 'parent': selected_value.parent()}
                     self.selected_values[selected_value.text()] = delete_element_data
-                    new_selected = QStandardItem(selected_value.text())
-                    new_selected.setEditable(False)
-                    new_selected2 = QStandardItem('')
-                    self.selected_values_display_row.appendRow([new_selected, new_selected2])
+                    selected_col_1 = QStandardItem(selected_value.text())
+                    selected_col_1.setEditable(False)
+                    selected_col_2_input_value = QStandardItem('')
+                    self.selected_values_display_row.appendRow([selected_col_1, selected_col_2_input_value])
                     self.create_field(selected_value)
                     self.delete_leaf()
 
@@ -2048,11 +2100,13 @@ class PerkDoubleList(SimpleFields.ElementsList):
             if name == 'StatusIcon':
                 temp = val.split('/')
                 self.files_container = [temp[-1], val]
-                self.add_leaf([name, temp[-1]], parent=self.selected_values_display_row)
+                a_leaves = self.add_leaf([name, temp[-1]], parent=self.selected_values_display_row)
             elif name == '':
                 continue
             else:
-                self.add_leaf([name, val], parent=self.selected_values_display_row)
+                a_leaves = self.add_leaf([name, val], parent=self.selected_values_display_row)
+            """a_leaves should be list where 0 is first column and 1 is second, in this case, name and val"""
+            a_leaves[1].setEditable(True)
 
     def get_val(self, temp_dict_container=None):
         """it needs to get data from treeview and return it in 2 separate fields"""
@@ -2103,7 +2157,7 @@ class PerkDoubleList(SimpleFields.ElementsList):
                     new_selected.setEditable(False)
                     new_selected2 = QStandardItem('')
                     self.delete_leaf()
-                    self.selected_values_display_row.appendRow([new_selected,new_selected2])
+                    self.selected_values_display_row.appendRow([new_selected, new_selected2])
                 else:
                     """if clicked on element in SELECTED VALUES then if its icon it should open file load"""
                     if 'Icon' in selected_value.text():
@@ -2113,13 +2167,14 @@ class PerkDoubleList(SimpleFields.ElementsList):
                              to get its sibling in next column"""
                             icon_row = self.tree_model.indexFromItem(selected_value)
                             icon_place = self.tree_model.itemFromIndex(icon_row.siblingAtColumn(1))
-
                             temp = icon[0].split('/')
                             filename = temp[-1]
                             file_path_start = icon[0].find('Mods/')
                             file_path = self.path_cut + icon[0][file_path_start:]
                             self.files_container = [filename, file_path]
                             icon_place.setText(filename)
+                Glob_Var.edit_element = True
+                Glob_Var.edited_field()
 
     def restore_selected(self):
         selected_value = self.selected_element()

@@ -18,23 +18,18 @@ from SimpleFields import ElementsList, Main_MultiList, mod_temp_data
 from GlobalVariables import Mod_Var, Glob_Var
 import TemplatesPreparation
 
-# TODO naming stuff
-# TODO broken:
-# monster - combat trigger - set music to
-# perks - perk type - probably status icon
-# main gui display - not centered
-# TODO templates>save data - first field, only monster card has different, maybe just change order and use first field key
+# TODO naming stuff - left function class, some other time
+
 
 # TODO for scene function there are some used mainly for additions
 # Hard problems
 # TODO broken - for some reason, when loading skills, on 4 load it breaks. it should clear fields then add new set, but
 # requiresStance is missing....might be problem with how some write those fields.
-# TODO multilists in addition does not react to delete key, with few exception - workaround
+# in elementList>select element, it does not find requresStance, even if it should be there. For some reason it is losing fields
 # TODO in function window, when loading SwapLineIf then changing to another functions, fields appear at the botton instead of top of layout.
 # TODO function menu > choice from event. works only on debug
-# check most endloops - left ifplayerhasstance
 # TODO for some reason, when opening function designer, first dropdown(single list l_player_name) gets focus. problem is that probably, it gets it before being created and return error. but sometimes it works.
-# TODO scroll bars keep disappeareng
+# TODO scroll bars keep disappearing
 
 
 class ModTreeField(ElementsList):

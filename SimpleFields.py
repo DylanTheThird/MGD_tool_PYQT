@@ -1069,9 +1069,12 @@ class ElementsList(QtWidgets.QTreeView):
                 row_count = self.tree_model.rowCount()
                 for idx in range(row_count):
                     if self.tree_model.index(idx,0) != element_index:
-                        self.selectionModel().select(self.tree_model.index(idx,0), QtCore.QItemSelectionModel.Select)
+                        self.selectionModel().select(self.tree_model.index(idx, 0), QtCore.QItemSelectionModel.Select)
             else:
                 self.selectionModel().select(element_index, QtCore.QItemSelectionModel.Select)
+            return True
+        else:
+            return None
 
     def new_prep_data_to_add(self, data=[], return_val=[]):
         """turn data, list of dictionaries and strings, into list of standard items with nested items"""
@@ -1205,7 +1208,8 @@ class ElementsList(QtWidgets.QTreeView):
                 self.tree_model.insertRow(row, new_leaves)
             else:
                 self.tree_model.appendRow(new_leaves)
-        """used to add single leaves with specific id, to be able to delete later without searching"""
+        return new_leaves
+        """return added leaf to customize"""
 
     def change_row_height(self, new_height, child=None):
         if child is None:
@@ -1509,8 +1513,8 @@ class MultiListDisplay:
                 current_count = self.final_data.tree_model.rowCount()
                 if self.limit:
                     if current_count > self.limit:
-                        otherFunctions.show_message('Warning',' Reached limit. Please remove some before adding more'
-                                                    ,'Warning')
+                        otherFunctions.show_message('Warning', ' Reached limit. Please remove some before adding more'
+                                                    , 'Warning')
                         return
                 current_values = []
                 for idx in range(current_count):

@@ -1,12 +1,12 @@
 {
-    "name": {
-				"type":"text",
-				"tooltip":"name of monster to display",
-				"options":["addition"]
-			},
 	"IDname": {
 				"type":"text",
 				"tooltip":"The internal name of the monster for use in json files. \nYou will be working with this whenever the game \nasks for which monster you wish to refer to.",
+				"options":["addition"]
+			},
+    "name": {
+				"type":"text",
+				"tooltip":"name of monster to display",
 				"options":["addition"]
 			},
 	"species": {
